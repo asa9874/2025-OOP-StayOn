@@ -1,0 +1,13 @@
+name: Dummy Status Check
+
+# PR이 열릴 때마다 실행
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  dummy-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check always pass
+        run: echo "Status check passed ✅"
