@@ -6,7 +6,7 @@ import org.example.domain.cleaningStaff.strategy.EmptyListStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,21 +47,20 @@ class CleaningStaffTest {
         CleaningStaff savedStaff = controller.save(requestDTO);
 
         // when
-        Optional<CleaningStaff> foundStaff = controller.findById(savedStaff.getId());
+        CleaningStaff foundStaff = controller.findById(savedStaff.getId());
 
         // then
-        assertTrue(foundStaff.isPresent());
-        assertEquals("홍길동", foundStaff.get().getName());
-        assertEquals("010-1234-5678", foundStaff.get().getPhoneNumber());
+        assertNotNull(foundStaff);
+        assertEquals("홍길동", foundStaff.getName());
+        assertEquals("010-1234-5678", foundStaff.getPhoneNumber());
     }
 
     @Test
-    void 아이디검색_존재하지않는아이디_빈결과반환() {
-        // when
-        Optional<CleaningStaff> foundStaff = controller.findById(999);
-
-        // then
-        assertTrue(foundStaff.isEmpty());
+    void 아이디검색_존재하지않는아이디_예외발생() {
+        // when & then
+        assertThrows(NoSuchElementException.class, () -> {
+            controller.findById(999);
+        });
     }
 
     @Test
@@ -76,7 +75,17 @@ class CleaningStaffTest {
         // then
         List<CleaningStaff> allStaff = repository.findAll();
         assertTrue(allStaff.isEmpty());
-        assertTrue(controller.findById(savedStaff.getId()).isEmpty());
+        assertThrows(NoSuchElementException.class, () -> {
+            controller.findById(savedStaff.getId());
+        });
+    }
+
+    @Test
+    void 아이디삭제_존재하지않는아이디_예외발생() {
+        // when & then
+        assertThrows(NoSuchElementException.class, () -> {
+            controller.deleteById(999);
+        });
     }
 
     @Test

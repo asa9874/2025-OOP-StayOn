@@ -1,7 +1,6 @@
 package org.example.domain.cleaningStaff;
 
 import org.example.domain.cleaningStaff.dto.CleaningStaffRequestDTO;
-import java.util.Optional;
 import java.util.List;
 
 public class CleaningStaffController {
@@ -25,7 +24,7 @@ public class CleaningStaffController {
         return instance;
     }
 
-    public Optional<CleaningStaff> findById(int id) {
+    public CleaningStaff findById(int id) {
         return cleaningStaffService.findById(id);
     }
 

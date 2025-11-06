@@ -1,8 +1,8 @@
 package org.example.domain.cleaningStaff;
 
 import org.example.domain.cleaningStaff.dto.CleaningStaffRequestDTO;
-import java.util.Optional;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class CleaningStaffService {
     private static CleaningStaffService instance;
@@ -25,8 +25,9 @@ public class CleaningStaffService {
         return instance;
     }
 
-    public Optional<CleaningStaff> findById(int id) {
-        return cleaningStaffRepository.findById(id);
+    public CleaningStaff findById(int id) {
+        return cleaningStaffRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("ID가 " + id + "인 청소 스태프를 찾을 수 없습니다."));
     }
 
     public List<CleaningStaff> findAll() {
@@ -39,6 +40,8 @@ public class CleaningStaffService {
     }
 
     public void deleteById(int id) {
+        // 존재하는지 확인 후 삭제
+        findById(id); // NotFoundException을 던질 수 있음
         cleaningStaffRepository.deleteById(id);
     }
 }
