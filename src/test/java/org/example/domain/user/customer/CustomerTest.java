@@ -26,7 +26,7 @@ class CustomerTest {
     void 저장_유효한입력_고객저장및반환() {
         // given
         CustomerRequestDTO requestDTO = new CustomerRequestDTO(
-                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com");
+                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com", 10000);
 
         // when
         controller.save(requestDTO);
@@ -40,6 +40,7 @@ class CustomerTest {
         assertEquals("hong123", customer.getAccountId());
         assertEquals("010-1234-5678", customer.getPhone());
         assertEquals("hong@example.com", customer.getEmail());
+        assertEquals(10000, customer.getMoney());
         assertTrue(customer.getId() > 0);
     }
 
@@ -47,7 +48,7 @@ class CustomerTest {
     void 아이디검색_존재하는아이디_고객반환() {
         // given
         CustomerRequestDTO requestDTO = new CustomerRequestDTO(
-                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com");
+                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com", 10000);
         Customer savedCustomer = controller.save(requestDTO);
 
         // when
@@ -59,6 +60,7 @@ class CustomerTest {
         assertEquals("hong123", foundCustomer.getAccountId());
         assertEquals("010-1234-5678", foundCustomer.getPhone());
         assertEquals("hong@example.com", foundCustomer.getEmail());
+        assertEquals(10000, foundCustomer.getMoney());
     }
 
     @Test
@@ -73,7 +75,7 @@ class CustomerTest {
     void 계정아이디검색_존재하는계정아이디_고객반환() {
         // given
         CustomerRequestDTO requestDTO = new CustomerRequestDTO(
-                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com");
+                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com", 10000);
         controller.save(requestDTO);
 
         // when
@@ -97,7 +99,7 @@ class CustomerTest {
     void 아이디삭제_존재하는아이디_고객삭제() {
         // given
         CustomerRequestDTO requestDTO = new CustomerRequestDTO(
-                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com");
+                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com", 10000);
         Customer savedCustomer = controller.save(requestDTO);
 
         // when
@@ -123,9 +125,9 @@ class CustomerTest {
     void 전체조회_여러고객존재_모든고객반환() {
         // given
         CustomerRequestDTO customer1 = new CustomerRequestDTO(
-                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com");
+                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com", 10000);
         CustomerRequestDTO customer2 = new CustomerRequestDTO(
-                "김철수", "kim456", "password456", "010-8765-4321", "kim@example.com");
+                "김철수", "kim456", "password456", "010-8765-4321", "kim@example.com", 20000);
 
         controller.save(customer1);
         controller.save(customer2);
@@ -143,7 +145,7 @@ class CustomerTest {
     void 로그인_올바른비밀번호_로그인성공() {
         // given
         CustomerRequestDTO requestDTO = new CustomerRequestDTO(
-                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com");
+                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com", 10000);
         Customer savedCustomer = controller.save(requestDTO);
 
         // when
@@ -157,7 +159,7 @@ class CustomerTest {
     void 로그인_잘못된비밀번호_로그인실패() {
         // given
         CustomerRequestDTO requestDTO = new CustomerRequestDTO(
-                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com");
+                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com", 10000);
         Customer savedCustomer = controller.save(requestDTO);
 
         // when
@@ -171,7 +173,7 @@ class CustomerTest {
     void 프로필수정_유효한입력_프로필업데이트() {
         // given
         CustomerRequestDTO requestDTO = new CustomerRequestDTO(
-                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com");
+                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com", 10000);
         Customer savedCustomer = controller.save(requestDTO);
 
         // when
@@ -187,7 +189,7 @@ class CustomerTest {
     void 비밀번호재설정_새비밀번호_비밀번호업데이트() {
         // given
         CustomerRequestDTO requestDTO = new CustomerRequestDTO(
-                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com");
+                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com", 10000);
         Customer savedCustomer = controller.save(requestDTO);
 
         // when
@@ -202,7 +204,7 @@ class CustomerTest {
     void 컨트롤러로그인_올바른계정정보_로그인성공() {
         // given
         CustomerRequestDTO requestDTO = new CustomerRequestDTO(
-                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com");
+                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com", 10000);
         controller.save(requestDTO);
 
         // when
@@ -218,7 +220,7 @@ class CustomerTest {
     void 컨트롤러로그인_잘못된비밀번호_예외발생() {
         // given
         CustomerRequestDTO requestDTO = new CustomerRequestDTO(
-                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com");
+                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com", 10000);
         controller.save(requestDTO);
 
         // when & then
@@ -239,7 +241,7 @@ class CustomerTest {
     void 서비스로그인_올바른계정정보_로그인성공() {
         // given
         CustomerRequestDTO requestDTO = new CustomerRequestDTO(
-                "김철수", "kim456", "mypassword", "010-5555-6666", "kim@example.com");
+                "김철수", "kim456", "mypassword", "010-5555-6666", "kim@example.com", 20000);
         controller.save(requestDTO);
         CustomerService service = CustomerService.getInstance();
 
@@ -256,7 +258,7 @@ class CustomerTest {
     void 서비스로그인_잘못된비밀번호_예외발생() {
         // given
         CustomerRequestDTO requestDTO = new CustomerRequestDTO(
-                "김철수", "kim456", "mypassword", "010-5555-6666", "kim@example.com");
+                "김철수", "kim456", "mypassword", "010-5555-6666", "kim@example.com", 20000);
         controller.save(requestDTO);
         CustomerService service = CustomerService.getInstance();
 
@@ -270,11 +272,11 @@ class CustomerTest {
     void 여러고객중로그인_올바른계정정보_해당고객로그인성공() {
         // given
         CustomerRequestDTO customer1 = new CustomerRequestDTO(
-                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com");
+                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com", 10000);
         CustomerRequestDTO customer2 = new CustomerRequestDTO(
-                "김철수", "kim456", "password456", "010-8765-4321", "kim@example.com");
+                "김철수", "kim456", "password456", "010-8765-4321", "kim@example.com", 20000);
         CustomerRequestDTO customer3 = new CustomerRequestDTO(
-                "박영희", "park789", "password789", "010-1111-2222", "park@example.com");
+                "박영희", "park789", "password789", "010-1111-2222", "park@example.com", 30000);
 
         controller.save(customer1);
         controller.save(customer2);
@@ -288,5 +290,46 @@ class CustomerTest {
         assertEquals("김철수", loginResult.getName());
         assertEquals("kim456", loginResult.getAccountId());
         assertEquals("010-8765-4321", loginResult.getPhone());
+    }
+
+    @Test
+    void 잔액추가_유효한금액_잔액증가() {
+        // given
+        CustomerRequestDTO requestDTO = new CustomerRequestDTO(
+                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com", 10000);
+        Customer savedCustomer = controller.save(requestDTO);
+
+        // when
+        savedCustomer.addMoney(5000);
+
+        // then
+        assertEquals(15000, savedCustomer.getMoney());
+    }
+
+    @Test
+    void 잔액차감_충분한잔액_잔액감소() {
+        // given
+        CustomerRequestDTO requestDTO = new CustomerRequestDTO(
+                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com", 10000);
+        Customer savedCustomer = controller.save(requestDTO);
+
+        // when
+        savedCustomer.subtractMoney(3000);
+
+        // then
+        assertEquals(7000, savedCustomer.getMoney());
+    }
+
+    @Test
+    void 잔액차감_부족한잔액_예외발생() {
+        // given
+        CustomerRequestDTO requestDTO = new CustomerRequestDTO(
+                "홍길동", "hong123", "password123", "010-1234-5678", "hong@example.com", 10000);
+        Customer savedCustomer = controller.save(requestDTO);
+
+        // when & then
+        assertThrows(IllegalArgumentException.class, () -> {
+            savedCustomer.subtractMoney(15000);
+        });
     }
 }
