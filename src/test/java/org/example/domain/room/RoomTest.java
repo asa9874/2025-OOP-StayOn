@@ -26,7 +26,7 @@ class RoomTest {
     void 저장_유효한입력_객실저장및반환() {
         // given
         RoomRequestDTO requestDTO = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE);
+                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
 
         // when
         controller.save(requestDTO);
@@ -43,6 +43,7 @@ class RoomTest {
         assertEquals("아늑한 싱글룸", room.getDescription());
         assertEquals(RoomStatus.RESERVATION, room.getRoomStatus());
         assertEquals(RoomType.SINGLE, room.getRoomType());
+        assertEquals(50000, room.getPrice());
         assertTrue(room.getId() > 0);
     }
 
@@ -50,7 +51,7 @@ class RoomTest {
     void 아이디검색_존재하는아이디_객실반환() {
         // given
         RoomRequestDTO requestDTO = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE);
+                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
         Room savedRoom = controller.save(requestDTO);
 
         // when
@@ -60,6 +61,7 @@ class RoomTest {
         assertNotNull(foundRoom);
         assertEquals("101호", foundRoom.getRoomName());
         assertEquals(RoomType.SINGLE, foundRoom.getRoomType());
+        assertEquals(50000, foundRoom.getPrice());
     }
 
     @Test
@@ -74,7 +76,7 @@ class RoomTest {
     void 객실명검색_존재하는객실명_객실반환() {
         // given
         RoomRequestDTO requestDTO = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE);
+                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
         controller.save(requestDTO);
 
         // when
@@ -97,7 +99,7 @@ class RoomTest {
     void 아이디삭제_존재하는아이디_객실삭제() {
         // given
         RoomRequestDTO requestDTO = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE);
+                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
         Room savedRoom = controller.save(requestDTO);
 
         // when
@@ -123,9 +125,9 @@ class RoomTest {
     void 전체조회_여러객실존재_모든객실반환() {
         // given
         RoomRequestDTO room1 = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
         RoomRequestDTO room2 = new RoomRequestDTO(
-                "201호", 2, "A동", 4, "복층객실", RoomStatus.RESERVATION, RoomType.DUPLEX);
+                "201호", 2, "A동", 4, "복층객실", RoomStatus.RESERVATION, RoomType.DUPLEX, 100000);
 
         controller.save(room1);
         controller.save(room2);
@@ -143,11 +145,11 @@ class RoomTest {
     void 객실타입별조회_특정타입_해당타입객실들반환() {
         // given
         RoomRequestDTO room1 = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
         RoomRequestDTO room2 = new RoomRequestDTO(
-                "201호", 2, "A동", 4, "복층객실", RoomStatus.RESERVATION, RoomType.DUPLEX);
+                "201호", 2, "A동", 4, "복층객실", RoomStatus.RESERVATION, RoomType.DUPLEX, 100000);
         RoomRequestDTO room3 = new RoomRequestDTO(
-                "102호", 1, "A동", 2, "싱글룸2", RoomStatus.RESERVATION, RoomType.SINGLE);
+                "102호", 1, "A동", 2, "싱글룸2", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
 
         controller.save(room1);
         controller.save(room2);
@@ -165,11 +167,11 @@ class RoomTest {
     void 객실상태별조회_특정상태_해당상태객실들반환() {
         // given
         RoomRequestDTO room1 = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
         RoomRequestDTO room2 = new RoomRequestDTO(
-                "201호", 2, "A동", 4, "복층객실", RoomStatus.USING, RoomType.DUPLEX);
+                "201호", 2, "A동", 4, "복층객실", RoomStatus.USING, RoomType.DUPLEX, 100000);
         RoomRequestDTO room3 = new RoomRequestDTO(
-                "102호", 1, "A동", 2, "싱글룸2", RoomStatus.RESERVATION, RoomType.SINGLE);
+                "102호", 1, "A동", 2, "싱글룸2", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
 
         controller.save(room1);
         controller.save(room2);
@@ -187,7 +189,7 @@ class RoomTest {
     void 객실상태변경_유효한상태_상태업데이트() {
         // given
         RoomRequestDTO requestDTO = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
         Room savedRoom = controller.save(requestDTO);
 
         // when
@@ -204,5 +206,34 @@ class RoomTest {
         assertThrows(NoSuchElementException.class, () -> {
             controller.updateRoomStatus(999, RoomStatus.USING);
         });
+    }
+
+    @Test
+    void 가격조회_유효한객실_가격반환() {
+        // given
+        RoomRequestDTO requestDTO = new RoomRequestDTO(
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
+        Room savedRoom = controller.save(requestDTO);
+
+        // when
+        int price = savedRoom.getPrice();
+
+        // then
+        assertEquals(50000, price);
+    }
+
+    @Test
+    void 가격변경_유효한금액_가격업데이트() {
+        // given
+        RoomRequestDTO requestDTO = new RoomRequestDTO(
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
+        Room savedRoom = controller.save(requestDTO);
+
+        // when
+        savedRoom.setPrice(60000);
+
+        // then
+        assertEquals(60000, savedRoom.getPrice());
+        assertEquals(60000, controller.findById(savedRoom.getId()).getPrice());
     }
 }

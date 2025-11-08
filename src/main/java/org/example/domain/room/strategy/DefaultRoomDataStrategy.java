@@ -20,6 +20,7 @@ public class DefaultRoomDataStrategy implements RoomInitStrategy {
         room1.setDescription("아늑한 싱글룸");
         room1.setRoomStatus(RoomStatus.RESERVATION);
         room1.setRoomType(RoomType.SINGLE);
+        room1.setPrice(50000);
         
         Room room2 = new Room();
         room2.setId(2);
@@ -30,6 +31,7 @@ public class DefaultRoomDataStrategy implements RoomInitStrategy {
         room2.setDescription("넓은 복층 객실");
         room2.setRoomStatus(RoomStatus.RESERVATION);
         room2.setRoomType(RoomType.DUPLEX);
+        room2.setPrice(100000);
         
         list.add(room1);
         list.add(room2);

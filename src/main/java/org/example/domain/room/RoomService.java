@@ -55,7 +55,8 @@ public class RoomService {
                 requestDTO.maxPeople(),
                 requestDTO.description(),
                 requestDTO.roomStatus(),
-                requestDTO.roomType()
+                requestDTO.roomType(),
+                requestDTO.price()
         );
         return roomRepository.save(newRoom);
     }
