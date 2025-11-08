@@ -15,12 +15,18 @@ import org.example.domain.user.pensionManager.PensionManagerRepository;
 import org.example.domain.user.pensionManager.PensionManagerService;
 import org.example.domain.user.pensionManager.strategy.PensionManagerInitStrategy;
 import org.example.domain.user.pensionManager.strategy.DefaultPensionManagerDataStrategy;
+import org.example.domain.room.RoomController;
+import org.example.domain.room.RoomRepository;
+import org.example.domain.room.RoomService;
+import org.example.domain.room.strategy.RoomInitStrategy;
+import org.example.domain.room.strategy.DefaultRoomDataStrategy;
 
 public class Init {
     public static void initializeDependencies() { // DI 하는 메서드
         initializeCleaningStaffModule(new DefaultDataStrategy());
         initializeCustomerModule(new DefaultCustomerDataStrategy());
         initializePensionManagerModule(new DefaultPensionManagerDataStrategy());
+        initializeRoomModule(new DefaultRoomDataStrategy());
     }
 
     public static void initializeCleaningStaffModule(CleaningStaffInitStrategy strategy) {
@@ -54,6 +60,17 @@ public class Init {
         PensionManagerRepository.initialize(pensionManagerInitStrategy);
         PensionManagerService.initialize(PensionManagerRepository.getInstance());
         PensionManagerController.initialize(PensionManagerService.getInstance());
+    }
+
+    public static void initializeRoomModule(RoomInitStrategy strategy) {
+        RoomInitStrategy roomInitStrategy;
+        if (strategy == null) {
+            roomInitStrategy = new DefaultRoomDataStrategy();
+        }
+        roomInitStrategy = strategy;
+        RoomRepository.initialize(roomInitStrategy);
+        RoomService.initialize(RoomRepository.getInstance());
+        RoomController.initialize(RoomService.getInstance());
     }
 
 }
