@@ -25,6 +25,11 @@ import org.example.domain.reservation.ReservationRepository;
 import org.example.domain.reservation.ReservationService;
 import org.example.domain.reservation.strategy.ReservationInitStrategy;
 import org.example.domain.reservation.strategy.DefaultReservationDataStrategy;
+import org.example.domain.review.ReviewController;
+import org.example.domain.review.ReviewRepository;
+import org.example.domain.review.ReviewService;
+import org.example.domain.review.strategy.ReviewInitStrategy;
+import org.example.domain.review.strategy.DefaultReviewDataStrategy;
 
 public class Init {
     public static void initializeDependencies() { // DI 하는 메서드
@@ -33,6 +38,7 @@ public class Init {
         initializePensionManagerModule(new DefaultPensionManagerDataStrategy());
         initializeRoomModule(new DefaultRoomDataStrategy());
         initializeReservationModule(new DefaultReservationDataStrategy());
+        initializeReviewModule(new DefaultReviewDataStrategy());
     }
 
     public static void initializeCleaningStaffModule(CleaningStaffInitStrategy strategy) {
@@ -93,6 +99,22 @@ public class Init {
         
         ReservationController reservationController = ReservationController.getInstance();
         reservationController.setReservationService(reservationService);
+    }
+
+    public static void initializeReviewModule(ReviewInitStrategy strategy) {
+        ReviewInitStrategy reviewInitStrategy;
+        if (strategy == null) {
+            reviewInitStrategy = new DefaultReviewDataStrategy();
+        }
+        reviewInitStrategy = strategy;
+        ReviewRepository reviewRepository = ReviewRepository.getInstance();
+        reviewRepository.setInitStrategy(reviewInitStrategy);
+        
+        ReviewService reviewService = ReviewService.getInstance();
+        reviewService.setReviewRepository(reviewRepository);
+        
+        ReviewController reviewController = ReviewController.getInstance();
+        reviewController.setReviewService(reviewService);
     }
 
 }
