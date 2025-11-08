@@ -20,6 +20,11 @@ import org.example.domain.room.RoomRepository;
 import org.example.domain.room.RoomService;
 import org.example.domain.room.strategy.RoomInitStrategy;
 import org.example.domain.room.strategy.DefaultRoomDataStrategy;
+import org.example.domain.reservation.ReservationController;
+import org.example.domain.reservation.ReservationRepository;
+import org.example.domain.reservation.ReservationService;
+import org.example.domain.reservation.strategy.ReservationInitStrategy;
+import org.example.domain.reservation.strategy.DefaultReservationDataStrategy;
 
 public class Init {
     public static void initializeDependencies() { // DI 하는 메서드
@@ -27,6 +32,7 @@ public class Init {
         initializeCustomerModule(new DefaultCustomerDataStrategy());
         initializePensionManagerModule(new DefaultPensionManagerDataStrategy());
         initializeRoomModule(new DefaultRoomDataStrategy());
+        initializeReservationModule(new DefaultReservationDataStrategy());
     }
 
     public static void initializeCleaningStaffModule(CleaningStaffInitStrategy strategy) {
@@ -71,6 +77,22 @@ public class Init {
         RoomRepository.initialize(roomInitStrategy);
         RoomService.initialize(RoomRepository.getInstance());
         RoomController.initialize(RoomService.getInstance());
+    }
+
+    public static void initializeReservationModule(ReservationInitStrategy strategy) {
+        ReservationInitStrategy reservationInitStrategy;
+        if (strategy == null) {
+            reservationInitStrategy = new DefaultReservationDataStrategy();
+        }
+        reservationInitStrategy = strategy;
+        ReservationRepository reservationRepository = ReservationRepository.getInstance();
+        reservationRepository.setInitStrategy(reservationInitStrategy);
+        
+        ReservationService reservationService = ReservationService.getInstance();
+        reservationService.setReservationRepository(reservationRepository);
+        
+        ReservationController reservationController = ReservationController.getInstance();
+        reservationController.setReservationService(reservationService);
     }
 
 }
