@@ -45,7 +45,8 @@ public class CustomerService {
                 requestDTO.accountId(),
                 requestDTO.password(),
                 requestDTO.phone(),
-                requestDTO.email()
+                requestDTO.email(),
+                requestDTO.money()
         );
         return customerRepository.save(newCustomer);
     }

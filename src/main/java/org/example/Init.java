@@ -15,12 +15,30 @@ import org.example.domain.user.pensionManager.PensionManagerRepository;
 import org.example.domain.user.pensionManager.PensionManagerService;
 import org.example.domain.user.pensionManager.strategy.PensionManagerInitStrategy;
 import org.example.domain.user.pensionManager.strategy.DefaultPensionManagerDataStrategy;
+import org.example.domain.room.RoomController;
+import org.example.domain.room.RoomRepository;
+import org.example.domain.room.RoomService;
+import org.example.domain.room.strategy.RoomInitStrategy;
+import org.example.domain.room.strategy.DefaultRoomDataStrategy;
+import org.example.domain.reservation.ReservationController;
+import org.example.domain.reservation.ReservationRepository;
+import org.example.domain.reservation.ReservationService;
+import org.example.domain.reservation.strategy.ReservationInitStrategy;
+import org.example.domain.reservation.strategy.DefaultReservationDataStrategy;
+import org.example.domain.review.ReviewController;
+import org.example.domain.review.ReviewRepository;
+import org.example.domain.review.ReviewService;
+import org.example.domain.review.strategy.ReviewInitStrategy;
+import org.example.domain.review.strategy.DefaultReviewDataStrategy;
 
 public class Init {
     public static void initializeDependencies() { // DI 하는 메서드
         initializeCleaningStaffModule(new DefaultDataStrategy());
         initializeCustomerModule(new DefaultCustomerDataStrategy());
         initializePensionManagerModule(new DefaultPensionManagerDataStrategy());
+        initializeRoomModule(new DefaultRoomDataStrategy());
+        initializeReservationModule(new DefaultReservationDataStrategy());
+        initializeReviewModule(new DefaultReviewDataStrategy());
     }
 
     public static void initializeCleaningStaffModule(CleaningStaffInitStrategy strategy) {
@@ -54,6 +72,49 @@ public class Init {
         PensionManagerRepository.initialize(pensionManagerInitStrategy);
         PensionManagerService.initialize(PensionManagerRepository.getInstance());
         PensionManagerController.initialize(PensionManagerService.getInstance());
+    }
+
+    public static void initializeRoomModule(RoomInitStrategy strategy) {
+        RoomInitStrategy roomInitStrategy;
+        if (strategy == null) {
+            roomInitStrategy = new DefaultRoomDataStrategy();
+        }
+        roomInitStrategy = strategy;
+        RoomRepository.initialize(roomInitStrategy);
+        RoomService.initialize(RoomRepository.getInstance());
+        RoomController.initialize(RoomService.getInstance());
+    }
+
+    public static void initializeReservationModule(ReservationInitStrategy strategy) {
+        ReservationInitStrategy reservationInitStrategy;
+        if (strategy == null) {
+            reservationInitStrategy = new DefaultReservationDataStrategy();
+        }
+        reservationInitStrategy = strategy;
+        ReservationRepository reservationRepository = ReservationRepository.getInstance();
+        reservationRepository.setInitStrategy(reservationInitStrategy);
+        
+        ReservationService reservationService = ReservationService.getInstance();
+        reservationService.setReservationRepository(reservationRepository);
+        
+        ReservationController reservationController = ReservationController.getInstance();
+        reservationController.setReservationService(reservationService);
+    }
+
+    public static void initializeReviewModule(ReviewInitStrategy strategy) {
+        ReviewInitStrategy reviewInitStrategy;
+        if (strategy == null) {
+            reviewInitStrategy = new DefaultReviewDataStrategy();
+        }
+        reviewInitStrategy = strategy;
+        ReviewRepository reviewRepository = ReviewRepository.getInstance();
+        reviewRepository.setInitStrategy(reviewInitStrategy);
+        
+        ReviewService reviewService = ReviewService.getInstance();
+        reviewService.setReviewRepository(reviewRepository);
+        
+        ReviewController reviewController = ReviewController.getInstance();
+        reviewController.setReviewService(reviewService);
     }
 
 }
