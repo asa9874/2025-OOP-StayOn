@@ -47,6 +47,10 @@ public class RoomService {
         return roomRepository.findByRoomStatus(roomStatus);
     }
 
+    public List<Room> findByPensionId(int pensionId) {
+        return roomRepository.findByPensionId(pensionId);
+    }
+
     public Room save(RoomRequestDTO requestDTO) {
         Room newRoom = new Room(
                 requestDTO.roomName(),
@@ -56,7 +60,8 @@ public class RoomService {
                 requestDTO.description(),
                 requestDTO.roomStatus(),
                 requestDTO.roomType(),
-                requestDTO.price()
+                requestDTO.price(),
+                requestDTO.pensionId()
         );
         return roomRepository.save(newRoom);
     }

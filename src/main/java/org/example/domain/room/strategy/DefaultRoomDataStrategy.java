@@ -21,6 +21,7 @@ public class DefaultRoomDataStrategy implements RoomInitStrategy {
         room1.setRoomStatus(RoomStatus.RESERVATION);
         room1.setRoomType(RoomType.SINGLE);
         room1.setPrice(50000);
+        room1.setPensionId(1);
         
         Room room2 = new Room();
         room2.setId(2);
@@ -32,6 +33,7 @@ public class DefaultRoomDataStrategy implements RoomInitStrategy {
         room2.setRoomStatus(RoomStatus.RESERVATION);
         room2.setRoomType(RoomType.DUPLEX);
         room2.setPrice(100000);
+        room2.setPensionId(1);
         
         list.add(room1);
         list.add(room2);

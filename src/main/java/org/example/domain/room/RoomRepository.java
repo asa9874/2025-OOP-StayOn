@@ -69,6 +69,12 @@ public class RoomRepository {
                 .collect(Collectors.toList());
     }
 
+    public List<Room> findByPensionId(int pensionId) {
+        return roomList.stream()
+                .filter(room -> room.getPensionId() == pensionId)
+                .collect(Collectors.toList());
+    }
+
     public Room save(Room room) {
         room.setId(nextId++);
         roomList.add(room);
