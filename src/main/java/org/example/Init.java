@@ -5,6 +5,10 @@ import org.example.domain.cleaningStaff.CleaningStaffRepository;
 import org.example.domain.cleaningStaff.CleaningStaffService;
 import org.example.domain.cleaningStaff.strategy.CleaningStaffInitStrategy;
 import org.example.domain.cleaningStaff.strategy.DefaultDataStrategy;
+import org.example.domain.pension.PensionController;
+import org.example.domain.pension.PensionRepository;
+import org.example.domain.pension.PensionService;
+import org.example.domain.pension.strategy.PensionInitStrategy;
 import org.example.domain.user.customer.CustomerController;
 import org.example.domain.user.customer.CustomerRepository;
 import org.example.domain.user.customer.CustomerService;
@@ -93,10 +97,10 @@ public class Init {
         reservationInitStrategy = strategy;
         ReservationRepository reservationRepository = ReservationRepository.getInstance();
         reservationRepository.setInitStrategy(reservationInitStrategy);
-        
+
         ReservationService reservationService = ReservationService.getInstance();
         reservationService.setReservationRepository(reservationRepository);
-        
+
         ReservationController reservationController = ReservationController.getInstance();
         reservationController.setReservationService(reservationService);
     }
@@ -109,12 +113,17 @@ public class Init {
         reviewInitStrategy = strategy;
         ReviewRepository reviewRepository = ReviewRepository.getInstance();
         reviewRepository.setInitStrategy(reviewInitStrategy);
-        
+
         ReviewService reviewService = ReviewService.getInstance();
         reviewService.setReviewRepository(reviewRepository);
-        
+
         ReviewController reviewController = ReviewController.getInstance();
         reviewController.setReviewService(reviewService);
     }
 
+    public static void initializePensionModule(PensionInitStrategy strategy) {
+        PensionRepository.initialize(strategy);
+        PensionService.initialize(PensionRepository.getInstance());
+        PensionController.initialize(PensionService.getInstance());
+    }
 }

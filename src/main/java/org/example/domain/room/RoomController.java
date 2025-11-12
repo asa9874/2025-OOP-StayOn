@@ -48,6 +48,10 @@ public class RoomController {
         return roomService.findByRoomStatus(roomStatus);
     }
 
+    public List<Room> findByPensionId(int pensionId) {
+        return roomService.findByPensionId(pensionId);
+    }
+
     public void deleteById(int id) {
         roomService.deleteById(id);
     }

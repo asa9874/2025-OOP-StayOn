@@ -26,7 +26,7 @@ class RoomTest {
     void 저장_유효한입력_객실저장및반환() {
         // given
         RoomRequestDTO requestDTO = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
+                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
 
         // when
         controller.save(requestDTO);
@@ -44,6 +44,7 @@ class RoomTest {
         assertEquals(RoomStatus.RESERVATION, room.getRoomStatus());
         assertEquals(RoomType.SINGLE, room.getRoomType());
         assertEquals(50000, room.getPrice());
+        assertEquals(1, room.getPensionId());
         assertTrue(room.getId() > 0);
     }
 
@@ -51,7 +52,7 @@ class RoomTest {
     void 아이디검색_존재하는아이디_객실반환() {
         // given
         RoomRequestDTO requestDTO = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
+                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
         Room savedRoom = controller.save(requestDTO);
 
         // when
@@ -76,7 +77,7 @@ class RoomTest {
     void 객실명검색_존재하는객실명_객실반환() {
         // given
         RoomRequestDTO requestDTO = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
+                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
         controller.save(requestDTO);
 
         // when
@@ -99,7 +100,7 @@ class RoomTest {
     void 아이디삭제_존재하는아이디_객실삭제() {
         // given
         RoomRequestDTO requestDTO = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
+                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
         Room savedRoom = controller.save(requestDTO);
 
         // when
@@ -125,9 +126,9 @@ class RoomTest {
     void 전체조회_여러객실존재_모든객실반환() {
         // given
         RoomRequestDTO room1 = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
         RoomRequestDTO room2 = new RoomRequestDTO(
-                "201호", 2, "A동", 4, "복층객실", RoomStatus.RESERVATION, RoomType.DUPLEX, 100000);
+                "201호", 2, "A동", 4, "복층객실", RoomStatus.RESERVATION, RoomType.DUPLEX, 100000, 1);
 
         controller.save(room1);
         controller.save(room2);
@@ -145,11 +146,11 @@ class RoomTest {
     void 객실타입별조회_특정타입_해당타입객실들반환() {
         // given
         RoomRequestDTO room1 = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
         RoomRequestDTO room2 = new RoomRequestDTO(
-                "201호", 2, "A동", 4, "복층객실", RoomStatus.RESERVATION, RoomType.DUPLEX, 100000);
+                "201호", 2, "A동", 4, "복층객실", RoomStatus.RESERVATION, RoomType.DUPLEX, 100000, 1);
         RoomRequestDTO room3 = new RoomRequestDTO(
-                "102호", 1, "A동", 2, "싱글룸2", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
+                "102호", 1, "A동", 2, "싱글룸2", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
 
         controller.save(room1);
         controller.save(room2);
@@ -167,11 +168,11 @@ class RoomTest {
     void 객실상태별조회_특정상태_해당상태객실들반환() {
         // given
         RoomRequestDTO room1 = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
         RoomRequestDTO room2 = new RoomRequestDTO(
-                "201호", 2, "A동", 4, "복층객실", RoomStatus.USING, RoomType.DUPLEX, 100000);
+                "201호", 2, "A동", 4, "복층객실", RoomStatus.USING, RoomType.DUPLEX, 100000, 1);
         RoomRequestDTO room3 = new RoomRequestDTO(
-                "102호", 1, "A동", 2, "싱글룸2", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
+                "102호", 1, "A동", 2, "싱글룸2", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
 
         controller.save(room1);
         controller.save(room2);
@@ -189,7 +190,7 @@ class RoomTest {
     void 객실상태변경_유효한상태_상태업데이트() {
         // given
         RoomRequestDTO requestDTO = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
         Room savedRoom = controller.save(requestDTO);
 
         // when
@@ -212,7 +213,7 @@ class RoomTest {
     void 가격조회_유효한객실_가격반환() {
         // given
         RoomRequestDTO requestDTO = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
         Room savedRoom = controller.save(requestDTO);
 
         // when
@@ -226,7 +227,7 @@ class RoomTest {
     void 가격변경_유효한금액_가격업데이트() {
         // given
         RoomRequestDTO requestDTO = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
         Room savedRoom = controller.save(requestDTO);
 
         // when
@@ -235,5 +236,68 @@ class RoomTest {
         // then
         assertEquals(60000, savedRoom.getPrice());
         assertEquals(60000, controller.findById(savedRoom.getId()).getPrice());
+    }
+
+    @Test
+    void 펜션별조회_특정펜션_해당펜션객실들반환() {
+        // given
+        RoomRequestDTO room1 = new RoomRequestDTO(
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
+        RoomRequestDTO room2 = new RoomRequestDTO(
+                "201호", 2, "A동", 4, "복층객실", RoomStatus.RESERVATION, RoomType.DUPLEX, 100000, 1);
+        RoomRequestDTO room3 = new RoomRequestDTO(
+                "301호", 3, "B동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 55000, 2);
+
+        controller.save(room1);
+        controller.save(room2);
+        controller.save(room3);
+
+        // when
+        List<Room> pension1Rooms = controller.findByPensionId(1);
+
+        // then
+        assertEquals(2, pension1Rooms.size());
+        assertTrue(pension1Rooms.stream().allMatch(room -> room.getPensionId() == 1));
+        assertEquals("101호", pension1Rooms.get(0).getRoomName());
+        assertEquals("201호", pension1Rooms.get(1).getRoomName());
+    }
+
+    @Test
+    void 펜션별조회_존재하지않는펜션_빈리스트반환() {
+        // given
+        RoomRequestDTO room1 = new RoomRequestDTO(
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
+        controller.save(room1);
+
+        // when
+        List<Room> nonExistentPensionRooms = controller.findByPensionId(999);
+
+        // then
+        assertTrue(nonExistentPensionRooms.isEmpty());
+    }
+
+    @Test
+    void 펜션별조회_여러펜션_각펜션별로다른객실반환() {
+        // given
+        RoomRequestDTO room1 = new RoomRequestDTO(
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
+        RoomRequestDTO room2 = new RoomRequestDTO(
+                "201호", 2, "A동", 4, "복층객실", RoomStatus.RESERVATION, RoomType.DUPLEX, 100000, 2);
+        RoomRequestDTO room3 = new RoomRequestDTO(
+                "301호", 3, "B동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 55000, 1);
+
+        controller.save(room1);
+        controller.save(room2);
+        controller.save(room3);
+
+        // when
+        List<Room> pension1Rooms = controller.findByPensionId(1);
+        List<Room> pension2Rooms = controller.findByPensionId(2);
+
+        // then
+        assertEquals(2, pension1Rooms.size());
+        assertEquals(1, pension2Rooms.size());
+        assertTrue(pension1Rooms.stream().allMatch(room -> room.getPensionId() == 1));
+        assertTrue(pension2Rooms.stream().allMatch(room -> room.getPensionId() == 2));
     }
 }
