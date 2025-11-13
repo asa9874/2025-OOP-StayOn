@@ -11,34 +11,26 @@ public class DefaultRoomDataStrategy implements RoomInitStrategy {
     public List<Room> initializeList() {
         List<Room> list = new ArrayList<>();
         
-        Room room1 = new Room();
-        room1.setId(1);
-        room1.setRoomName("101호");
-        room1.setFloor(1);
-        room1.setBuilding("A동");
-        room1.setMaxPeople(2);
-        room1.setDescription("아늑한 싱글룸");
-        room1.setRoomStatus(RoomStatus.RESERVATION);
-        room1.setRoomType(RoomType.SINGLE);
-        room1.setPrice(50000);
-        room1.setPensionId(1);
-        room1.setImage("image/room.png");
+        String[] buildings = {"A동", "B동", "C동"};
+        RoomType[] types = {RoomType.SINGLE, RoomType.DUPLEX, RoomType.HOTEL};
+        RoomStatus[] statuses = {RoomStatus.RESERVATION, RoomStatus.USING, RoomStatus.CLEANING, RoomStatus.CHECKING};
+        int[] prices = {50000, 70000, 90000, 100000, 120000};
         
-        Room room2 = new Room();
-        room2.setId(2);
-        room2.setRoomName("201호");
-        room2.setFloor(2);
-        room2.setBuilding("A동");
-        room2.setMaxPeople(4);
-        room2.setDescription("넓은 복층 객실");
-        room2.setRoomStatus(RoomStatus.RESERVATION);
-        room2.setRoomType(RoomType.DUPLEX);
-        room2.setPrice(100000);
-        room2.setPensionId(1);
-        room2.setImage("image/room.png");
-        
-        list.add(room1);
-        list.add(room2);
+        for (int i = 1; i <= 25; i++) {
+            Room room = new Room();
+            room.setId(i);
+            room.setRoomName((100 + i) + "호");
+            room.setFloor((i - 1) / 5 + 1);
+            room.setBuilding(buildings[i % 3]);
+            room.setMaxPeople((i % 4) + 2);
+            room.setDescription("객실 " + i + "번 - " + types[i % 3].name() + " 타입");
+            room.setRoomStatus(statuses[i % 4]);
+            room.setRoomType(types[i % 3]);
+            room.setPrice(prices[i % 5]);
+            room.setPensionId((i % 3) + 1);
+            room.setImage("image/room.png");
+            list.add(room);
+        }
         
         return list;
     }

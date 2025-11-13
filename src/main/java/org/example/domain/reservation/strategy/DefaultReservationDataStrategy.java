@@ -17,36 +17,63 @@ public class DefaultReservationDataStrategy implements ReservationInitStrategy {
         List<Reservation> list = new ArrayList<>();
 
         // 테스트용 Customer 생성
-        Customer customer1 = new Customer("홍길동", "customer1", "password1", "010-1234-5678", "hong@example.com", 100000);
-        customer1.setId(1);
+        Customer[] customers = new Customer[25];
+        String[] names = {"홍길동", "김철수", "이영희", "박민수", "최수지",
+                         "정준호", "강지은", "조성민", "윤하늘", "장서연",
+                         "임도윤", "한예준", "오시우", "서하준", "신서준",
+                         "권지호", "황수빈", "안은우", "송유진", "류지우",
+                         "전현우", "홍민지", "고태양", "문소율", "양채원"};
+        
+        for (int i = 0; i < 25; i++) {
+            customers[i] = new Customer(
+                names[i],
+                "customer" + (i + 1),
+                "password" + (i + 1),
+                "010-" + (1000 + i * 100) + "-" + (2000 + i * 100),
+                "customer" + (i + 1) + "@example.com",
+                100000
+            );
+            customers[i].setId(i + 1);
+        }
 
         // 테스트용 Room 생성
-        Room room1 = new Room();
-        room1.setId(1);
-        room1.setRoomName("101호");
-        room1.setFloor(1);
-        room1.setBuilding("A동");
-        room1.setMaxPeople(2);
-        room1.setDescription("아늑한 싱글룸");
-        room1.setRoomStatus(RoomStatus.RESERVATION);
-        room1.setRoomType(RoomType.SINGLE);
-        room1.setPrice(50000);
+        Room[] rooms = new Room[25];
+        RoomType[] types = {RoomType.SINGLE, RoomType.DUPLEX, RoomType.HOTEL};
+        RoomStatus[] statuses = {RoomStatus.RESERVATION, RoomStatus.RESERVATIONED, RoomStatus.USING};
+        
+        for (int i = 0; i < 25; i++) {
+            rooms[i] = new Room();
+            rooms[i].setId(i + 1);
+            rooms[i].setRoomName((101 + i) + "호");
+            rooms[i].setFloor((i / 5) + 1);
+            rooms[i].setBuilding(((char)('A' + (i % 3))) + "동");
+            rooms[i].setMaxPeople((i % 4) + 2);
+            rooms[i].setDescription("객실 " + (i + 1) + "번");
+            rooms[i].setRoomStatus(statuses[i % 3]);
+            rooms[i].setRoomType(types[i % 3]);
+            rooms[i].setPrice(50000 + (i * 10000));
+        }
 
         // Reservation 생성
-        Reservation reservation1 = new Reservation();
-        reservation1.setId(1);
-        reservation1.setRoom(room1);
-        reservation1.setCustomer(customer1);
-        reservation1.setState(new PendingState());
-
-        Reservation reservation2 = new Reservation();
-        reservation2.setId(2);
-        reservation2.setRoom(room1);
-        reservation2.setCustomer(customer1);
-        reservation2.setState(new ConfirmedState());
-
-        list.add(reservation1);
-        list.add(reservation2);
+        for (int i = 1; i <= 25; i++) {
+            Reservation reservation = new Reservation();
+            reservation.setId(i);
+            reservation.setRoom(rooms[i - 1]);
+            reservation.setCustomer(customers[i - 1]);
+            
+            // 다양한 상태 분포
+            if (i % 4 == 0) {
+                reservation.setState(new PendingState());
+            } else if (i % 4 == 1) {
+                reservation.setState(new ConfirmedState());
+            } else if (i % 4 == 2) {
+                reservation.setState(new org.example.domain.reservation.state.CancelledState());
+            } else {
+                reservation.setState(new org.example.domain.reservation.state.RefundedState());
+            }
+            
+            list.add(reservation);
+        }
 
         return list;
     }
