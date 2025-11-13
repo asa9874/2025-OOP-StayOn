@@ -22,6 +22,7 @@ public class DefaultRoomDataStrategy implements RoomInitStrategy {
         room1.setRoomType(RoomType.SINGLE);
         room1.setPrice(50000);
         room1.setPensionId(1);
+        room1.setImage("image/room.png");
         
         Room room2 = new Room();
         room2.setId(2);
@@ -34,6 +35,7 @@ public class DefaultRoomDataStrategy implements RoomInitStrategy {
         room2.setRoomType(RoomType.DUPLEX);
         room2.setPrice(100000);
         room2.setPensionId(1);
+        room2.setImage("image/room.png");
         
         list.add(room1);
         list.add(room2);

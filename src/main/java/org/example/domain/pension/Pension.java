@@ -7,16 +7,18 @@ public class Pension {
     private String phoneNumber;
     private String description;
     private int pensionManagerId;
+    private String image;
 
     public Pension() {
     }
 
-    public Pension(String name, String address, String phoneNumber, String description, int pensionManagerId) {
+    public Pension(String name, String address, String phoneNumber, String description, int pensionManagerId, String image) {
         this.name = name;
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.description = description;
         this.pensionManagerId = pensionManagerId;
+        this.image = image;
     }
 
     public int getId() {
@@ -65,5 +67,13 @@ public class Pension {
 
     public void setPensionManagerId(int pensionManagerId) {
         this.pensionManagerId = pensionManagerId;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

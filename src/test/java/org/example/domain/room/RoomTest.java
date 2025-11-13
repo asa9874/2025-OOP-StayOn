@@ -26,7 +26,7 @@ class RoomTest {
     void 저장_유효한입력_객실저장및반환() {
         // given
         RoomRequestDTO requestDTO = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
+                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1, "image/room.png");
 
         // when
         controller.save(requestDTO);
@@ -45,6 +45,7 @@ class RoomTest {
         assertEquals(RoomType.SINGLE, room.getRoomType());
         assertEquals(50000, room.getPrice());
         assertEquals(1, room.getPensionId());
+        assertEquals("image/room.png", room.getImage());
         assertTrue(room.getId() > 0);
     }
 
@@ -52,7 +53,7 @@ class RoomTest {
     void 아이디검색_존재하는아이디_객실반환() {
         // given
         RoomRequestDTO requestDTO = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
+                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1, "image/room.png");
         Room savedRoom = controller.save(requestDTO);
 
         // when
@@ -77,7 +78,7 @@ class RoomTest {
     void 객실명검색_존재하는객실명_객실반환() {
         // given
         RoomRequestDTO requestDTO = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
+                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1, "image/room.png");
         controller.save(requestDTO);
 
         // when
@@ -97,10 +98,10 @@ class RoomTest {
     }
 
     @Test
-    void 아이디삭제_존재하는아이디_객실삭제() {
+    void 삭제_존재하는객실_객실삭제() {
         // given
         RoomRequestDTO requestDTO = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "아늑한 싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1, "image/room.png");
         Room savedRoom = controller.save(requestDTO);
 
         // when
@@ -123,12 +124,12 @@ class RoomTest {
     }
 
     @Test
-    void 전체조회_여러객실존재_모든객실반환() {
+    void 전체조회_저장된객실목록_모든객실반환() {
         // given
         RoomRequestDTO room1 = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1, "image/room.png");
         RoomRequestDTO room2 = new RoomRequestDTO(
-                "201호", 2, "A동", 4, "복층객실", RoomStatus.RESERVATION, RoomType.DUPLEX, 100000, 1);
+                "201호", 2, "A동", 4, "복층객실", RoomStatus.RESERVATION, RoomType.DUPLEX, 100000, 1, "image/room.png");
 
         controller.save(room1);
         controller.save(room2);
@@ -146,11 +147,11 @@ class RoomTest {
     void 객실타입별조회_특정타입_해당타입객실들반환() {
         // given
         RoomRequestDTO room1 = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1, "image/room.png");
         RoomRequestDTO room2 = new RoomRequestDTO(
-                "201호", 2, "A동", 4, "복층객실", RoomStatus.RESERVATION, RoomType.DUPLEX, 100000, 1);
+                "201호", 2, "A동", 4, "복층객실", RoomStatus.RESERVATION, RoomType.DUPLEX, 100000, 1, "image/room.png");
         RoomRequestDTO room3 = new RoomRequestDTO(
-                "102호", 1, "A동", 2, "싱글룸2", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
+                "102호", 1, "A동", 2, "싱글룸2", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1, "image/room.png");
 
         controller.save(room1);
         controller.save(room2);
@@ -168,11 +169,11 @@ class RoomTest {
     void 객실상태별조회_특정상태_해당상태객실들반환() {
         // given
         RoomRequestDTO room1 = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1, "image/room.png");
         RoomRequestDTO room2 = new RoomRequestDTO(
-                "201호", 2, "A동", 4, "복층객실", RoomStatus.USING, RoomType.DUPLEX, 100000, 1);
+                "201호", 2, "A동", 4, "복층객실", RoomStatus.USING, RoomType.DUPLEX, 100000, 1, "image/room.png");
         RoomRequestDTO room3 = new RoomRequestDTO(
-                "102호", 1, "A동", 2, "싱글룸2", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
+                "102호", 1, "A동", 2, "싱글룸2", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1, "image/room.png");
 
         controller.save(room1);
         controller.save(room2);
@@ -190,7 +191,7 @@ class RoomTest {
     void 객실상태변경_유효한상태_상태업데이트() {
         // given
         RoomRequestDTO requestDTO = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1, "image/room.png");
         Room savedRoom = controller.save(requestDTO);
 
         // when
@@ -213,7 +214,7 @@ class RoomTest {
     void 가격조회_유효한객실_가격반환() {
         // given
         RoomRequestDTO requestDTO = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1, "image/room.png");
         Room savedRoom = controller.save(requestDTO);
 
         // when
@@ -227,7 +228,7 @@ class RoomTest {
     void 가격변경_유효한금액_가격업데이트() {
         // given
         RoomRequestDTO requestDTO = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1, "image/room.png");
         Room savedRoom = controller.save(requestDTO);
 
         // when
@@ -239,14 +240,14 @@ class RoomTest {
     }
 
     @Test
-    void 펜션별조회_특정펜션_해당펜션객실들반환() {
+    void 펜션별조회_다양한펜션의객실_해당펜션객실목록반환() {
         // given
         RoomRequestDTO room1 = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1, "image/room.png");
         RoomRequestDTO room2 = new RoomRequestDTO(
-                "201호", 2, "A동", 4, "복층객실", RoomStatus.RESERVATION, RoomType.DUPLEX, 100000, 1);
+                "201호", 2, "A동", 4, "복층객실", RoomStatus.RESERVATION, RoomType.DUPLEX, 100000, 1, "image/room.png");
         RoomRequestDTO room3 = new RoomRequestDTO(
-                "301호", 3, "B동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 55000, 2);
+                "301호", 3, "B동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 55000, 2, "image/room.png");
 
         controller.save(room1);
         controller.save(room2);
@@ -266,7 +267,7 @@ class RoomTest {
     void 펜션별조회_존재하지않는펜션_빈리스트반환() {
         // given
         RoomRequestDTO room1 = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1, "image/room.png");
         controller.save(room1);
 
         // when
@@ -280,11 +281,11 @@ class RoomTest {
     void 펜션별조회_여러펜션_각펜션별로다른객실반환() {
         // given
         RoomRequestDTO room1 = new RoomRequestDTO(
-                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1);
+                "101호", 1, "A동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1, "image/room.png");
         RoomRequestDTO room2 = new RoomRequestDTO(
-                "201호", 2, "A동", 4, "복층객실", RoomStatus.RESERVATION, RoomType.DUPLEX, 100000, 2);
+                "201호", 2, "A동", 4, "복층객실", RoomStatus.RESERVATION, RoomType.DUPLEX, 100000, 2, "image/room.png");
         RoomRequestDTO room3 = new RoomRequestDTO(
-                "301호", 3, "B동", 2, "싱글룸", RoomStatus.RESERVATION, RoomType.SINGLE, 55000, 1);
+                "102호", 1, "A동", 2, "싱글룸2", RoomStatus.RESERVATION, RoomType.SINGLE, 50000, 1, "image/room.png");
 
         controller.save(room1);
         controller.save(room2);

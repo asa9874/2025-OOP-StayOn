@@ -31,7 +31,8 @@ class PensionTest {
             "강원도 강릉시 해안로 123",
             "033-1234-5678",
             "아름다운 바다 전망을 자랑하는 펜션입니다.",
-            1
+            1,
+            "image/pension.png"
         );
 
         // when
@@ -59,7 +60,8 @@ class PensionTest {
             "강원도 강릉시 해안로 123",
             "033-1234-5678",
             "아름다운 바다 전망을 자랑하는 펜션입니다.",
-            1
+            1,
+            "image/pension.png"
         );
         Pension savedPension = controller.save(requestDTO);
 
@@ -90,21 +92,24 @@ class PensionTest {
             "강원도 강릉시 해안로 123",
             "033-1234-5678",
             "아름다운 바다 전망",
-            1
+            1,
+            "image/pension.png"
         );
         PensionRequestDTO pension2 = new PensionRequestDTO(
             "산속의 휴식",
             "경기도 가평군 산속로 456",
             "031-9876-5432",
             "조용한 산속 힐링",
-            1
+            1,
+            "image/pension.png"
         );
         PensionRequestDTO pension3 = new PensionRequestDTO(
             "제주 힐링 펜션",
             "제주특별자치도 서귀포시 중문로 789",
             "064-7777-8888",
             "제주의 자연 만끽",
-            2
+            2,
+            "image/pension.png"
         );
 
         controller.save(pension1);
@@ -129,21 +134,24 @@ class PensionTest {
             "강원도 강릉시 해안로 123",
             "033-1234-5678",
             "아름다운 바다 전망",
-            1
+            1,
+            "image/pension.png"
         );
         PensionRequestDTO pension2 = new PensionRequestDTO(
             "산속의 휴식",
             "경기도 가평군 산속로 456",
             "031-9876-5432",
             "조용한 산속 힐링",
-            1
+            1,
+            "image/pension.png"
         );
         PensionRequestDTO pension3 = new PensionRequestDTO(
             "제주 힐링 펜션",
             "제주특별자치도 서귀포시 중문로 789",
             "064-7777-8888",
             "제주의 자연 만끽",
-            2
+            2,
+            "image/pension.png"
         );
 
         controller.save(pension1);
@@ -170,7 +178,8 @@ class PensionTest {
             "강원도 강릉시 해안로 123",
             "033-1234-5678",
             "아름다운 바다 전망",
-            1
+            1,
+            "image/pension.png"
         );
         Pension savedPension = controller.save(requestDTO);
 
@@ -220,7 +229,8 @@ class PensionTest {
             "강원도 강릉시 해안로 123",
             "033-1234-5678",
             "아름다운 바다 전망",
-            1
+            1,
+            "image/pension.png"
         );
         Pension savedPension = controller.save(requestDTO);
 
@@ -251,7 +261,8 @@ class PensionTest {
             "강원도 강릉시 해안로 123",
             "033-1234-5678",
             "아름다운 바다 전망",
-            1
+            1,
+            "image/pension.png"
         );
         controller.save(requestDTO);
 
@@ -266,13 +277,13 @@ class PensionTest {
     void 저장_여러펜션저장_아이디자동증가확인() {
         // given
         PensionRequestDTO pension1 = new PensionRequestDTO(
-            "펜션1", "주소1", "010-1111-1111", "설명1", 1
+            "펜션1", "주소1", "010-1111-1111", "설명1", 1, "image/pension.png"
         );
         PensionRequestDTO pension2 = new PensionRequestDTO(
-            "펜션2", "주소2", "010-2222-2222", "설명2", 1
+            "펜션2", "주소2", "010-2222-2222", "설명2", 1, "image/pension.png"
         );
         PensionRequestDTO pension3 = new PensionRequestDTO(
-            "펜션3", "주소3", "010-3333-3333", "설명3", 1
+            "펜션3", "주소3", "010-3333-3333", "설명3", 1, "image/pension.png"
         );
 
         // when

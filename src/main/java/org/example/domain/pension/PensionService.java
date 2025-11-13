@@ -45,7 +45,8 @@ public class PensionService {
             requestDTO.address(),
             requestDTO.phoneNumber(),
             requestDTO.description(),
-            requestDTO.pensionManagerId()
+            requestDTO.pensionManagerId(),
+            requestDTO.image()
         );
         return pensionRepository.save(newPension);
     }

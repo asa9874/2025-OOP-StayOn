@@ -16,6 +16,7 @@ public class DefaultDataStrategy implements PensionInitStrategy {
         pension1.setPhoneNumber("033-1234-5678");
         pension1.setDescription("아름다운 바다 전망을 자랑하는 펜션입니다.");
         pension1.setPensionManagerId(1);
+        pension1.setImage("image/pension.png");
         
         Pension pension2 = new Pension();
         pension2.setId(2);
@@ -24,6 +25,7 @@ public class DefaultDataStrategy implements PensionInitStrategy {
         pension2.setPhoneNumber("031-9876-5432");
         pension2.setDescription("조용한 산속에서 힐링할 수 있는 펜션입니다.");
         pension2.setPensionManagerId(1);
+        pension2.setImage("image/pension.png");
         
         Pension pension3 = new Pension();
         pension3.setId(3);
@@ -32,6 +34,7 @@ public class DefaultDataStrategy implements PensionInitStrategy {
         pension3.setPhoneNumber("064-7777-8888");
         pension3.setDescription("제주의 자연을 만끽할 수 있는 프리미엄 펜션입니다.");
         pension3.setPensionManagerId(2);
+        pension3.setImage("image/pension.png");
         
         list.add(pension1);
         list.add(pension2);

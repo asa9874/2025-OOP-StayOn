@@ -11,11 +11,12 @@ public class Room {
     private RoomType roomType;
     private int price;
     private int pensionId;
+    private String image;
 
     public Room() {
     }
 
-    public Room(String roomName, int floor, String building, int maxPeople, String description, RoomStatus roomStatus, RoomType roomType, int price, int pensionId) {
+    public Room(String roomName, int floor, String building, int maxPeople, String description, RoomStatus roomStatus, RoomType roomType, int price, int pensionId, String image) {
         this.roomName = roomName;
         this.floor = floor;
         this.building = building;
@@ -25,6 +26,7 @@ public class Room {
         this.roomType = roomType;
         this.price = price;
         this.pensionId = pensionId;
+        this.image = image;
     }
 
     public int getId() {
@@ -105,5 +107,13 @@ public class Room {
 
     public void setPensionId(int pensionId) {
         this.pensionId = pensionId;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

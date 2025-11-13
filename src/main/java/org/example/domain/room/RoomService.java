@@ -61,7 +61,8 @@ public class RoomService {
                 requestDTO.roomStatus(),
                 requestDTO.roomType(),
                 requestDTO.price(),
-                requestDTO.pensionId()
+                requestDTO.pensionId(),
+                requestDTO.image()
         );
         return roomRepository.save(newRoom);
     }
