@@ -3,6 +3,8 @@ package org.example.domain.room.strategy;
 import org.example.domain.room.Room;
 import org.example.domain.room.RoomStatus;
 import org.example.domain.room.RoomType;
+import org.example.domain.pension.Pension;
+import org.example.domain.pension.PensionRepository;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +12,14 @@ public class DefaultRoomDataStrategy implements RoomInitStrategy {
     @Override
     public List<Room> initializeList() {
         List<Room> list = new ArrayList<>();
+        
+        // Pension 가져오기 (이미 초기화되어 있어야 함)
+        PensionRepository pensionRepo = PensionRepository.getInstance();
+        List<Pension> pensions = pensionRepo.findAll();
+        
+        if (pensions.isEmpty()) {
+            throw new IllegalStateException("Pension이 먼저 초기화되어야 합니다.");
+        }
         
         String[] buildings = {"A동", "B동", "C동"};
         RoomType[] types = {RoomType.SINGLE, RoomType.DUPLEX, RoomType.HOTEL};
@@ -27,7 +37,10 @@ public class DefaultRoomDataStrategy implements RoomInitStrategy {
             room.setRoomStatus(statuses[i % 4]);
             room.setRoomType(types[i % 3]);
             room.setPrice(prices[i % 5]);
-            room.setPensionId((i % 3) + 1);
+            
+            // Pension 객체로 연관 설정
+            Pension pension = pensions.get((i - 1) % pensions.size());
+            room.setPension(pension);
             room.setImage("image/room.png");
             list.add(room);
         }

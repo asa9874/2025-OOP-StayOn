@@ -1,6 +1,8 @@
 package org.example.domain.pension.strategy;
 
 import org.example.domain.pension.Pension;
+import org.example.domain.user.pensionManager.PensionManager;
+import org.example.domain.user.pensionManager.PensionManagerRepository;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +10,14 @@ public class DefaultDataStrategy implements PensionInitStrategy {
     @Override
     public List<Pension> initializeList() {
         List<Pension> list = new ArrayList<>();
+        
+        // PensionManager 가져오기 (이미 초기화되어 있어야 함)
+        PensionManagerRepository managerRepo = PensionManagerRepository.getInstance();
+        List<PensionManager> managers = managerRepo.findAll();
+        
+        if (managers.isEmpty()) {
+            throw new IllegalStateException("PensionManager가 먼저 초기화되어야 합니다.");
+        }
         
         String[] names = {"바다뷰", "산속의 휴식", "제주 힐링", "강변 힐링", "도심 속 휴식", 
                          "설악 펜션", "남해 바다", "한라산", "경포대", "속초 해변",
@@ -23,7 +33,10 @@ public class DefaultDataStrategy implements PensionInitStrategy {
             pension.setAddress(regions[i % 5] + " " + names[i - 1] + "로 " + (100 + i * 10));
             pension.setPhoneNumber("0" + (30 + (i % 7)) + "-" + (1000 + i * 100) + "-" + (5000 + i * 100));
             pension.setDescription(names[i - 1] + " 펜션에서 편안한 휴식을 즐기세요. 최고의 서비스를 제공합니다.");
-            pension.setPensionManagerId((i % 3) + 1);
+            
+            // PensionManager 객체로 연관 설정
+            PensionManager manager = managers.get((i - 1) % managers.size());
+            pension.setPensionManager(manager);
             pension.setImage("image/pension.png");
             list.add(pension);
         }

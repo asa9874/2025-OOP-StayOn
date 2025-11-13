@@ -2,6 +2,7 @@ package org.example.domain.review.strategy;
 
 import org.example.domain.review.Review;
 import org.example.domain.user.customer.Customer;
+import org.example.domain.user.customer.CustomerRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,24 +13,12 @@ public class DefaultReviewDataStrategy implements ReviewInitStrategy {
     public List<Review> initializeList() {
         List<Review> list = new ArrayList<>();
 
-        // 테스트용 Customer 생성
-        Customer[] customers = new Customer[25];
-        String[] names = {"김철수", "이영희", "박민수", "최수지", "정준호",
-                         "강지은", "조성민", "윤하늘", "장서연", "임도윤",
-                         "한예준", "오시우", "서하준", "신서준", "권지호",
-                         "황수빈", "안은우", "송유진", "류지우", "전현우",
-                         "홍민지", "고태양", "문소율", "양채원", "손다은"};
+        // Customer 가져오기 (이미 초기화되어 있어야 함)
+        CustomerRepository customerRepo = CustomerRepository.getInstance();
+        List<Customer> customers = customerRepo.findAll();
         
-        for (int i = 0; i < 25; i++) {
-            customers[i] = new Customer(
-                names[i],
-                "customer" + (i + 1),
-                "password" + (i + 1),
-                "010-" + (1000 + i * 100) + "-" + (2000 + i * 100),
-                "customer" + (i + 1) + "@example.com",
-                100000
-            );
-            customers[i].setId(i + 1);
+        if (customers.isEmpty()) {
+            throw new IllegalStateException("Customer가 먼저 초기화되어야 합니다.");
         }
 
         // Review 생성
@@ -69,7 +58,7 @@ public class DefaultReviewDataStrategy implements ReviewInitStrategy {
             review.setRate(rates[i - 1]);
             review.setContent(comments[i - 1]);
             review.setDate(LocalDate.of(2025, (i % 12) + 1, (i % 28) + 1));
-            review.setCustomer(customers[i - 1]);
+            review.setCustomer(customers.get((i - 1) % customers.size()));
             list.add(review);
         }
 

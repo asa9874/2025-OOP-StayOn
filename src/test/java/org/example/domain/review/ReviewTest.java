@@ -20,6 +20,8 @@ class ReviewTest {
 
     @BeforeEach
     void setUp() {
+        // Customer 먼저 초기화 (Review가 Customer를 참조함)
+        Init.initializeCustomerModule(new org.example.domain.user.customer.strategy.DefaultCustomerDataStrategy());
         Init.initializeReviewModule(new EmptyReviewListStrategy());
         repository = ReviewRepository.getInstance();
         controller = ReviewController.getInstance();
