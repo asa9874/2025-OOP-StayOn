@@ -9,18 +9,19 @@ public class DefaultDataStrategy implements CleaningStaffInitStrategy {
     public List<CleaningStaff> initializeList() {
         List<CleaningStaff> list = new ArrayList<>();
         
-        CleaningStaff staff1 = new CleaningStaff();
-        staff1.setId(1);
-        staff1.setName("홍길동");
-        staff1.setPhoneNumber("010-1234-5678");
+        String[] names = {"홍길동", "김철수", "이영희", "박민수", "최수지",
+                         "정준호", "강지은", "조성민", "윤하늘", "장서연",
+                         "임도윤", "한예준", "오시우", "서하준", "신서준",
+                         "권지호", "황수빈", "안은우", "송유진", "류지우",
+                         "전현우", "홍민지", "고태양", "문소율", "양채원"};
         
-        CleaningStaff staff2 = new CleaningStaff();
-        staff2.setId(2);
-        staff2.setName("김철수");
-        staff2.setPhoneNumber("010-9876-5432");
-        
-        list.add(staff1);
-        list.add(staff2);
+        for (int i = 1; i <= 25; i++) {
+            CleaningStaff staff = new CleaningStaff();
+            staff.setId(i);
+            staff.setName(names[i - 1]);
+            staff.setPhoneNumber("010-" + (1000 + i * 100) + "-" + (5000 + i * 100));
+            list.add(staff);
+        }
         
         return list;
     }

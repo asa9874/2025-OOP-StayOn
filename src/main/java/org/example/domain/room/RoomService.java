@@ -1,5 +1,7 @@
 package org.example.domain.room;
 
+import org.example.domain.pension.Pension;
+import org.example.domain.pension.PensionRepository;
 import org.example.domain.room.dto.RoomRequestDTO;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -7,9 +9,11 @@ import java.util.NoSuchElementException;
 public class RoomService {
     private static RoomService instance;
     private final RoomRepository roomRepository;
+    private final PensionRepository pensionRepository;
 
     private RoomService(RoomRepository roomRepository) {
         this.roomRepository = roomRepository;
+        this.pensionRepository = PensionRepository.getInstance();
     }
 
     public static void initialize(RoomRepository roomRepository) {
@@ -52,6 +56,10 @@ public class RoomService {
     }
 
     public Room save(RoomRequestDTO requestDTO) {
+        // Pension 조회
+        Pension pension = pensionRepository.findById(requestDTO.pensionId())
+            .orElseThrow(() -> new IllegalArgumentException("Pension not found: " + requestDTO.pensionId()));
+        
         Room newRoom = new Room(
                 requestDTO.roomName(),
                 requestDTO.floor(),
@@ -61,7 +69,8 @@ public class RoomService {
                 requestDTO.roomStatus(),
                 requestDTO.roomType(),
                 requestDTO.price(),
-                requestDTO.pensionId()
+                pension,
+                requestDTO.image()
         );
         return roomRepository.save(newRoom);
     }

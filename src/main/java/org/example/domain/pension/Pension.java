@@ -1,22 +1,26 @@
 package org.example.domain.pension;
 
+import org.example.domain.user.pensionManager.PensionManager;
+
 public class Pension {
     private int id;
     private String name;
     private String address;
     private String phoneNumber;
     private String description;
-    private int pensionManagerId;
+    private PensionManager pensionManager;
+    private String image;
 
     public Pension() {
     }
 
-    public Pension(String name, String address, String phoneNumber, String description, int pensionManagerId) {
+    public Pension(String name, String address, String phoneNumber, String description, PensionManager pensionManager, String image) {
         this.name = name;
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.description = description;
-        this.pensionManagerId = pensionManagerId;
+        this.pensionManager = pensionManager;
+        this.image = image;
     }
 
     public int getId() {
@@ -60,10 +64,27 @@ public class Pension {
     }
 
     public int getPensionManagerId() {
-        return pensionManagerId;
+        return pensionManager != null ? pensionManager.getId() : 0;
     }
 
     public void setPensionManagerId(int pensionManagerId) {
-        this.pensionManagerId = pensionManagerId;
+        // 하위 호환성을 위한 메서드 - 실제로는 setPensionManager를 사용해야 함
+        // 이 메서드는 deprecated 예정
+    }
+
+    public PensionManager getPensionManager() {
+        return pensionManager;
+    }
+
+    public void setPensionManager(PensionManager pensionManager) {
+        this.pensionManager = pensionManager;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

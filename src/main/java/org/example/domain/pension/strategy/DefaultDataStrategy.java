@@ -1,6 +1,8 @@
 package org.example.domain.pension.strategy;
 
 import org.example.domain.pension.Pension;
+import org.example.domain.user.pensionManager.PensionManager;
+import org.example.domain.user.pensionManager.PensionManagerRepository;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,33 +11,35 @@ public class DefaultDataStrategy implements PensionInitStrategy {
     public List<Pension> initializeList() {
         List<Pension> list = new ArrayList<>();
         
-        Pension pension1 = new Pension();
-        pension1.setId(1);
-        pension1.setName("바다뷰 펜션");
-        pension1.setAddress("강원도 강릉시 해안로 123");
-        pension1.setPhoneNumber("033-1234-5678");
-        pension1.setDescription("아름다운 바다 전망을 자랑하는 펜션입니다.");
-        pension1.setPensionManagerId(1);
+        // PensionManager 가져오기 (이미 초기화되어 있어야 함)
+        PensionManagerRepository managerRepo = PensionManagerRepository.getInstance();
+        List<PensionManager> managers = managerRepo.findAll();
         
-        Pension pension2 = new Pension();
-        pension2.setId(2);
-        pension2.setName("산속의 휴식");
-        pension2.setAddress("경기도 가평군 산속로 456");
-        pension2.setPhoneNumber("031-9876-5432");
-        pension2.setDescription("조용한 산속에서 힐링할 수 있는 펜션입니다.");
-        pension2.setPensionManagerId(1);
+        if (managers.isEmpty()) {
+            throw new IllegalStateException("PensionManager가 먼저 초기화되어야 합니다.");
+        }
         
-        Pension pension3 = new Pension();
-        pension3.setId(3);
-        pension3.setName("제주 힐링 펜션");
-        pension3.setAddress("제주특별자치도 서귀포시 중문로 789");
-        pension3.setPhoneNumber("064-7777-8888");
-        pension3.setDescription("제주의 자연을 만끽할 수 있는 프리미엄 펜션입니다.");
-        pension3.setPensionManagerId(2);
+        String[] names = {"바다뷰", "산속의 휴식", "제주 힐링", "강변 힐링", "도심 속 휴식", 
+                         "설악 펜션", "남해 바다", "한라산", "경포대", "속초 해변",
+                         "평창 산장", "양양 서핑", "부산 해운대", "여수 밤바다", "전주 한옥",
+                         "경주 고택", "안동 전통", "대구 도심", "인천 송도", "수원 화성",
+                         "춘천 호반", "태안 해변", "보령 머드", "서산 낙조", "당진 왜목"};
+        String[] regions = {"강원도", "경기도", "제주도", "부산광역시", "서울특별시"};
         
-        list.add(pension1);
-        list.add(pension2);
-        list.add(pension3);
+        for (int i = 1; i <= 25; i++) {
+            Pension pension = new Pension();
+            pension.setId(i);
+            pension.setName(names[i - 1] + " 펜션");
+            pension.setAddress(regions[i % 5] + " " + names[i - 1] + "로 " + (100 + i * 10));
+            pension.setPhoneNumber("0" + (30 + (i % 7)) + "-" + (1000 + i * 100) + "-" + (5000 + i * 100));
+            pension.setDescription(names[i - 1] + " 펜션에서 편안한 휴식을 즐기세요. 최고의 서비스를 제공합니다.");
+            
+            // PensionManager 객체로 연관 설정
+            PensionManager manager = managers.get((i - 1) % managers.size());
+            pension.setPensionManager(manager);
+            pension.setImage("image/pension.png");
+            list.add(pension);
+        }
         
         return list;
     }

@@ -37,9 +37,11 @@ import org.example.domain.review.strategy.DefaultReviewDataStrategy;
 
 public class Init {
     public static void initializeDependencies() { // DI 하는 메서드
+        // 의존성 순서: PensionManager → Pension → Room, Customer → Reservation, Review
         initializeCleaningStaffModule(new DefaultDataStrategy());
-        initializeCustomerModule(new DefaultCustomerDataStrategy());
         initializePensionManagerModule(new DefaultPensionManagerDataStrategy());
+        initializePensionModule(new org.example.domain.pension.strategy.DefaultDataStrategy());
+        initializeCustomerModule(new DefaultCustomerDataStrategy());
         initializeRoomModule(new DefaultRoomDataStrategy());
         initializeReservationModule(new DefaultReservationDataStrategy());
         initializeReviewModule(new DefaultReviewDataStrategy());

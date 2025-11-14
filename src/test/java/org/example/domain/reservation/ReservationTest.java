@@ -23,6 +23,11 @@ class ReservationTest {
 
     @BeforeEach
     void setUp() {
+        // 의존성 순서: PensionManager → Pension → Room, Customer → Reservation
+        Init.initializePensionManagerModule(new org.example.domain.user.pensionManager.strategy.DefaultPensionManagerDataStrategy());
+        Init.initializePensionModule(new org.example.domain.pension.strategy.DefaultDataStrategy());
+        Init.initializeRoomModule(new org.example.domain.room.strategy.DefaultRoomDataStrategy());
+        Init.initializeCustomerModule(new org.example.domain.user.customer.strategy.DefaultCustomerDataStrategy());
         Init.initializeReservationModule(new EmptyReservationListStrategy());
         repository = ReservationRepository.getInstance();
         controller = ReservationController.getInstance();

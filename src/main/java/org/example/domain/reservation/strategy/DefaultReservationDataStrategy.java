@@ -4,9 +4,9 @@ import org.example.domain.reservation.Reservation;
 import org.example.domain.reservation.state.PendingState;
 import org.example.domain.reservation.state.ConfirmedState;
 import org.example.domain.room.Room;
-import org.example.domain.room.RoomStatus;
-import org.example.domain.room.RoomType;
+import org.example.domain.room.RoomRepository;
 import org.example.domain.user.customer.Customer;
+import org.example.domain.user.customer.CustomerRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,37 +16,42 @@ public class DefaultReservationDataStrategy implements ReservationInitStrategy {
     public List<Reservation> initializeList() {
         List<Reservation> list = new ArrayList<>();
 
-        // 테스트용 Customer 생성
-        Customer customer1 = new Customer("홍길동", "customer1", "password1", "010-1234-5678", "hong@example.com", 100000);
-        customer1.setId(1);
+        // Customer와 Room 가져오기 (이미 초기화되어 있어야 함)
+        CustomerRepository customerRepo = CustomerRepository.getInstance();
+        RoomRepository roomRepo = RoomRepository.getInstance();
+        
+        List<Customer> customers = customerRepo.findAll();
+        List<Room> rooms = roomRepo.findAll();
+        
+        if (customers.isEmpty() || rooms.isEmpty()) {
+            throw new IllegalStateException("Customer와 Room이 먼저 초기화되어야 합니다.");
+        }
 
-        // 테스트용 Room 생성
-        Room room1 = new Room();
-        room1.setId(1);
-        room1.setRoomName("101호");
-        room1.setFloor(1);
-        room1.setBuilding("A동");
-        room1.setMaxPeople(2);
-        room1.setDescription("아늑한 싱글룸");
-        room1.setRoomStatus(RoomStatus.RESERVATION);
-        room1.setRoomType(RoomType.SINGLE);
-        room1.setPrice(50000);
-
-        // Reservation 생성
-        Reservation reservation1 = new Reservation();
-        reservation1.setId(1);
-        reservation1.setRoom(room1);
-        reservation1.setCustomer(customer1);
-        reservation1.setState(new PendingState());
-
-        Reservation reservation2 = new Reservation();
-        reservation2.setId(2);
-        reservation2.setRoom(room1);
-        reservation2.setCustomer(customer1);
-        reservation2.setState(new ConfirmedState());
-
-        list.add(reservation1);
-        list.add(reservation2);
+        // Reservation 생성 - 고객과 객실을 순환하며 연결
+        for (int i = 1; i <= 25; i++) {
+            Reservation reservation = new Reservation();
+            reservation.setId(i);
+            
+            // 실제 존재하는 Customer와 Room 객체 연결
+            Customer customer = customers.get((i - 1) % customers.size());
+            Room room = rooms.get((i - 1) % rooms.size());
+            
+            reservation.setCustomer(customer);
+            reservation.setRoom(room);
+            
+            // 다양한 상태 분포
+            if (i % 4 == 0) {
+                reservation.setState(new PendingState());
+            } else if (i % 4 == 1) {
+                reservation.setState(new ConfirmedState());
+            } else if (i % 4 == 2) {
+                reservation.setState(new org.example.domain.reservation.state.CancelledState());
+            } else {
+                reservation.setState(new org.example.domain.reservation.state.RefundedState());
+            }
+            
+            list.add(reservation);
+        }
 
         return list;
     }
