@@ -1,5 +1,7 @@
 package org.example.domain.room;
 
+import org.example.domain.pension.Pension;
+
 public class Room {
     private int id;
     private String roomName;
@@ -10,12 +12,13 @@ public class Room {
     private RoomStatus roomStatus;
     private RoomType roomType;
     private int price;
-    private int pensionId;
+    private Pension pension;
+    private String image;
 
     public Room() {
     }
 
-    public Room(String roomName, int floor, String building, int maxPeople, String description, RoomStatus roomStatus, RoomType roomType, int price, int pensionId) {
+    public Room(String roomName, int floor, String building, int maxPeople, String description, RoomStatus roomStatus, RoomType roomType, int price, Pension pension, String image) {
         this.roomName = roomName;
         this.floor = floor;
         this.building = building;
@@ -24,7 +27,8 @@ public class Room {
         this.roomStatus = roomStatus;
         this.roomType = roomType;
         this.price = price;
-        this.pensionId = pensionId;
+        this.pension = pension;
+        this.image = image;
     }
 
     public int getId() {
@@ -100,10 +104,27 @@ public class Room {
     }
 
     public int getPensionId() {
-        return pensionId;
+        return pension != null ? pension.getId() : 0;
     }
 
     public void setPensionId(int pensionId) {
-        this.pensionId = pensionId;
+        // 하위 호환성을 위한 메서드 - 실제로는 setPension을 사용해야 함
+        // 이 메서드는 deprecated 예정
+    }
+
+    public Pension getPension() {
+        return pension;
+    }
+
+    public void setPension(Pension pension) {
+        this.pension = pension;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

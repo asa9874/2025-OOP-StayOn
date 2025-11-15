@@ -5,6 +5,7 @@ public record PensionRequestDTO(
     String address,
     String phoneNumber,
     String description,
-    int pensionManagerId
+    int pensionManagerId,
+    String image
 ) {
 }
