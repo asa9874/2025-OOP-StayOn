@@ -23,12 +23,22 @@ public class MainView {
             CleaningStaffView cleaningStaffView = new CleaningStaffView();
             cleaningStaffView.start(stage);
         });
+
+        // 예약 관리 버튼
+        Button reservationButton = new Button("방 등록");
+        reservationButton.setOnAction(e -> {
+            RoomEnrollView roomEnrollView = new RoomEnrollView();
+            roomEnrollView.start(stage);
+        });
         
         // 레이아웃 설정
         VBox vbox = new VBox(20);
         vbox.setPadding(new Insets(30));
         vbox.setAlignment(Pos.CENTER);
-        vbox.getChildren().addAll(cleaningStaffButton);
+        vbox.getChildren().addAll(
+                cleaningStaffButton,
+                reservationButton
+        );
 
         // 씬 설정
         Scene scene = new Scene(vbox, 400, 300);
