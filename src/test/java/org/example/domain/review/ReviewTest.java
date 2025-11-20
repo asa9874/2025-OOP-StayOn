@@ -246,6 +246,94 @@ class ReviewTest {
     }
 
     @Test
+    void 방별조회날짜순정렬_특정방의리뷰_최신날짜순으로반환() {
+        // given
+        LocalDate date1 = LocalDate.of(2025, 11, 10);
+        LocalDate date2 = LocalDate.of(2025, 11, 15);
+        LocalDate date3 = LocalDate.of(2025, 11, 12);
+
+        ReviewRequestDTO review1 = new ReviewRequestDTO(
+                5, "첫번째리뷰", date1, testCustomer, testRoom);
+        ReviewRequestDTO review2 = new ReviewRequestDTO(
+                4, "두번째리뷰", date2, testCustomer, testRoom);
+        ReviewRequestDTO review3 = new ReviewRequestDTO(
+                3, "세번째리뷰", date3, testCustomer, testRoom);
+        ReviewRequestDTO review4 = new ReviewRequestDTO(
+                4, "다른방리뷰", date2, testCustomer, testRoom2);
+
+        controller.save(review1);
+        controller.save(review2);
+        controller.save(review3);
+        controller.save(review4);
+
+        // when
+        List<Review> sortedReviews = controller.findByRoomIdSortedByDate(testRoom.getId());
+
+        // then
+        assertEquals(3, sortedReviews.size());
+        assertEquals(date2, sortedReviews.get(0).getDate());  // 최신 (2025-11-15)
+        assertEquals(date3, sortedReviews.get(1).getDate());  // 중간 (2025-11-12)
+        assertEquals(date1, sortedReviews.get(2).getDate());  // 가장 오래됨 (2025-11-10)
+    }
+
+    @Test
+    void 방별조회날짜순정렬_같은날짜의리뷰_모두포함() {
+        // given
+        LocalDate sameDate = LocalDate.of(2025, 11, 15);
+
+        ReviewRequestDTO review1 = new ReviewRequestDTO(
+                5, "첫번째", sameDate, testCustomer, testRoom);
+        ReviewRequestDTO review2 = new ReviewRequestDTO(
+                4, "두번째", sameDate, testCustomer, testRoom);
+        ReviewRequestDTO review3 = new ReviewRequestDTO(
+                3, "세번째", sameDate, testCustomer, testRoom);
+
+        controller.save(review1);
+        controller.save(review2);
+        controller.save(review3);
+
+        // when
+        List<Review> sortedReviews = controller.findByRoomIdSortedByDate(testRoom.getId());
+
+        // then
+        assertEquals(3, sortedReviews.size());
+        assertTrue(sortedReviews.stream()
+                .allMatch(r -> r.getDate().equals(sameDate)));
+    }
+
+    @Test
+    void 방별조회날짜순정렬_존재하지않는방_빈리스트반환() {
+        // given
+        LocalDate date = LocalDate.of(2025, 11, 15);
+        ReviewRequestDTO review1 = new ReviewRequestDTO(
+                5, "리뷰", date, testCustomer, testRoom);
+        controller.save(review1);
+
+        // when
+        List<Review> sortedReviews = controller.findByRoomIdSortedByDate(999);
+
+        // then
+        assertEquals(0, sortedReviews.size());
+    }
+
+    @Test
+    void 방별조회날짜순정렬_단일리뷰_올바르게반환() {
+        // given
+        LocalDate date = LocalDate.of(2025, 11, 15);
+        ReviewRequestDTO review1 = new ReviewRequestDTO(
+                5, "유일한리뷰", date, testCustomer, testRoom);
+        Review saved = controller.save(review1);
+
+        // when
+        List<Review> sortedReviews = controller.findByRoomIdSortedByDate(testRoom.getId());
+
+        // then
+        assertEquals(1, sortedReviews.size());
+        assertEquals(saved.getId(), sortedReviews.get(0).getId());
+        assertEquals(date, sortedReviews.get(0).getDate());
+    }
+
+    @Test
     void 리뷰수정_유효한입력_리뷰업데이트() {
         // given
         ReviewRequestDTO requestDTO = new ReviewRequestDTO(

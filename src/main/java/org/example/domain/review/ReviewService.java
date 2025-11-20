@@ -60,6 +60,10 @@ public class ReviewService {
         return reviewRepository.findByRoomId(roomId);
     }
 
+    public List<Review> findByRoomIdSortedByDate(int roomId) {
+        return reviewRepository.findByRoomIdSortedByDate(roomId);
+    }
+
     public void deleteById(int id) {
         Review review = findById(id);
         reviewRepository.deleteById(review.getId());

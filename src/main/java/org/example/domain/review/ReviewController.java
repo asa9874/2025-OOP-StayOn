@@ -51,6 +51,10 @@ public class ReviewController {
         return reviewService.findByRoomId(roomId);
     }
 
+    public List<Review> findByRoomIdSortedByDate(int roomId) {
+        return reviewService.findByRoomIdSortedByDate(roomId);
+    }
+
     public void deleteById(int id) {
         reviewService.deleteById(id);
     }
