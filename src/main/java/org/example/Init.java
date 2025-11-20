@@ -5,9 +5,11 @@ import org.example.domain.cleaningStaff.CleaningStaffRepository;
 import org.example.domain.cleaningStaff.CleaningStaffService;
 import org.example.domain.cleaningStaff.strategy.CleaningStaffInitStrategy;
 import org.example.domain.cleaningStaff.strategy.DefaultDataStrategy;
+import org.example.domain.facilities.strategy.DefaultFacilitiesDataStrategy;
 import org.example.domain.pension.PensionController;
 import org.example.domain.pension.PensionRepository;
 import org.example.domain.pension.PensionService;
+import org.example.domain.pension.strategy.DefaultPensionDataStrategy;
 import org.example.domain.pension.strategy.PensionInitStrategy;
 import org.example.domain.user.customer.CustomerController;
 import org.example.domain.user.customer.CustomerRepository;
@@ -44,12 +46,12 @@ public class Init {
         // 의존성 순서: PensionManager → Pension → Room, Customer → Reservation, Review
         initializeCleaningStaffModule(new DefaultDataStrategy());
         initializePensionManagerModule(new DefaultPensionManagerDataStrategy());
-        initializePensionModule(new org.example.domain.pension.strategy.DefaultDataStrategy());
+        initializePensionModule(new DefaultPensionDataStrategy());
         initializeCustomerModule(new DefaultCustomerDataStrategy());
         initializeRoomModule(new DefaultRoomDataStrategy());
         initializeReservationModule(new DefaultReservationDataStrategy());
         initializeReviewModule(new DefaultReviewDataStrategy());
-        initializeFacilitiesModule(new org.example.domain.facilities.strategy.DefaultDataStrategy());
+        initializeFacilitiesModule(new DefaultFacilitiesDataStrategy());
     }
 
     public static void initializeCleaningStaffModule(CleaningStaffInitStrategy strategy) {
@@ -137,7 +139,7 @@ public class Init {
     public static void initializeFacilitiesModule(FacilitiesInitStrategy strategy) {
         FacilitiesInitStrategy facilitiesInitStrategy;
         if (strategy == null) {
-            facilitiesInitStrategy = new org.example.domain.facilities.strategy.DefaultDataStrategy();
+            facilitiesInitStrategy = new DefaultFacilitiesDataStrategy();
         }
         facilitiesInitStrategy = strategy;
         FacilitiesRepository.initialize(facilitiesInitStrategy);

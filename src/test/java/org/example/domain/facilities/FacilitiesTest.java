@@ -2,8 +2,8 @@ package org.example.domain.facilities;
 
 import org.example.Init;
 import org.example.domain.facilities.dto.FacilitiesRequestDTO;
-import org.example.domain.facilities.strategy.EmptyListStrategy;
-import org.example.domain.pension.strategy.DefaultDataStrategy;
+import org.example.domain.facilities.strategy.EmptyFacilitiesListStrategy;
+import org.example.domain.pension.strategy.DefaultPensionDataStrategy;
 import org.example.domain.user.pensionManager.strategy.DefaultPensionManagerDataStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,8 +21,8 @@ class FacilitiesTest {
     void setUp() {
         // PensionManager와 Pension 먼저 초기화 (Facilities가 Pension을 참조함)
         Init.initializePensionManagerModule(new DefaultPensionManagerDataStrategy());
-        Init.initializePensionModule(new DefaultDataStrategy());
-        Init.initializeFacilitiesModule(new EmptyListStrategy());
+        Init.initializePensionModule(new DefaultPensionDataStrategy());
+        Init.initializeFacilitiesModule(new EmptyFacilitiesListStrategy());
         repository = FacilitiesRepository.getInstance();
         controller = FacilitiesController.getInstance();
         repository.returnToDefaultData();

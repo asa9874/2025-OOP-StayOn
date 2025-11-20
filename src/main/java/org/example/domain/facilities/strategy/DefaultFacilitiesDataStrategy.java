@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DefaultDataStrategy implements FacilitiesInitStrategy {
+public class DefaultFacilitiesDataStrategy implements FacilitiesInitStrategy {
     @Override
     public List<Facilities> initializeList() {
         List<Facilities> list = new ArrayList<>();

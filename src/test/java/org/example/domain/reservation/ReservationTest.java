@@ -1,6 +1,7 @@
 package org.example.domain.reservation;
 
 import org.example.Init;
+import org.example.domain.pension.strategy.DefaultPensionDataStrategy;
 import org.example.domain.reservation.dto.ReservationRequestDTO;
 import org.example.domain.reservation.strategy.EmptyReservationListStrategy;
 import org.example.domain.room.Room;
@@ -25,7 +26,7 @@ class ReservationTest {
     void setUp() {
         // 의존성 순서: PensionManager → Pension → Room, Customer → Reservation
         Init.initializePensionManagerModule(new org.example.domain.user.pensionManager.strategy.DefaultPensionManagerDataStrategy());
-        Init.initializePensionModule(new org.example.domain.pension.strategy.DefaultDataStrategy());
+        Init.initializePensionModule(new DefaultPensionDataStrategy());
         Init.initializeRoomModule(new org.example.domain.room.strategy.DefaultRoomDataStrategy());
         Init.initializeCustomerModule(new org.example.domain.user.customer.strategy.DefaultCustomerDataStrategy());
         Init.initializeReservationModule(new EmptyReservationListStrategy());
