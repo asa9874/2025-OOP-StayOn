@@ -1,9 +1,12 @@
 package org.example.domain.pension;
 
 import org.example.domain.pension.strategy.PensionInitStrategy;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class PensionRepository {
     private static PensionRepository instance;
@@ -14,14 +17,15 @@ public class PensionRepository {
     private PensionRepository(PensionInitStrategy initStrategy) {
         this.initStrategy = initStrategy;
         this.pensionList = initStrategy.initializeList();
+        Collections.sort(pensionList, Comparator.comparingInt(Pension::getId));
         updateNextId();
     }
 
     private void updateNextId() {
         int maxId = pensionList.stream()
-                .mapToInt(Pension::getId)
-                .max()
-                .orElse(0);
+            .mapToInt(Pension::getId)
+            .max()
+            .orElse(0);
         nextId = maxId + 1;
     }
 
@@ -43,20 +47,32 @@ public class PensionRepository {
     }
 
     public Optional<Pension> findById(int id) {
-        return pensionList.stream()
-                .filter(pension -> pension.getId() == id)
-                .findFirst();
+        int low = 0;
+        int high = pensionList.size() - 1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            Pension midPension = pensionList.get(mid);
+            if (midPension.getId() == id) {
+                return Optional.of(midPension);
+            } else if (midPension.getId() < id) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        return Optional.empty();
     }
 
     public List<Pension> findByPensionManagerId(int pensionManagerId) {
         return pensionList.stream()
-                .filter(pension -> pension.getPensionManagerId() == pensionManagerId)
-                .collect(Collectors.toList());
+            .filter(pension -> pension.getPensionManagerId() == pensionManagerId)
+            .collect(Collectors.toList());
     }
 
     public Pension save(Pension pension) {
         pension.setId(nextId++);
         pensionList.add(pension);
+        Collections.sort(pensionList, Comparator.comparingInt(Pension::getId));
         return pension;
     }
 
@@ -68,6 +84,7 @@ public class PensionRepository {
             existingPension.setAddress(pension.getAddress());
             existingPension.setPhoneNumber(pension.getPhoneNumber());
             existingPension.setDescription(pension.getDescription());
+            existingPension.setImage(pension.getImage());
             return existingPension;
         }
         return null;
@@ -75,6 +92,7 @@ public class PensionRepository {
 
     public void deleteById(int id) {
         pensionList.removeIf(pension -> pension.getId() == id);
+        Collections.sort(pensionList, Comparator.comparingInt(Pension::getId));
     }
 
     public void delete(Pension pension) {
@@ -83,6 +101,7 @@ public class PensionRepository {
 
     public void returnToDefaultData() {
         this.pensionList = initStrategy.initializeList();
+        Collections.sort(pensionList, Comparator.comparingInt(Pension::getId));
         updateNextId();
     }
 }
