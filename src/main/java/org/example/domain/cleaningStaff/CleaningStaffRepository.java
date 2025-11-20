@@ -61,10 +61,6 @@ public class CleaningStaffRepository {
         cleaningStaffList.removeIf(staff -> staff.getId() == id);
     }
 
-    public void delete(CleaningStaff cleaningStaff) {
-        deleteById(cleaningStaff.getId());
-    }
-
     public void returnToDefaultData() {
         this.cleaningStaffList = initStrategy.initializeList();
         updateNextId();

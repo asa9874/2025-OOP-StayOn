@@ -67,11 +67,6 @@ public class Pension {
         return pensionManager != null ? pensionManager.getId() : 0;
     }
 
-    public void setPensionManagerId(int pensionManagerId) {
-        // 하위 호환성을 위한 메서드 - 실제로는 setPensionManager를 사용해야 함
-        // 이 메서드는 deprecated 예정
-    }
-
     public PensionManager getPensionManager() {
         return pensionManager;
     }

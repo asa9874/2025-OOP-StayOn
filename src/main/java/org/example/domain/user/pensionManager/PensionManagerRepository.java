@@ -66,10 +66,6 @@ public class PensionManagerRepository {
         pensionManagerList.removeIf(manager -> manager.getId() == id);
     }
 
-    public void delete(PensionManager pensionManager) {
-        deleteById(pensionManager.getId());
-    }
-
     public void returnToDefaultData() {
         this.pensionManagerList = initStrategy.initializeList();
         updateNextId();
