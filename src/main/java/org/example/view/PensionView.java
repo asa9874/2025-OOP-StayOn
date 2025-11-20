@@ -1,6 +1,7 @@
 package org.example.view;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -88,19 +89,34 @@ public class PensionView {
                 pensionListContainer.getChildren().add(createPensionCard(pension));
             }
         }
-    }
-    private HBox createPensionCard(Pension pension) {
+    }    private HBox createPensionCard(Pension pension) {
         // 이미지뷰 생성
         ImageView imageView = new ImageView();
         imageView.setFitWidth(100);
-        imageView.setFitHeight(80);
-        imageView.setPreserveRatio(true);
+        imageView.setFitHeight(100);
+        imageView.setPreserveRatio(false);  // 비율 유지 안함
+        
+        // 정사각형으로 중앙 크롭을 위한 뷰포트 설정
+        Rectangle2D viewport = null;
 
         // 이미지 로드
         try {
             File imageFile = new File(pension.getImage());
             if (imageFile.exists()) {
                 Image image = new Image(imageFile.toURI().toString());
+                
+                // 이미지의 실제 크기
+                double imageWidth = image.getWidth();
+                double imageHeight = image.getHeight();
+                
+                // 정사각형으로 자르기 위한 계산
+                double size = Math.min(imageWidth, imageHeight);
+                double offsetX = (imageWidth - size) / 2;
+                double offsetY = (imageHeight - size) / 2;
+                
+                // 뷰포트 설정 (중앙 정사각형 부분만)
+                viewport = new Rectangle2D(offsetX, offsetY, size, size);
+                imageView.setViewport(viewport);
                 imageView.setImage(image);
             }
         } catch (Exception e) {

@@ -36,7 +36,7 @@ public class DefaultDataStrategy implements PensionInitStrategy {
               // PensionManager 객체로 연관 설정
             PensionManager manager = managers.get((i - 1) % managers.size());
             pension.setPensionManager(manager);
-            pension.setImage("src/main/java/org/example/image/pension.png");
+            pension.setImage("src/main/java/org/example/image/pension/pension ("+i+").jpeg");
             list.add(pension);
         }
         
