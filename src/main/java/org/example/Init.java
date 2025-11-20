@@ -34,6 +34,10 @@ import org.example.domain.review.ReviewRepository;
 import org.example.domain.review.ReviewService;
 import org.example.domain.review.strategy.ReviewInitStrategy;
 import org.example.domain.review.strategy.DefaultReviewDataStrategy;
+import org.example.domain.facilities.FacilitiesController;
+import org.example.domain.facilities.FacilitiesRepository;
+import org.example.domain.facilities.FacilitiesService;
+import org.example.domain.facilities.strategy.FacilitiesInitStrategy;
 
 public class Init {
     public static void initializeDependencies() { // DI 하는 메서드
@@ -45,6 +49,7 @@ public class Init {
         initializeRoomModule(new DefaultRoomDataStrategy());
         initializeReservationModule(new DefaultReservationDataStrategy());
         initializeReviewModule(new DefaultReviewDataStrategy());
+        initializeFacilitiesModule(new org.example.domain.facilities.strategy.DefaultDataStrategy());
     }
 
     public static void initializeCleaningStaffModule(CleaningStaffInitStrategy strategy) {
@@ -127,5 +132,16 @@ public class Init {
         PensionRepository.initialize(strategy);
         PensionService.initialize(PensionRepository.getInstance());
         PensionController.initialize(PensionService.getInstance());
+    }
+
+    public static void initializeFacilitiesModule(FacilitiesInitStrategy strategy) {
+        FacilitiesInitStrategy facilitiesInitStrategy;
+        if (strategy == null) {
+            facilitiesInitStrategy = new org.example.domain.facilities.strategy.DefaultDataStrategy();
+        }
+        facilitiesInitStrategy = strategy;
+        FacilitiesRepository.initialize(facilitiesInitStrategy);
+        FacilitiesService.initialize(FacilitiesRepository.getInstance());
+        FacilitiesController.initialize(FacilitiesService.getInstance());
     }
 }

@@ -2,6 +2,8 @@ package org.example.domain.facilities;
 
 import java.time.LocalDateTime;
 
+import org.example.domain.pension.Pension;
+
 public class Facilities {
     private int id;
     private String name;
@@ -9,26 +11,32 @@ public class Facilities {
     private LocalDateTime closingTime;
     boolean requireReservation;
 
+    private Pension pension;
+
     public Facilities(
         int id,
         String name,
         LocalDateTime openingTime,
         LocalDateTime closingTime,
-        boolean requireReservation
+        boolean requireReservation,
+        Pension pension
     ) {
         this.id = id;
         this.name = name;
         this.openingTime = openingTime;
         this.closingTime = closingTime;
         this.requireReservation = requireReservation;
+        this.pension = pension;
     }
 
     public int getId() {
         return id;
     }
+
     public String getName() {
         return name;
     }
+
     public LocalDateTime getOpeningTime() {
         return openingTime;
     }
@@ -36,8 +44,36 @@ public class Facilities {
     public LocalDateTime getClosingTime() {
         return closingTime;
     }
+
     public boolean isRequireReservation() {
         return requireReservation;
     }
 
+    public Pension getPension() {
+        return pension;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setOpeningTime(LocalDateTime openingTime) {
+        this.openingTime = openingTime;
+    }
+
+    public void setClosingTime(LocalDateTime closingTime) {
+        this.closingTime = closingTime;
+    }
+
+    public void setRequireReservation(boolean requireReservation) {
+        this.requireReservation = requireReservation;
+    }
+
+    public void setPension(Pension pension) {
+        this.pension = pension;
+    }
 }

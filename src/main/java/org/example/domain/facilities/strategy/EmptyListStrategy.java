@@ -1,4 +1,12 @@
 package org.example.domain.facilities.strategy;
 
-public class EmptyListStrategy {
+import org.example.domain.facilities.Facilities;
+import java.util.ArrayList;
+import java.util.List;
+
+public class EmptyListStrategy implements FacilitiesInitStrategy {
+    @Override
+    public List<Facilities> initializeList() {
+        return new ArrayList<>();
+    }
 }

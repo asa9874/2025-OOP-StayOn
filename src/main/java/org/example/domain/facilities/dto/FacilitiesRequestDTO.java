@@ -1,4 +1,12 @@
 package org.example.domain.facilities.dto;
 
-public class FacilitiesRequestDTO {
+import java.time.LocalDateTime;
+
+public record FacilitiesRequestDTO(
+    String name,
+    LocalDateTime openingTime,
+    LocalDateTime closingTime,
+    boolean requireReservation,
+    int pensionId
+) {
 }
