@@ -29,7 +29,8 @@ public class ReviewService {
                 requestDTO.rate(),
                 requestDTO.content(),
                 requestDTO.date(),
-                requestDTO.customer()
+                requestDTO.customer(),
+                requestDTO.room()
         );
         return reviewRepository.save(newReview);
     }
@@ -53,6 +54,10 @@ public class ReviewService {
 
     public List<Review> findByRateGreaterThanOrEqual(int rate) {
         return reviewRepository.findByRateGreaterThanOrEqual(rate);
+    }
+
+    public List<Review> findByRoomId(int roomId) {
+        return reviewRepository.findByRoomId(roomId);
     }
 
     public void deleteById(int id) {

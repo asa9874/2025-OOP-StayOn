@@ -4,6 +4,10 @@ import org.example.Init;
 import org.example.domain.review.dto.ReviewRequestDTO;
 import org.example.domain.review.strategy.EmptyReviewListStrategy;
 import org.example.domain.user.customer.Customer;
+import org.example.domain.room.Room;
+import org.example.domain.room.RoomStatus;
+import org.example.domain.room.RoomType;
+import org.example.domain.pension.Pension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,10 +21,23 @@ class ReviewTest {
     private ReviewController controller;
     private ReviewRepository repository;
     private Customer testCustomer;
+    private Room testRoom;
+    private Room testRoom2;
+    private Pension testPension;
 
     @BeforeEach
     void setUp() {
-        // Customer 먼저 초기화 (Review가 Customer를 참조함)
+        // Pension, Room, Customer 초기화
+        testPension = new Pension();
+        testPension.setId(1);
+        testPension.setName("테스트펜션");
+        
+        testRoom = new Room("101호", 1, "A", 2, "테스트룸", RoomStatus.RESERVATION, RoomType.SINGLE, 100000, testPension, "room.jpg");
+        testRoom.setId(1);
+        
+        testRoom2 = new Room("102호", 1, "A", 2, "테스트룸2", RoomStatus.RESERVATION, RoomType.SINGLE, 100000, testPension, "room2.jpg");
+        testRoom2.setId(2);
+
         Init.initializeCustomerModule(new org.example.domain.user.customer.strategy.DefaultCustomerDataStrategy());
         Init.initializeReviewModule(new EmptyReviewListStrategy());
         repository = ReviewRepository.getInstance();
@@ -36,7 +53,7 @@ class ReviewTest {
     void 저장_유효한입력_리뷰저장및반환() {
         // given
         ReviewRequestDTO requestDTO = new ReviewRequestDTO(
-                5, "정말 좋았습니다!", LocalDate.now(), testCustomer);
+                5, "정말 좋았습니다!", LocalDate.now(), testCustomer, testRoom);
 
         // when
         Review saved = controller.save(requestDTO);
@@ -46,6 +63,7 @@ class ReviewTest {
         assertEquals(5, saved.getRate());
         assertEquals("정말 좋았습니다!", saved.getContent());
         assertEquals(testCustomer.getId(), saved.getCustomer().getId());
+        assertEquals(testRoom.getId(), saved.getRoom().getId());
         assertTrue(saved.getId() > 0);
     }
 
@@ -53,7 +71,7 @@ class ReviewTest {
     void 저장_잘못된평점_예외발생() {
         // given
         ReviewRequestDTO requestDTO = new ReviewRequestDTO(
-                6, "내용", LocalDate.now(), testCustomer);
+                6, "내용", LocalDate.now(), testCustomer, testRoom);
 
         // when & then
         assertThrows(IllegalArgumentException.class, () -> {
@@ -65,7 +83,7 @@ class ReviewTest {
     void 저장_0점평점_예외발생() {
         // given
         ReviewRequestDTO requestDTO = new ReviewRequestDTO(
-                0, "내용", LocalDate.now(), testCustomer);
+                0, "내용", LocalDate.now(), testCustomer, testRoom);
 
         // when & then
         assertThrows(IllegalArgumentException.class, () -> {
@@ -77,7 +95,7 @@ class ReviewTest {
     void 아이디검색_존재하는아이디_리뷰반환() {
         // given
         ReviewRequestDTO requestDTO = new ReviewRequestDTO(
-                4, "좋은 경험이었습니다.", LocalDate.now(), testCustomer);
+                4, "좋은 경험이었습니다.", LocalDate.now(), testCustomer, testRoom);
         Review saved = controller.save(requestDTO);
 
         // when
@@ -101,9 +119,9 @@ class ReviewTest {
     void 전체조회_여러리뷰존재_모든리뷰반환() {
         // given
         ReviewRequestDTO review1 = new ReviewRequestDTO(
-                5, "최고입니다!", LocalDate.now(), testCustomer);
+                5, "최고입니다!", LocalDate.now(), testCustomer, testRoom);
         ReviewRequestDTO review2 = new ReviewRequestDTO(
-                4, "좋아요", LocalDate.now(), testCustomer);
+                4, "좋아요", LocalDate.now(), testCustomer, testRoom2);
 
         controller.save(review1);
         controller.save(review2);
@@ -122,11 +140,11 @@ class ReviewTest {
         anotherCustomer.setId(2);
 
         ReviewRequestDTO review1 = new ReviewRequestDTO(
-                5, "좋아요", LocalDate.now(), testCustomer);
+                5, "좋아요", LocalDate.now(), testCustomer, testRoom);
         ReviewRequestDTO review2 = new ReviewRequestDTO(
-                4, "괜찮아요", LocalDate.now(), testCustomer);
+                4, "괜찮아요", LocalDate.now(), testCustomer, testRoom2);
         ReviewRequestDTO review3 = new ReviewRequestDTO(
-                3, "보통이에요", LocalDate.now(), anotherCustomer);
+                3, "보통이에요", LocalDate.now(), anotherCustomer, testRoom);
 
         controller.save(review1);
         controller.save(review2);
@@ -145,11 +163,11 @@ class ReviewTest {
     void 평점별조회_특정평점_해당평점리뷰들반환() {
         // given
         ReviewRequestDTO review1 = new ReviewRequestDTO(
-                5, "최고", LocalDate.now(), testCustomer);
+                5, "최고", LocalDate.now(), testCustomer, testRoom);
         ReviewRequestDTO review2 = new ReviewRequestDTO(
-                4, "좋음", LocalDate.now(), testCustomer);
+                4, "좋음", LocalDate.now(), testCustomer, testRoom2);
         ReviewRequestDTO review3 = new ReviewRequestDTO(
-                5, "훌륭", LocalDate.now(), testCustomer);
+                5, "훌륭", LocalDate.now(), testCustomer, testRoom);
 
         controller.save(review1);
         controller.save(review2);
@@ -167,11 +185,11 @@ class ReviewTest {
     void 평점이상조회_특정평점이상_해당리뷰들반환() {
         // given
         ReviewRequestDTO review1 = new ReviewRequestDTO(
-                5, "최고", LocalDate.now(), testCustomer);
+                5, "최고", LocalDate.now(), testCustomer, testRoom);
         ReviewRequestDTO review2 = new ReviewRequestDTO(
-                3, "보통", LocalDate.now(), testCustomer);
+                3, "보통", LocalDate.now(), testCustomer, testRoom2);
         ReviewRequestDTO review3 = new ReviewRequestDTO(
-                4, "좋음", LocalDate.now(), testCustomer);
+                4, "좋음", LocalDate.now(), testCustomer, testRoom);
 
         controller.save(review1);
         controller.save(review2);
@@ -186,10 +204,52 @@ class ReviewTest {
     }
 
     @Test
+    void 방별조회_특정방의리뷰_해당리뷰들반환() {
+        // given
+        ReviewRequestDTO review1 = new ReviewRequestDTO(
+                5, "룸1 최고", LocalDate.now(), testCustomer, testRoom);
+        ReviewRequestDTO review2 = new ReviewRequestDTO(
+                4, "룸2 좋음", LocalDate.now(), testCustomer, testRoom2);
+        ReviewRequestDTO review3 = new ReviewRequestDTO(
+                4, "룸1 좋아요", LocalDate.now(), testCustomer, testRoom);
+
+        controller.save(review1);
+        controller.save(review2);
+        controller.save(review3);
+
+        // when
+        List<Review> room1Reviews = controller.findByRoomId(testRoom.getId());
+        List<Review> room2Reviews = controller.findByRoomId(testRoom2.getId());
+
+        // then
+        assertEquals(2, room1Reviews.size());
+        assertEquals(1, room2Reviews.size());
+        
+        assertTrue(room1Reviews.stream()
+                .allMatch(r -> r.getRoom().getId() == testRoom.getId()));
+        assertTrue(room2Reviews.stream()
+                .allMatch(r -> r.getRoom().getId() == testRoom2.getId()));
+    }
+
+    @Test
+    void 방별조회_존재하지않는방_빈리스트반환() {
+        // given
+        ReviewRequestDTO review1 = new ReviewRequestDTO(
+                5, "룸1 최고", LocalDate.now(), testCustomer, testRoom);
+        controller.save(review1);
+
+        // when
+        List<Review> nonExistentRoomReviews = controller.findByRoomId(999);
+
+        // then
+        assertEquals(0, nonExistentRoomReviews.size());
+    }
+
+    @Test
     void 리뷰수정_유효한입력_리뷰업데이트() {
         // given
         ReviewRequestDTO requestDTO = new ReviewRequestDTO(
-                3, "보통이에요", LocalDate.now(), testCustomer);
+                3, "보통이에요", LocalDate.now(), testCustomer, testRoom);
         Review saved = controller.save(requestDTO);
 
         // when
@@ -204,7 +264,7 @@ class ReviewTest {
     void 리뷰수정_잘못된평점_예외발생() {
         // given
         ReviewRequestDTO requestDTO = new ReviewRequestDTO(
-                3, "보통이에요", LocalDate.now(), testCustomer);
+                3, "보통이에요", LocalDate.now(), testCustomer, testRoom);
         Review saved = controller.save(requestDTO);
 
         // when & then
@@ -217,7 +277,7 @@ class ReviewTest {
     void 삭제_존재하는아이디_리뷰삭제() {
         // given
         ReviewRequestDTO requestDTO = new ReviewRequestDTO(
-                4, "좋아요", LocalDate.now(), testCustomer);
+                4, "좋아요", LocalDate.now(), testCustomer, testRoom);
         Review saved = controller.save(requestDTO);
 
         // when
@@ -243,11 +303,11 @@ class ReviewTest {
     void 평균평점조회_리뷰존재_평균값반환() {
         // given
         ReviewRequestDTO review1 = new ReviewRequestDTO(
-                5, "최고", LocalDate.now(), testCustomer);
+                5, "최고", LocalDate.now(), testCustomer, testRoom);
         ReviewRequestDTO review2 = new ReviewRequestDTO(
-                3, "보통", LocalDate.now(), testCustomer);
+                3, "보통", LocalDate.now(), testCustomer, testRoom2);
         ReviewRequestDTO review3 = new ReviewRequestDTO(
-                4, "좋음", LocalDate.now(), testCustomer);
+                4, "좋음", LocalDate.now(), testCustomer, testRoom);
 
         controller.save(review1);
         controller.save(review2);
@@ -274,12 +334,43 @@ class ReviewTest {
         // given
         LocalDate testDate = LocalDate.of(2025, 11, 9);
         ReviewRequestDTO requestDTO = new ReviewRequestDTO(
-                5, "테스트", testDate, testCustomer);
+                5, "테스트", testDate, testCustomer, testRoom);
 
         // when
         Review saved = controller.save(requestDTO);
 
         // then
         assertEquals(testDate, saved.getDate());
+    }
+
+    @Test
+    void 방과고객별조회_특정방의특정고객리뷰_해당리뷰반환() {
+        // given
+        Customer anotherCustomer = new Customer("다른유저", "another", "password", "010-9999-9999", "another@example.com", 100000);
+        anotherCustomer.setId(2);
+
+        ReviewRequestDTO review1 = new ReviewRequestDTO(
+                5, "고객1 룸1", LocalDate.now(), testCustomer, testRoom);
+        ReviewRequestDTO review2 = new ReviewRequestDTO(
+                4, "고객1 룸2", LocalDate.now(), testCustomer, testRoom2);
+        ReviewRequestDTO review3 = new ReviewRequestDTO(
+                3, "고객2 룸1", LocalDate.now(), anotherCustomer, testRoom);
+
+        controller.save(review1);
+        controller.save(review2);
+        controller.save(review3);
+
+        // when
+        List<Review> customersReviews = controller.findByCustomer(testCustomer);
+        List<Review> room1Reviews = controller.findByRoomId(testRoom.getId());
+
+        // then
+        assertEquals(2, customersReviews.size());
+        assertEquals(2, room1Reviews.size());
+        
+        assertTrue(customersReviews.stream()
+                .allMatch(r -> r.getCustomer().getId() == testCustomer.getId()));
+        assertTrue(room1Reviews.stream()
+                .allMatch(r -> r.getRoom().getId() == testRoom.getId()));
     }
 }

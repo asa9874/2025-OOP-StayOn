@@ -47,6 +47,10 @@ public class ReviewController {
         return reviewService.findByRateGreaterThanOrEqual(rate);
     }
 
+    public List<Review> findByRoomId(int roomId) {
+        return reviewService.findByRoomId(roomId);
+    }
+
     public void deleteById(int id) {
         reviewService.deleteById(id);
     }

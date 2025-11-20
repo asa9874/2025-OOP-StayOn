@@ -64,6 +64,8 @@ public class ReviewRepository {
         return new ArrayList<>(reviewList);
     }
 
+
+
     public List<Review> findByCustomer(Customer customer) {
         return reviewList.stream()
                 .filter(review -> review.getCustomer().getId() == customer.getId())
@@ -79,6 +81,12 @@ public class ReviewRepository {
     public List<Review> findByRateGreaterThanOrEqual(int rate) {
         return reviewList.stream()
                 .filter(review -> review.getRate() >= rate)
+                .toList();
+    }
+
+    public List<Review> findByRoomId(int roomId) {
+        return reviewList.stream()
+                .filter(review -> review.getRoom() != null && review.getRoom().getId() == roomId)
                 .toList();
     }
 
