@@ -1,11 +1,13 @@
 package org.example.view;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -17,12 +19,16 @@ import java.util.List;
 
 public class PensionView {
     private final PensionController controller;
-    private VBox pensionListContainer;
+    private FlowPane pensionGridContainer;
     private List<Pension> currentPensionList;
+    private Stage stage;
 
     public PensionView() {
         this.controller = PensionController.getInstance();
-    }public void start(Stage stage) {
+    }
+
+    public void start(Stage stage) {
+        this.stage = stage;
         stage.setTitle("펜션 목록 검색");
 
         // 검색 필드
@@ -36,7 +42,9 @@ public class PensionView {
             if (!nameText.isEmpty()) {
                 searchByName(nameText);
             }
-        });        // 전체 목록 조회 버튼
+        });
+
+        // 전체 목록 조회 버튼
         Button showAllButton = new Button("전체 목록 조회");
         showAllButton.setOnAction(e -> updatePensionList());
 
@@ -62,13 +70,15 @@ public class PensionView {
             sortByNameDescButton
         );
 
-        // 펜션 목록 컨테이너
-        pensionListContainer = new VBox(10);
-        pensionListContainer.setPadding(new Insets(10));
+        // 펜션 그리드 컨테이너 (FlowPane 사용으로 자동 줄바꿈)
+        pensionGridContainer = new FlowPane();
+        pensionGridContainer.setHgap(20);
+        pensionGridContainer.setVgap(20);
+        pensionGridContainer.setPadding(new Insets(10));
         updatePensionList();
 
         // 스크롤 패널
-        ScrollPane scrollPane = new ScrollPane(pensionListContainer);
+        ScrollPane scrollPane = new ScrollPane(pensionGridContainer);
         scrollPane.setFitToWidth(true);
         scrollPane.setPrefHeight(500);
 
@@ -88,25 +98,28 @@ public class PensionView {
             new Separator(),
             new Label("펜션 이름:"),
             searchNameField,
-            searchByNameButton,            new Separator(),
+            searchByNameButton,
+            new Separator(),
             showAllButton,
             sortButtonBox,
             new Label("펜션 목록:"),
             scrollPane
         );
 
-        Scene scene = new Scene(mainLayout, 800, 700);
+        Scene scene = new Scene(mainLayout, 900, 700);
         stage.setScene(scene);
         stage.show();
-    }    private void updatePensionList() {
+    }
+
+    private void updatePensionList() {
         currentPensionList = new ArrayList<>(controller.findAll());
         displayPensionList();
     }
 
     private void displayPensionList() {
-        pensionListContainer.getChildren().clear();
+        pensionGridContainer.getChildren().clear();
         for (Pension pension : currentPensionList) {
-            pensionListContainer.getChildren().add(createPensionCard(pension));
+            pensionGridContainer.getChildren().add(createPensionCard(pension));
         }
     }
 
@@ -134,7 +147,9 @@ public class PensionView {
             });
             displayPensionList();
         }
-    }    private void searchByName(String name) {
+    }
+
+    private void searchByName(String name) {
         currentPensionList = new ArrayList<>();
         for (Pension pension : controller.findAll()) {
             if (pension.getName().contains(name)) {
@@ -142,15 +157,14 @@ public class PensionView {
             }
         }
         displayPensionList();
-    }private HBox createPensionCard(Pension pension) {
+    }
+
+    private VBox createPensionCard(Pension pension) {
         // 이미지뷰 생성
         ImageView imageView = new ImageView();
-        imageView.setFitWidth(100);
-        imageView.setFitHeight(100);
-        imageView.setPreserveRatio(false);  // 비율 유지 안함
-        
-        // 정사각형으로 중앙 크롭을 위한 뷰포트 설정
-        Rectangle2D viewport = null;
+        imageView.setFitWidth(150);
+        imageView.setFitHeight(150);
+        imageView.setPreserveRatio(false);
 
         // 이미지 로드
         try {
@@ -168,7 +182,7 @@ public class PensionView {
                 double offsetY = (imageHeight - size) / 2;
                 
                 // 뷰포트 설정 (중앙 정사각형 부분만)
-                viewport = new Rectangle2D(offsetX, offsetY, size, size);
+                Rectangle2D viewport = new Rectangle2D(offsetX, offsetY, size, size);
                 imageView.setViewport(viewport);
                 imageView.setImage(image);
             }
@@ -176,29 +190,35 @@ public class PensionView {
             // 빈 이미지
         }
 
-        // 펜션 정보 텍스트
-        VBox infoBox = new VBox(5);
-        Label nameLabel = new Label("이름: " + pension.getName());
-        nameLabel.setStyle("-fx-font-weight: bold;");
-        Label addressLabel = new Label("주소: " + pension.getAddress());
-        Label phoneLabel = new Label("전화번호: " + pension.getPhoneNumber());
-        Label descLabel = new Label("설명: " + pension.getDescription());
-        
-        infoBox.getChildren().addAll(nameLabel, addressLabel, phoneLabel, descLabel);
+        // 펜션 이름 레이블
+        Label nameLabel = new Label(pension.getName());
+        nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+        nameLabel.setMaxWidth(150);
+        nameLabel.setAlignment(Pos.CENTER);
+        nameLabel.setWrapText(true);
 
         // 카드 레이아웃
-        HBox card = new HBox(15);
+        VBox card = new VBox(10);
         card.setPadding(new Insets(10));
-        card.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #f9f9f9;");
-        card.getChildren().addAll(imageView, infoBox);
+        card.setAlignment(Pos.CENTER);
+        card.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #f9f9f9; -fx-cursor: hand;");
+        card.getChildren().addAll(imageView, nameLabel);
+        
+        // 클릭 이벤트 - 상세 정보 화면으로 이동
+        card.setOnMouseClicked(e -> {
+            PensionDetailView detailView = new PensionDetailView(pension, stage);
+            detailView.show();
+        });
+        
+        // 마우스 호버 효과
+        card.setOnMouseEntered(e -> {
+            card.setStyle("-fx-border-color: #0066cc; -fx-border-width: 2; -fx-background-color: #e6f2ff; -fx-cursor: hand;");
+        });
+        
+        card.setOnMouseExited(e -> {
+            card.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #f9f9f9; -fx-cursor: hand;");
+        });
         
         return card;
-    }
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }
