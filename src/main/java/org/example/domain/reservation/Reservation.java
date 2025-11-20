@@ -20,17 +20,17 @@ public class Reservation {
         this.state = state != null ? state : new PendingState();
     }
 
-    // 결제 로직 - 현재 상태에게 위임
+    // 결제 로직
     public void pay() {
         state.pay(this);
     }
 
-    // 취소 로직 - 현재 상태에게 위임
+    // 취소 로직
     public void cancel() {
         state.cancel(this);
     }
 
-    // 환불 로직 - 현재 상태에게 위임
+    // 환불 로직
     public void refund() {
         state.refund(this);
     }
@@ -71,7 +71,6 @@ public class Reservation {
         return state.getStateName();
     }
 
-    // 하위 호환성을 위한 메서드 (기존 코드와 호환)
     public ReservationStatus getReservationStatus() {
         return ReservationStatus.valueOf(state.getStateName());
     }

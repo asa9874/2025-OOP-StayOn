@@ -51,8 +51,7 @@ public class PensionManagerService {
     }
 
     public void deleteById(int id) {
-        // 존재하는지 확인 후 삭제
-        findById(id); // NotFoundException을 던질 수 있음
+        findById(id);
         pensionManagerRepository.deleteById(id);
     }
 

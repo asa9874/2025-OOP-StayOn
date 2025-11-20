@@ -39,7 +39,7 @@ public class DefaultReservationDataStrategy implements ReservationInitStrategy {
             reservation.setCustomer(customer);
             reservation.setRoom(room);
             
-            // 다양한 상태 분포
+            // 상태
             if (i % 4 == 0) {
                 reservation.setState(new PendingState());
             } else if (i % 4 == 1) {

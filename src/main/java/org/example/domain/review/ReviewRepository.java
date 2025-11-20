@@ -119,7 +119,7 @@ public class ReviewRepository {
         int i = 0, j = 0;
 
         while (i < left.size() && j < right.size()) {
-            // 최신 날짜 순서 (내림차순): r2.getDate().compareTo(r1.getDate()) > 0이면 r2가 먼저
+            // 최신 날짜 순서 (내림차순)
             if (left.get(i).getDate().compareTo(right.get(j).getDate()) >= 0) {
                 merged.add(left.get(i));
                 i++;
