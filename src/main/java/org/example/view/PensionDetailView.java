@@ -73,20 +73,21 @@ public class PensionDetailView {
         VBox infoBox = new VBox(10);
         infoBox.setPadding(new Insets(10));
         
-        Label nameLabel = new Label("펜션 이름: " + pension.getName());
+        Label nameLabel = new Label(pension.getName());
         nameLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
         
-        Label addressLabel = new Label("주소: " + pension.getAddress());
-        addressLabel.setStyle("-fx-font-size: 14px;");
-        
-        Label phoneLabel = new Label("전화번호: " + pension.getPhoneNumber());
-        phoneLabel.setStyle("-fx-font-size: 14px;");
-        
-        Label descLabel = new Label("설명: " + pension.getDescription());
+        Label descLabel = new Label(pension.getDescription());
         descLabel.setStyle("-fx-font-size: 14px;");
         descLabel.setWrapText(true);
         
-        infoBox.getChildren().addAll(nameLabel, addressLabel, phoneLabel, descLabel);
+        Label addressLabel = new Label(pension.getAddress());
+        addressLabel.setStyle("-fx-font-size: 14px;");
+        
+        Label phoneLabel = new Label(pension.getPhoneNumber());
+        phoneLabel.setStyle("-fx-font-size: 14px;");
+
+
+        infoBox.getChildren().addAll(nameLabel, descLabel, addressLabel, phoneLabel);
 
         // 객실 정보
         VBox roomBox = new VBox(10);
@@ -126,23 +127,83 @@ public class PensionDetailView {
         Scene scene = new Scene(scrollPane, 800, 700);
         stage.setScene(scene);
         stage.show();
-    }
+    }    private HBox createRoomCard(Room room) {
+        // 객실 이미지뷰 생성
+        ImageView roomImageView = new ImageView();
+        roomImageView.setFitWidth(100);
+        roomImageView.setFitHeight(100);
+        roomImageView.setPreserveRatio(false);
 
-    private HBox createRoomCard(Room room) {
-        HBox card = new HBox(10);
+        // 이미지 로드
+        try {
+            File imageFile = new File(room.getImage());
+            if (imageFile.exists()) {
+                Image image = new Image(imageFile.toURI().toString());
+                
+                // 이미지의 실제 크기
+                double imageWidth = image.getWidth();
+                double imageHeight = image.getHeight();
+                
+                // 정사각형으로 자르기 위한 계산
+                double size = Math.min(imageWidth, imageHeight);
+                double offsetX = (imageWidth - size) / 2;
+                double offsetY = (imageHeight - size) / 2;
+                
+                // 뷰포트 설정 (중앙 정사각형 부분만)
+                Rectangle2D viewport = new Rectangle2D(offsetX, offsetY, size, size);
+                roomImageView.setViewport(viewport);
+                roomImageView.setImage(image);
+            }
+        } catch (Exception e) {
+            // 빈 이미지
+        }
+
+        HBox card = new HBox(15);
         card.setPadding(new Insets(10));
         card.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #f9f9f9;");
         
         VBox infoBox = new VBox(5);
-        Label nameLabel = new Label("객실명: " + room.getRoomName());
+        Label nameLabel = new Label(room.getRoomName());
         nameLabel.setStyle("-fx-font-weight: bold;");
-        Label typeLabel = new Label("객실 타입: " + room.getRoomType());
-        Label statusLabel = new Label("상태: " + room.getRoomStatus());
-        Label priceLabel = new Label("가격: " + room.getPrice() + "원");
+        Label typeLabel = new Label(getRoomTypeText(room.getRoomType()));
+        Label statusLabel = new Label(getRoomStatusText(room.getRoomStatus()));
+        Label priceLabel = new Label(room.getPrice() + "원");
         
         infoBox.getChildren().addAll(nameLabel, typeLabel, statusLabel, priceLabel);
-        card.getChildren().add(infoBox);
+        card.getChildren().addAll(roomImageView, infoBox);
         
         return card;
+    }
+
+    private String getRoomStatusText(org.example.domain.room.RoomStatus status) {
+        switch (status) {
+            case RESERVATION:
+                return "예약 중";
+            case RESERVATIONED:
+                return "예약완료";
+            case USING:
+                return "청소 중";
+            case CHECKING:
+                return "점검 중";
+            case CLEANING:
+                return "판매 중";
+            case NOTSALES:
+                return "판매 중지";
+            default:
+                return status.toString();
+        }
+    }
+
+    private String getRoomTypeText(org.example.domain.room.RoomType type) {
+        switch (type) {
+            case DUPLEX:
+                return "복층형";
+            case SINGLE:
+                return "독채형";
+            case HOTEL:
+                return "호텔형";
+            default:
+                return type.toString();
+        }
     }
 }

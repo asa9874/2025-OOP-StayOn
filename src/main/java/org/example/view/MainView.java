@@ -16,7 +16,7 @@ public class MainView {
 
     public void show() {
         stage.setTitle("StayOn 관리 시스템");
-        
+
         // 청소 스태프 관리 버튼
         Button cleaningStaffButton = new Button("청소 스태프 관리");
         cleaningStaffButton.setOnAction(e -> {
