@@ -41,7 +41,7 @@ public class DefaultRoomDataStrategy implements RoomInitStrategy {
             // Pension 객체로 연관 설정
             Pension pension = pensions.get((i - 1) % pensions.size());
             room.setPension(pension);
-            room.setImage("image/room.png");
+            room.setImage("src/main/java/org/example/image/room/room.png");
             list.add(room);
         }
         
