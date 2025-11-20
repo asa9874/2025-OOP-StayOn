@@ -12,14 +12,17 @@ import javafx.stage.Stage;
 import org.example.domain.pension.Pension;
 import org.example.domain.pension.PensionController;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PensionView {
     private final PensionController controller;
     private VBox pensionListContainer;
+    private List<Pension> currentPensionList;
 
     public PensionView() {
         this.controller = PensionController.getInstance();
-    }    public void start(Stage stage) {
+    }public void start(Stage stage) {
         stage.setTitle("펜션 목록 검색");
 
         // 검색 필드
@@ -33,11 +36,31 @@ public class PensionView {
             if (!nameText.isEmpty()) {
                 searchByName(nameText);
             }
-        });
-
-        // 전체 목록 조회 버튼
+        });        // 전체 목록 조회 버튼
         Button showAllButton = new Button("전체 목록 조회");
         showAllButton.setOnAction(e -> updatePensionList());
+
+        // 정렬 버튼들
+        Button sortByIdAscButton = new Button("ID ↑");
+        sortByIdAscButton.setOnAction(e -> sortById(true));
+        
+        Button sortByIdDescButton = new Button("ID ↓");
+        sortByIdDescButton.setOnAction(e -> sortById(false));
+        
+        Button sortByNameAscButton = new Button("이름 ↑");
+        sortByNameAscButton.setOnAction(e -> sortByName(true));
+        
+        Button sortByNameDescButton = new Button("이름 ↓");
+        sortByNameDescButton.setOnAction(e -> sortByName(false));
+
+        HBox sortButtonBox = new HBox(10);
+        sortButtonBox.getChildren().addAll(
+            new Label("정렬:"),
+            sortByIdAscButton,
+            sortByIdDescButton,
+            sortByNameAscButton,
+            sortByNameDescButton
+        );
 
         // 펜션 목록 컨테이너
         pensionListContainer = new VBox(10);
@@ -65,9 +88,9 @@ public class PensionView {
             new Separator(),
             new Label("펜션 이름:"),
             searchNameField,
-            searchByNameButton,
-            new Separator(),
+            searchByNameButton,            new Separator(),
             showAllButton,
+            sortButtonBox,
             new Label("펜션 목록:"),
             scrollPane
         );
@@ -76,20 +99,50 @@ public class PensionView {
         stage.setScene(scene);
         stage.show();
     }    private void updatePensionList() {
+        currentPensionList = new ArrayList<>(controller.findAll());
+        displayPensionList();
+    }
+
+    private void displayPensionList() {
         pensionListContainer.getChildren().clear();
-        for (Pension pension : controller.findAll()) {
+        for (Pension pension : currentPensionList) {
             pensionListContainer.getChildren().add(createPensionCard(pension));
         }
     }
 
-    private void searchByName(String name) {
-        pensionListContainer.getChildren().clear();
+    private void sortById(boolean ascending) {
+        if (currentPensionList != null) {
+            currentPensionList.sort((p1, p2) -> {
+                if (ascending) {
+                    return Integer.compare(p1.getId(), p2.getId());
+                } else {
+                    return Integer.compare(p2.getId(), p1.getId());
+                }
+            });
+            displayPensionList();
+        }
+    }
+
+    private void sortByName(boolean ascending) {
+        if (currentPensionList != null) {
+            currentPensionList.sort((p1, p2) -> {
+                if (ascending) {
+                    return p1.getName().compareTo(p2.getName());
+                } else {
+                    return p2.getName().compareTo(p1.getName());
+                }
+            });
+            displayPensionList();
+        }
+    }    private void searchByName(String name) {
+        currentPensionList = new ArrayList<>();
         for (Pension pension : controller.findAll()) {
             if (pension.getName().contains(name)) {
-                pensionListContainer.getChildren().add(createPensionCard(pension));
+                currentPensionList.add(pension);
             }
         }
-    }    private HBox createPensionCard(Pension pension) {
+        displayPensionList();
+    }private HBox createPensionCard(Pension pension) {
         // 이미지뷰 생성
         ImageView imageView = new ImageView();
         imageView.setFitWidth(100);
