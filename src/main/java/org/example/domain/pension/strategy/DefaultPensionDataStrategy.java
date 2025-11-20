@@ -6,7 +6,7 @@ import org.example.domain.user.pensionManager.PensionManagerRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DefaultDataStrategy implements PensionInitStrategy {
+public class DefaultPensionDataStrategy implements PensionInitStrategy {
     @Override
     public List<Pension> initializeList() {
         List<Pension> list = new ArrayList<>();

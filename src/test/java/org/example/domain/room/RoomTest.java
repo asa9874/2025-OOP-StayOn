@@ -4,7 +4,7 @@ import org.example.Init;
 import org.example.domain.room.dto.RoomRequestDTO;
 import org.example.domain.room.strategy.EmptyRoomListStrategy;
 import org.example.domain.user.pensionManager.strategy.DefaultPensionManagerDataStrategy;
-import org.example.domain.pension.strategy.DefaultDataStrategy;
+import org.example.domain.pension.strategy.DefaultPensionDataStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.List;
@@ -20,7 +20,7 @@ class RoomTest {
     void setUp() {
         // 의존성 순서: PensionManager → Pension → Room
         Init.initializePensionManagerModule(new DefaultPensionManagerDataStrategy());
-        Init.initializePensionModule(new DefaultDataStrategy());
+        Init.initializePensionModule(new DefaultPensionDataStrategy());
         Init.initializeRoomModule(new EmptyRoomListStrategy());
         repository = RoomRepository.getInstance();
         controller = RoomController.getInstance();
