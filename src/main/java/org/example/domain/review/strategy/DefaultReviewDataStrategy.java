@@ -3,6 +3,8 @@ package org.example.domain.review.strategy;
 import org.example.domain.review.Review;
 import org.example.domain.user.customer.Customer;
 import org.example.domain.user.customer.CustomerRepository;
+import org.example.domain.room.Room;
+import org.example.domain.room.RoomRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,6 +21,14 @@ public class DefaultReviewDataStrategy implements ReviewInitStrategy {
         
         if (customers.isEmpty()) {
             throw new IllegalStateException("Customer가 먼저 초기화되어야 합니다.");
+        }
+
+        // Room 가져오기 (이미 초기화되어 있어야 함)
+        RoomRepository roomRepo = RoomRepository.getInstance();
+        List<Room> rooms = roomRepo.findAll();
+        
+        if (rooms.isEmpty()) {
+            throw new IllegalStateException("Room이 먼저 초기화되어야 합니다.");
         }
 
         // Review 생성
@@ -59,6 +69,7 @@ public class DefaultReviewDataStrategy implements ReviewInitStrategy {
             review.setContent(comments[i - 1]);
             review.setDate(LocalDate.of(2025, (i % 12) + 1, (i % 28) + 1));
             review.setCustomer(customers.get((i - 1) % customers.size()));
+            review.setRoom(rooms.get((i - 1) % rooms.size()));
             list.add(review);
         }
 
