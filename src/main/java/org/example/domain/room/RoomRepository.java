@@ -11,14 +11,12 @@ public class RoomRepository {
     private final RoomInitStrategy initStrategy;
     private int nextId = 1;
 
-    // 생성자
     private RoomRepository(RoomInitStrategy initStrategy) {
         this.initStrategy = initStrategy;
         this.roomList = initStrategy.initializeList();
         updateNextId();
     }
 
-    // 다음 ID 업데이트 메서드
     private void updateNextId() {
         int maxId = roomList.stream()
                 .mapToInt(Room::getId)
@@ -83,10 +81,6 @@ public class RoomRepository {
 
     public void deleteById(int id) {
         roomList.removeIf(room -> room.getId() == id);
-    }
-
-    public void delete(Room room) {
-        deleteById(room.getId());
     }
 
     public void returnToDefaultData() {

@@ -1,6 +1,7 @@
 package org.example.domain.review;
 
 import org.example.domain.user.customer.Customer;
+import org.example.domain.room.Room;
 import java.time.LocalDate;
 
 public class Review {
@@ -9,16 +10,18 @@ public class Review {
     private String content;
     private LocalDate date;
     private Customer customer;
+    private Room room;
 
     public Review() {
     }
 
-    public Review(int rate, String content, LocalDate date, Customer customer) {
+    public Review(int rate, String content, LocalDate date, Customer customer, Room room) {
         validateRate(rate);
         this.rate = rate;
         this.content = content;
         this.date = date;
         this.customer = customer;
+        this.room = room;
     }
 
     private void validateRate(int rate) {
@@ -72,5 +75,13 @@ public class Review {
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
+    }
+
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
     }
 }

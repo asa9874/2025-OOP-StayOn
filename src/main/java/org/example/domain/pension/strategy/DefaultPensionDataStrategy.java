@@ -6,7 +6,7 @@ import org.example.domain.user.pensionManager.PensionManagerRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DefaultDataStrategy implements PensionInitStrategy {
+public class DefaultPensionDataStrategy implements PensionInitStrategy {
     @Override
     public List<Pension> initializeList() {
         List<Pension> list = new ArrayList<>();
@@ -37,7 +37,7 @@ public class DefaultDataStrategy implements PensionInitStrategy {
             // PensionManager 객체로 연관 설정
             PensionManager manager = managers.get((i - 1) % managers.size());
             pension.setPensionManager(manager);
-            pension.setImage("image/pension.png");
+            pension.setImage("src/main/java/org/example/image/pension/pension ("+i+").jpeg");
             list.add(pension);
         }
         

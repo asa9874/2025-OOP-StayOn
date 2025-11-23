@@ -44,7 +44,6 @@ public class PensionService {
     }
 
     public Pension save(PensionRequestDTO requestDTO) {
-        // PensionManager 조회
         PensionManager pensionManager = pensionManagerRepository.findById(requestDTO.pensionManagerId())
             .orElseThrow(() -> new IllegalArgumentException("PensionManager not found: " + requestDTO.pensionManagerId()));
         
@@ -60,7 +59,6 @@ public class PensionService {
     }
 
     public Pension update(PensionUpdateDTO updateDTO) {
-        // 존재 여부 확인
         findById(updateDTO.id());
         
         Pension pension = new Pension();
@@ -78,7 +76,6 @@ public class PensionService {
     }
 
     public void deleteById(int id) {
-        // 존재하는지 확인 후 삭제
         findById(id);
         pensionRepository.deleteById(id);
     }

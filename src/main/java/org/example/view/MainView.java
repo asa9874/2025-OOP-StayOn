@@ -24,21 +24,25 @@ public class MainView {
             cleaningStaffView.start(stage);
         });
 
-        // 예약 관리 버튼
-        Button reservationButton = new Button("방 등록");
-        reservationButton.setOnAction(e -> {
-            RoomEnrollView roomEnrollView = new RoomEnrollView();
-            roomEnrollView.start(stage);
+        // 객실 선택 버튼
+        Button roomSelectButton = new Button("객실 선택");
+        roomSelectButton.setOnAction(e -> {
+            RoomSelectView roomSelectView = new RoomSelectView();
+            roomSelectView.start(stage);
+        });
+
+        // 결제 버튼
+        Button paymentButton = new Button("결제");
+        paymentButton.setOnAction(e -> {
+            PaymentView paymentView = new PaymentView();
+            paymentView.start(stage);
         });
         
         // 레이아웃 설정
         VBox vbox = new VBox(20);
         vbox.setPadding(new Insets(30));
         vbox.setAlignment(Pos.CENTER);
-        vbox.getChildren().addAll(
-                cleaningStaffButton,
-                reservationButton
-        );
+        vbox.getChildren().addAll(cleaningStaffButton, roomSelectButton, paymentButton);
 
         // 씬 설정
         Scene scene = new Scene(vbox, 400, 300);
