@@ -79,7 +79,7 @@ public class PensionDetailView {
         Label descLabel = new Label(pension.getDescription());
         descLabel.setStyle("-fx-font-size: 14px;");
         descLabel.setWrapText(true);
-
+        
         Label addressLabel = new Label(pension.getAddress());
         addressLabel.setStyle("-fx-font-size: 14px;");
         
@@ -87,7 +87,13 @@ public class PensionDetailView {
         phoneLabel.setStyle("-fx-font-size: 14px;");
 
 
-        infoBox.getChildren().addAll(nameLabel, descLabel, addressLabel, phoneLabel);
+        infoBox.getChildren().addAll(nameLabel, descLabel, addressLabel, phoneLabel);        // 객실 선택 버튼
+        Button selectRoomButton = new Button("객실 선택하기");
+        selectRoomButton.setStyle("-fx-font-size: 16px; -fx-background-color: #0066cc; -fx-text-fill: white; -fx-padding: 10 20;");
+        selectRoomButton.setOnAction(e -> {
+            RoomSelectView roomSelectView = new RoomSelectView(pension, stage);
+            roomSelectView.show();
+        });
 
         // 객실 정보
         VBox roomBox = new VBox(10);
@@ -118,6 +124,8 @@ public class PensionDetailView {
             new Separator(),
             infoBox,
             new Separator(),
+            selectRoomButton,
+            new Separator(),
             roomBox
         );
 
@@ -127,8 +135,7 @@ public class PensionDetailView {
         Scene scene = new Scene(scrollPane, 800, 700);
         stage.setScene(scene);
         stage.show();
-    }
-    private HBox createRoomCard(Room room) {
+    }    private HBox createRoomCard(Room room) {
         // 객실 이미지뷰 생성
         ImageView roomImageView = new ImageView();
         roomImageView.setFitWidth(100);
@@ -140,16 +147,16 @@ public class PensionDetailView {
             File imageFile = new File(room.getImage());
             if (imageFile.exists()) {
                 Image image = new Image(imageFile.toURI().toString());
-
+                
                 // 이미지의 실제 크기
                 double imageWidth = image.getWidth();
                 double imageHeight = image.getHeight();
-
+                
                 // 정사각형으로 자르기 위한 계산
                 double size = Math.min(imageWidth, imageHeight);
                 double offsetX = (imageWidth - size) / 2;
                 double offsetY = (imageHeight - size) / 2;
-
+                
                 // 뷰포트 설정 (중앙 정사각형 부분만)
                 Rectangle2D viewport = new Rectangle2D(offsetX, offsetY, size, size);
                 roomImageView.setViewport(viewport);
@@ -158,7 +165,6 @@ public class PensionDetailView {
         } catch (Exception e) {
             // 빈 이미지
         }
-    }
 
         HBox card = new HBox(15);
         card.setPadding(new Insets(10));
@@ -170,10 +176,10 @@ public class PensionDetailView {
         Label typeLabel = new Label(getRoomTypeText(room.getRoomType()));
         Label statusLabel = new Label(getRoomStatusText(room.getRoomStatus()));
         Label priceLabel = new Label(room.getPrice() + "원");
-
+        
         infoBox.getChildren().addAll(nameLabel, typeLabel, statusLabel, priceLabel);
         card.getChildren().addAll(roomImageView, infoBox);
-
+        
         return card;
     }
 
