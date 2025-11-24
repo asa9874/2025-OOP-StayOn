@@ -87,13 +87,27 @@ public class PensionDetailView {
         phoneLabel.setStyle("-fx-font-size: 14px;");
 
 
-        infoBox.getChildren().addAll(nameLabel, descLabel, addressLabel, phoneLabel);        // 객실 선택 버튼
+        infoBox.getChildren().addAll(nameLabel, descLabel, addressLabel, phoneLabel);        // 버튼 박스
+        HBox buttonBox = new HBox(15);
+        buttonBox.setAlignment(javafx.geometry.Pos.CENTER);
+        
+        // 객실 선택 버튼
         Button selectRoomButton = new Button("객실 선택하기");
         selectRoomButton.setStyle("-fx-font-size: 16px; -fx-background-color: #0066cc; -fx-text-fill: white; -fx-padding: 10 20;");
         selectRoomButton.setOnAction(e -> {
             RoomSelectView roomSelectView = new RoomSelectView(pension, stage);
             roomSelectView.show();
         });
+        
+        // 부대시설 조회 버튼
+        Button facilitiesButton = new Button("부대시설 조회");
+        facilitiesButton.setStyle("-fx-font-size: 16px; -fx-background-color: #28a745; -fx-text-fill: white; -fx-padding: 10 20;");
+        facilitiesButton.setOnAction(e -> {
+            FacilitiesView facilitiesView = new FacilitiesView(pension, stage);
+            facilitiesView.show();
+        });
+        
+        buttonBox.getChildren().addAll(selectRoomButton, facilitiesButton);
 
         // 객실 정보
         VBox roomBox = new VBox(10);
@@ -112,9 +126,7 @@ public class PensionDetailView {
                 HBox roomCard = createRoomCard(room);
                 roomBox.getChildren().add(roomCard);
             }
-        }
-
-        // 레이아웃
+        }        // 레이아웃
         VBox contentBox = new VBox(15);
         contentBox.setPadding(new Insets(10));
         contentBox.getChildren().addAll(
@@ -124,7 +136,7 @@ public class PensionDetailView {
             new Separator(),
             infoBox,
             new Separator(),
-            selectRoomButton,
+            buttonBox,
             new Separator(),
             roomBox
         );

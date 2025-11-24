@@ -18,6 +18,13 @@ public class DefaultFacilitiesDataStrategy implements FacilitiesInitStrategy {
         Pension pension = pensions.get(0); // Use first pension for simplicity
 
         String[] facilityNames = {"수영장", "사우나", "헬스장", "테니스장", "골프장"};
+        String[] facilityImages = {
+            "src/main/java/org/example/image/facilities/pool.jpeg",
+            "src/main/java/org/example/image/facilities/sauna.jpeg",
+            "src/main/java/org/example/image/facilities/gym.jpeg",
+            "src/main/java/org/example/image/facilities/tennis.jpeg",
+            "src/main/java/org/example/image/facilities/golf.jpeg"
+        };
         LocalDateTime openingTime = LocalDateTime.of(2023, 1, 1, 9, 0);
         LocalDateTime closingTime = LocalDateTime.of(2023, 1, 1, 18, 0);
 
@@ -28,7 +35,8 @@ public class DefaultFacilitiesDataStrategy implements FacilitiesInitStrategy {
                 openingTime,
                 closingTime,
                 i % 2 == 0, // Alternate requireReservation
-                pension
+                pension,
+                facilityImages[i - 1]
             );
             list.add(facility);
         }
