@@ -7,6 +7,7 @@ public record FacilitiesRequestDTO(
     LocalDateTime openingTime,
     LocalDateTime closingTime,
     boolean requireReservation,
-    int pensionId
+    int pensionId,
+    String image
 ) {
 }

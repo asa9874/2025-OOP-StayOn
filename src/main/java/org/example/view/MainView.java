@@ -16,7 +16,7 @@ public class MainView {
 
     public void show() {
         stage.setTitle("StayOn 관리 시스템");
-        
+
         // 청소 스태프 관리 버튼
         Button cleaningStaffButton = new Button("청소 스태프 관리");
         cleaningStaffButton.setOnAction(e -> {
@@ -37,14 +37,22 @@ public class MainView {
             LoginView loginView = new LoginView(stage);
             loginView.show();
         });
+
         // 레이아웃 설정
         VBox vbox = new VBox(20);
-        vbox.setPadding(new Insets(30));
-        vbox.setAlignment(Pos.CENTER);
+        vbox.setPadding(new Insets(30));        vbox.setAlignment(Pos.CENTER);
         vbox.getChildren().addAll(cleaningStaffButton, pensionButton, loginButton);
 
         // 씬 설정
         Scene scene = new Scene(vbox, 800, 600);
+        
+        // Pretendard 폰트 적용
+        try {
+            scene.getStylesheets().add(getClass().getResource("/styles/global.css").toExternalForm());
+        } catch (Exception e) {
+            System.out.println("CSS 파일을 불러올 수 없습니다: " + e.getMessage());
+        }
+        
         stage.setScene(scene);
         stage.show();
     }
