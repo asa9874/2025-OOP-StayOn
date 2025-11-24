@@ -10,8 +10,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.domain.user.customer.Customer;
 import org.example.domain.user.customer.CustomerController;
-import org.example.domain.user.pensionManager.PensionManager;
-import org.example.domain.user.pensionManager.PensionManagerController;
 
 public class LoginView {
     private final Stage stage;
@@ -27,18 +25,9 @@ public class LoginView {
             Image logoImage = new Image(getClass().getResourceAsStream("/images/logo.png"));
             logoView.setImage(logoImage);
             logoView.setFitWidth(300);
-            logoView.setPreserveRatio(true);
-        } catch (Exception e) {
+            logoView.setPreserveRatio(true);        } catch (Exception e) {
             System.out.println("로고 이미지를 불러올 수 없습니다: " + e.getMessage());
         }
-
-        // 사용자 타입 선택
-        ComboBox<String> userTypeComboBox = new ComboBox<>();
-        userTypeComboBox.getItems().addAll("고객", "펜션 매니저");
-        userTypeComboBox.setValue("고객");
-        userTypeComboBox.setPromptText("사용자 타입 선택");
-        userTypeComboBox.setPrefWidth(300);
-        userTypeComboBox.setStyle("-fx-font-size: 13px; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5;");
 
         // 입력 필드
         TextField idField = new TextField();
@@ -55,43 +44,29 @@ public class LoginView {
         Button loginButton = new Button("로그인");
         loginButton.setPrefWidth(300);
         loginButton.setPrefHeight(45);
-        loginButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;");
-        loginButton.setOnMouseEntered(e -> loginButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #2980b9; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;"));
+        loginButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;");        loginButton.setOnMouseEntered(e -> loginButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #2980b9; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;"));
         loginButton.setOnMouseExited(e -> loginButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;"));
         loginButton.setOnAction(e -> {
-            String userType = userTypeComboBox.getValue();
             String id = idField.getText();
             String password = passwordField.getText();
 
             if (id.isEmpty() || password.isEmpty()) {
                 showAlert(Alert.AlertType.WARNING, "입력 오류", "아이디와 비밀번호를 모두 입력해주세요.");
                 return;
-            }
-
-            try {
-                if (userType.equals("고객")) {
-                    Customer customer = CustomerController.getInstance().login(id, password);
-                    if (customer != null) {
-                        showAlert(Alert.AlertType.INFORMATION, "로그인 성공", customer.getName() + "님 환영합니다!");
-                        MainView mainView = new MainView(stage);
-                        mainView.show();
-                    } else {
-                        showAlert(Alert.AlertType.ERROR, "로그인 실패", "아이디 또는 비밀번호가 올바르지 않습니다.");
-                    }
+            }            try {
+                // 항상 고객으로 로그인 처리
+                Customer customer = CustomerController.getInstance().login(id, password);
+                if (customer != null) {
+                    showAlert(Alert.AlertType.INFORMATION, "로그인 성공", customer.getName() + "님 환영합니다!");
+                    PensionView pensionView = new PensionView();
+                    pensionView.start(stage);
                 } else {
-                    PensionManager manager = PensionManagerController.getInstance().login(id, password);
-                    if (manager != null) {
-                        showAlert(Alert.AlertType.INFORMATION, "로그인 성공", manager.getName() + "님 환영합니다!");
-                        MainView mainView = new MainView(stage);
-                        mainView.show();
-                    } else {
-                        showAlert(Alert.AlertType.ERROR, "로그인 실패", "아이디 또는 비밀번호가 올바르지 않습니다.");
-                    }
+                    showAlert(Alert.AlertType.ERROR, "로그인 실패", "아이디 또는 비밀번호가 올바르지 않습니다.");
                 }
             } catch (Exception ex) {
                 showAlert(Alert.AlertType.ERROR, "오류", "로그인 중 오류가 발생했습니다: " + ex.getMessage());
             }
-        });        // 회원가입 버튼
+        });// 회원가입 버튼
         Button registerButton = new Button("회원가입");
         registerButton.setPrefWidth(300);
         registerButton.setPrefHeight(45);
@@ -104,12 +79,10 @@ public class LoginView {
         });        // 폼 컨테이너
         VBox formContainer = new VBox(15);
         formContainer.setAlignment(Pos.CENTER);
-        formContainer.setPadding(new Insets(30));
-        formContainer.setMaxWidth(350);
+        formContainer.setPadding(new Insets(30));        formContainer.setMaxWidth(350);
         formContainer.setStyle("-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);");
         
         formContainer.getChildren().addAll(
-            userTypeComboBox,
             idField,
             passwordField
         );
@@ -122,7 +95,7 @@ public class LoginView {
         VBox mainLayout = new VBox(25);
         mainLayout.setAlignment(Pos.CENTER);
         mainLayout.setPadding(new Insets(40));
-        mainLayout.setStyle("-fx-background-color: linear-gradient(to bottom, #ecf0f1, #bdc3c7);");
+        mainLayout.setStyle("-fx-background-color: linear-gradient(to bottom,rgb(236, 241, 240),rgb(187, 240, 216));");
 
         mainLayout.getChildren().addAll(logoView, formContainer, buttonBox);
 

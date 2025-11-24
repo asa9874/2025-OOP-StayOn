@@ -10,13 +10,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.domain.user.customer.CustomerController;
 import org.example.domain.user.customer.dto.CustomerRequestDTO;
-import org.example.domain.user.pensionManager.PensionManagerController;
-import org.example.domain.user.pensionManager.dto.PensionManagerRequestDTO;
 
 public class RegisterView {
     private final Stage stage;
     private final CustomerController customerController = CustomerController.getInstance();
-    private final PensionManagerController pensionManagerController = PensionManagerController.getInstance();
 
     public RegisterView(Stage stage) {
         this.stage = stage;
@@ -29,18 +26,9 @@ public class RegisterView {
             Image logoImage = new Image(getClass().getResourceAsStream("/images/logo.png"));
             logoView.setImage(logoImage);
             logoView.setFitWidth(250);
-            logoView.setPreserveRatio(true);
-        } catch (Exception e) {
+            logoView.setPreserveRatio(true);        } catch (Exception e) {
             System.out.println("로고 이미지를 불러올 수 없습니다: " + e.getMessage());
         }
-
-        // 사용자 타입 선택
-        ComboBox<String> userTypeComboBox = new ComboBox<>();
-        userTypeComboBox.getItems().addAll("고객", "펜션 매니저");
-        userTypeComboBox.setValue("고객");
-        userTypeComboBox.setPromptText("가입 유형 선택");
-        userTypeComboBox.setPrefWidth(300);
-        userTypeComboBox.setStyle("-fx-font-size: 13px; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5;");
 
         // 입력 필드
         TextField idField = new TextField();
@@ -77,33 +65,19 @@ public class RegisterView {
         registerButton.setPrefHeight(45);
         registerButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;");
         registerButton.setOnMouseEntered(e -> registerButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #2980b9; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;"));
-        registerButton.setOnMouseExited(e -> registerButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;"));
-        registerButton.setOnAction(e -> {
+        registerButton.setOnMouseExited(e -> registerButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;"));        registerButton.setOnAction(e -> {
             if (!validateInput(idField, passwordField, confirmPasswordField, nameField, phoneField)) {
                 return;
             }
-            // 회원가입
-            if (userTypeComboBox.getValue().equals("고객")) {
-                // 고객 회원가입 로직
-                customerController.save(new CustomerRequestDTO(
-                    nameField.getText(),
-                    idField.getText(),
-                    passwordField.getText(),
-                    phoneField.getText(),
-                    emailField.getText(),
-                    0
-                ));
-            } else {
-                // 펜션 매니저 회원가입 요청
-                pensionManagerController.save(new PensionManagerRequestDTO(
-                    idField.getText(),
-                    passwordField.getText(),
-                    nameField.getText(),
-                    phoneField.getText(),
-                    emailField.getText()
-                ));
-            }
-
+            // 항상 고객으로 회원가입 처리
+            customerController.save(new CustomerRequestDTO(
+                nameField.getText(),
+                idField.getText(),
+                passwordField.getText(),
+                phoneField.getText(),
+                emailField.getText(),
+                0
+            ));
             
             showAlert(Alert.AlertType.INFORMATION, "회원가입 완료", "회원가입이 완료되었습니다.");
 
@@ -124,12 +98,10 @@ public class RegisterView {
         });        // 폼 컨테이너
         VBox formContainer = new VBox(12);
         formContainer.setAlignment(Pos.CENTER);
-        formContainer.setPadding(new Insets(30));
-        formContainer.setMaxWidth(350);
+        formContainer.setPadding(new Insets(30));        formContainer.setMaxWidth(350);
         formContainer.setStyle("-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);");
         
         formContainer.getChildren().addAll(
-            userTypeComboBox,
             idField,
             passwordField,
             confirmPasswordField,
@@ -146,7 +118,7 @@ public class RegisterView {
         VBox mainLayout = new VBox(20);
         mainLayout.setAlignment(Pos.CENTER);
         mainLayout.setPadding(new Insets(30));
-        mainLayout.setStyle("-fx-background-color: linear-gradient(to bottom, #ecf0f1, #bdc3c7);");
+        mainLayout.setStyle("-fx-background-color: linear-gradient(to bottom, rgb(236, 241, 240),rgb(187, 240, 216));");
 
         mainLayout.getChildren().addAll(logoView, formContainer, buttonBox);
 
