@@ -95,12 +95,19 @@ public class FacilitiesView {
             new Separator(),
             pensionNameLabel,
             new Separator(),
-            filterBox,
-            new Label("부대시설 목록:"),
+            filterBox,            new Label("부대시설 목록:"),
             scrollPane
         );
 
         Scene scene = new Scene(mainLayout, 900, 700);
+        
+        // Pretendard 폰트 적용
+        try {
+            scene.getStylesheets().add(getClass().getResource("/styles/global.css").toExternalForm());
+        } catch (Exception e) {
+            System.out.println("CSS 파일을 불러올 수 없습니다: " + e.getMessage());
+        }
+        
         stage.setScene(scene);
         stage.show();
     }

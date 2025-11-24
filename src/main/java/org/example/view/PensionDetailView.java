@@ -139,15 +139,21 @@ public class PensionDetailView {
             buttonBox,
             new Separator(),
             roomBox
-        );
-
-        ScrollPane scrollPane = new ScrollPane(contentBox);
+        );        ScrollPane scrollPane = new ScrollPane(contentBox);
         scrollPane.setFitToWidth(true);
 
         Scene scene = new Scene(scrollPane, 800, 700);
+        
+        // Pretendard 폰트 적용
+        try {
+            scene.getStylesheets().add(getClass().getResource("/styles/global.css").toExternalForm());
+        } catch (Exception e) {
+            System.out.println("CSS 파일을 불러올 수 없습니다: " + e.getMessage());
+        }
+        
         stage.setScene(scene);
         stage.show();
-    }    private HBox createRoomCard(Room room) {
+    }private HBox createRoomCard(Room room) {
         // 객실 이미지뷰 생성
         ImageView roomImageView = new ImageView();
         roomImageView.setFitWidth(100);

@@ -95,11 +95,17 @@ public class LoginView {
         VBox mainLayout = new VBox(25);
         mainLayout.setAlignment(Pos.CENTER);
         mainLayout.setPadding(new Insets(40));
-        mainLayout.setStyle("-fx-background-color: linear-gradient(to bottom,rgb(236, 241, 240),rgb(187, 240, 216));");
-
-        mainLayout.getChildren().addAll(logoView, formContainer, buttonBox);
+        mainLayout.setStyle("-fx-background-color: linear-gradient(to bottom,rgb(236, 241, 240),rgb(187, 240, 216));");        mainLayout.getChildren().addAll(logoView, formContainer, buttonBox);
 
         Scene scene = new Scene(mainLayout, 800, 600);
+        
+        // Pretendard 폰트 적용
+        try {
+            scene.getStylesheets().add(getClass().getResource("/styles/global.css").toExternalForm());
+        } catch (Exception e) {
+            System.out.println("CSS 파일을 불러올 수 없습니다: " + e.getMessage());
+        }
+        
         stage.setScene(scene);
         stage.show();
     }
