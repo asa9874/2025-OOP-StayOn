@@ -107,11 +107,6 @@ public class Room {
         return pension != null ? pension.getId() : 0;
     }
 
-    public void setPensionId(int pensionId) {
-        // 하위 호환성을 위한 메서드 - 실제로는 setPension을 사용해야 함
-        // 이 메서드는 deprecated 예정
-    }
-
     public Pension getPension() {
         return pension;
     }

@@ -66,10 +66,6 @@ public class CustomerRepository {
         customerList.removeIf(customer -> customer.getId() == id);
     }
 
-    public void delete(Customer customer) {
-        deleteById(customer.getId());
-    }
-
     public void returnToDefaultData() {
         this.customerList = initStrategy.initializeList();
         updateNextId();

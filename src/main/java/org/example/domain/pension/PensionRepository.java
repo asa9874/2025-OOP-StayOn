@@ -95,10 +95,6 @@ public class PensionRepository {
         Collections.sort(pensionList, Comparator.comparingInt(Pension::getId));
     }
 
-    public void delete(Pension pension) {
-        deleteById(pension.getId());
-    }
-
     public void returnToDefaultData() {
         this.pensionList = initStrategy.initializeList();
         Collections.sort(pensionList, Comparator.comparingInt(Pension::getId));

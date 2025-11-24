@@ -37,11 +37,26 @@ public class MainView {
             LoginView loginView = new LoginView(stage);
             loginView.show();
         });
+
+        // 객실 선택 버튼
+        Button roomSelectButton = new Button("객실 선택");
+        roomSelectButton.setOnAction(e -> {
+            RoomSelectView roomSelectView = new RoomSelectView();
+            roomSelectView.start(stage);
+        });
+
+        // 결제 버튼
+        Button paymentButton = new Button("결제");
+        paymentButton.setOnAction(e -> {
+            PaymentView paymentView = new PaymentView();
+            paymentView.start(stage);
+        });
+
         // 레이아웃 설정
         VBox vbox = new VBox(20);
         vbox.setPadding(new Insets(30));
         vbox.setAlignment(Pos.CENTER);
-        vbox.getChildren().addAll(cleaningStaffButton, pensionButton, loginButton);
+        vbox.getChildren().addAll(cleaningStaffButton, pensionButton, loginButton, roomSelectButton, paymentButton);
 
         // 씬 설정
         Scene scene = new Scene(vbox, 800, 600);

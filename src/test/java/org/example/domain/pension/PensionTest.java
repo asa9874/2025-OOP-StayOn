@@ -3,7 +3,7 @@ package org.example.domain.pension;
 import org.example.Init;
 import org.example.domain.pension.dto.PensionRequestDTO;
 import org.example.domain.pension.dto.PensionUpdateDTO;
-import org.example.domain.pension.strategy.EmptyListStrategy;
+import org.example.domain.pension.strategy.EmptyPensionListStrategy;
 import org.example.domain.user.pensionManager.strategy.DefaultPensionManagerDataStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ class PensionTest {
     void setUp() {
         // PensionManager 먼저 초기화 (Pension이 PensionManager를 참조함)
         Init.initializePensionManagerModule(new DefaultPensionManagerDataStrategy());
-        Init.initializePensionModule(new EmptyListStrategy());
+        Init.initializePensionModule(new EmptyPensionListStrategy());
         repository = PensionRepository.getInstance();
         controller = PensionController.getInstance();
         repository.returnToDefaultData();
