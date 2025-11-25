@@ -95,6 +95,20 @@ public class PensionDetailView {
             roomSelectView.show();
         });
 
+        Button reviewButton = new Button("후기 조회");
+        reviewButton.setStyle("-fx-font-size: 16px; -fx-background-color: #0066cc; -fx-text-fill: white; -fx-padding: 10 20;");
+        reviewButton.setOnAction(e -> {
+            ReviewView reviewView = new ReviewView(pension, stage);
+            reviewView.show();
+        });
+
+        HBox buttonBox = new HBox(10);
+        buttonBox.setPadding(new Insets(10));
+        buttonBox.getChildren().addAll(
+            selectRoomButton,
+            reviewButton
+        );
+
         // 객실 정보
         VBox roomBox = new VBox(10);
         roomBox.setPadding(new Insets(10));
@@ -124,7 +138,7 @@ public class PensionDetailView {
             new Separator(),
             infoBox,
             new Separator(),
-            selectRoomButton,
+            buttonBox,
             new Separator(),
             roomBox
         );
