@@ -137,7 +137,19 @@ public class PensionDetailView {
             facilitiesView.show();
         });
         
-        buttonBox.getChildren().addAll(selectRoomButton, facilitiesButton);
+        // 후기 조회 버튼
+        Button reviewButton = new Button("📝 후기 조회");
+        reviewButton.setPrefWidth(200);
+        reviewButton.setPrefHeight(45);
+        reviewButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #9b59b6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;");
+        reviewButton.setOnMouseEntered(e -> reviewButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #8e44ad; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;"));
+        reviewButton.setOnMouseExited(e -> reviewButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #9b59b6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;"));
+        reviewButton.setOnAction(e -> {
+            ReviewView reviewView = new ReviewView(pension, stage);
+            reviewView.show();
+        });
+
+        buttonBox.getChildren().addAll(selectRoomButton, facilitiesButton, reviewButton);
 
         // 객실 목록 섹션
         VBox roomSection = new VBox(15);
