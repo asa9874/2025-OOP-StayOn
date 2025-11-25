@@ -38,9 +38,7 @@ public class FacilitiesService {
 
     public List<Facilities> findByPensionId(int pensionId) {
         return facilitiesRepository.findByPensionId(pensionId);
-    }
-
-    public Facilities save(FacilitiesRequestDTO requestDTO) {
+    }    public Facilities save(FacilitiesRequestDTO requestDTO) {
         Pension pension = PensionRepository.getInstance().findById(requestDTO.pensionId())
                 .orElseThrow(() -> new NoSuchElementException("ID가 " + requestDTO.pensionId() + "인 펜션을 찾을 수 없습니다."));
         Facilities newFacility = new Facilities(
@@ -49,7 +47,8 @@ public class FacilitiesService {
             requestDTO.openingTime(),
             requestDTO.closingTime(),
             requestDTO.requireReservation(),
-            pension
+            pension,
+            requestDTO.image()
         );
         return facilitiesRepository.save(newFacility);
     }

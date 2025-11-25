@@ -1,0 +1,18 @@
+/* StayOn Global Styles */
+
+@font-face {
+    font-family: 'Pretendard';
+    src: url('../fonts/Pretendard-Regular.ttf');
+}
+
+.root {
+    -fx-font-family: 'Pretendard';
+    -fx-font-size: 13px;
+}
+
+/* Override all text controls */
+.text, .label, .button, .text-field, .text-area, .password-field, 
+.combo-box, .choice-box, .check-box, .radio-button, 
+.list-view, .table-view, .tree-view, .menu, .menu-item {
+    -fx-font-family: 'Pretendard';
+}
