@@ -91,7 +91,8 @@ public class RoomSelectView {
             new Separator(),
             pensionNameLabel,
             new Separator(),
-            filterBox,            new Label("객실 목록:"),
+            filterBox,
+            new Label("객실 목록:"),
             scrollPane
         );
 
@@ -223,7 +224,7 @@ public class RoomSelectView {
             int selectedCount = roomCountSpinner.getValue();
             if (selectedCount > 0) {
                 // PaymentView로 이동
-                PaymentView paymentView = new PaymentView();
+                PaymentView paymentView = new PaymentView(pension.getId(), room.getId(), selectedCount);
                 try {
                     paymentView.start(stage);
                 } catch (Exception ex) {
