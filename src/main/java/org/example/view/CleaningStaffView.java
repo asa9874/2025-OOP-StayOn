@@ -70,12 +70,19 @@ public class CleaningStaffView {
             nameField,
             new Label("전화번호:"),
             phoneField,
-            saveButton,
-            staffListView,
+            saveButton,            staffListView,
             deleteButton
         );
 
         Scene scene = new Scene(vbox, 300, 400);
+        
+        // Pretendard 폰트 적용
+        try {
+            scene.getStylesheets().add(getClass().getResource("/styles/global.css").toExternalForm());
+        } catch (Exception e) {
+            System.out.println("CSS 파일을 불러올 수 없습니다: " + e.getMessage());
+        }
+        
         stage.setScene(scene);
         stage.show();
     }

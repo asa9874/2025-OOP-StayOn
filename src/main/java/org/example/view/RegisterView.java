@@ -4,81 +4,80 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.domain.user.customer.CustomerController;
 import org.example.domain.user.customer.dto.CustomerRequestDTO;
-import org.example.domain.user.pensionManager.PensionManagerController;
-import org.example.domain.user.pensionManager.dto.PensionManagerRequestDTO;
 
 public class RegisterView {
     private final Stage stage;
     private final CustomerController customerController = CustomerController.getInstance();
-    private final PensionManagerController pensionManagerController = PensionManagerController.getInstance();
 
     public RegisterView(Stage stage) {
         this.stage = stage;
-    }
+    }    public void show() {
+        stage.setTitle("StayOn - 회원가입");
 
-    public void show() {
-        stage.setTitle("회원가입");
-
-        // 사용자 타입 선택
-        Label userTypeLabel = new Label("가입 유형:");
-        ComboBox<String> userTypeComboBox = new ComboBox<>();
-        userTypeComboBox.getItems().addAll("고객", "펜션 매니저");
-        userTypeComboBox.setValue("고객");
-        userTypeComboBox.setPrefWidth(200);
+        // 로고 이미지
+        ImageView logoView = new ImageView();
+        try {
+            Image logoImage = new Image(getClass().getResourceAsStream("/images/logo.png"));
+            logoView.setImage(logoImage);
+            logoView.setFitWidth(250);
+            logoView.setPreserveRatio(true);        } catch (Exception e) {
+            System.out.println("로고 이미지를 불러올 수 없습니다: " + e.getMessage());
+        }
 
         // 입력 필드
         TextField idField = new TextField();
-        idField.setPromptText("사용할 아이디");
-
+        idField.setPromptText("아이디");
+        idField.setPrefWidth(300);
+        idField.setStyle("-fx-font-size: 13px; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5;");
+        
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("비밀번호");
-
+        passwordField.setPrefWidth(300);
+        passwordField.setStyle("-fx-font-size: 13px; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5;");
+        
         PasswordField confirmPasswordField = new PasswordField();
         confirmPasswordField.setPromptText("비밀번호 확인");
-
+        confirmPasswordField.setPrefWidth(300);
+        confirmPasswordField.setStyle("-fx-font-size: 13px; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5;");
+        
         TextField nameField = new TextField();
         nameField.setPromptText("이름");
-
+        nameField.setPrefWidth(300);
+        nameField.setStyle("-fx-font-size: 13px; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5;");
+        
         TextField phoneField = new TextField();
         phoneField.setPromptText("전화번호");
-
+        phoneField.setPrefWidth(300);
+        phoneField.setStyle("-fx-font-size: 13px; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5;");
+        
         TextField emailField = new TextField();
         emailField.setPromptText("이메일");
-
-        // 회원가입 버튼
+        emailField.setPrefWidth(300);
+        emailField.setStyle("-fx-font-size: 13px; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5;");// 회원가입 버튼
         Button registerButton = new Button("가입하기");
-        registerButton.setPrefWidth(200);
-        registerButton.setOnAction(e -> {
+        registerButton.setPrefWidth(300);
+        registerButton.setPrefHeight(45);
+        registerButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;");
+        registerButton.setOnMouseEntered(e -> registerButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #2980b9; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;"));
+        registerButton.setOnMouseExited(e -> registerButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;"));        registerButton.setOnAction(e -> {
             if (!validateInput(idField, passwordField, confirmPasswordField, nameField, phoneField)) {
                 return;
             }
-            // 회원가입
-            if (userTypeComboBox.getValue().equals("고객")) {
-                // 고객 회원가입 로직
-                customerController.save(new CustomerRequestDTO(
-                    nameField.getText(),
-                    idField.getText(),
-                    passwordField.getText(),
-                    phoneField.getText(),
-                    emailField.getText(),
-                    0
-                ));
-            } else {
-                // 펜션 매니저 회원가입 요청
-                pensionManagerController.save(new PensionManagerRequestDTO(
-                    idField.getText(),
-                    passwordField.getText(),
-                    nameField.getText(),
-                    phoneField.getText(),
-                    emailField.getText()
-                ));
-            }
-
+            // 항상 고객으로 회원가입 처리
+            customerController.save(new CustomerRequestDTO(
+                nameField.getText(),
+                idField.getText(),
+                passwordField.getText(),
+                phoneField.getText(),
+                emailField.getText(),
+                0
+            ));
             
             showAlert(Alert.AlertType.INFORMATION, "회원가입 완료", "회원가입이 완료되었습니다.");
 
@@ -87,45 +86,49 @@ public class RegisterView {
         });
 
         // 취소 버튼
-        Button cancelButton = new Button("취소");
-        cancelButton.setPrefWidth(200);
+        Button cancelButton = new Button("로그인으로 돌아가기");
+        cancelButton.setPrefWidth(300);
+        cancelButton.setPrefHeight(45);
+        cancelButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;");
+        cancelButton.setOnMouseEntered(e -> cancelButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #7f8c8d; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;"));
+        cancelButton.setOnMouseExited(e -> cancelButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;"));
         cancelButton.setOnAction(e -> {
             LoginView loginView = new LoginView(stage);
             loginView.show();
-        });
+        });        // 폼 컨테이너
+        VBox formContainer = new VBox(12);
+        formContainer.setAlignment(Pos.CENTER);
+        formContainer.setPadding(new Insets(30));        formContainer.setMaxWidth(350);
+        formContainer.setStyle("-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);");
+        
+        formContainer.getChildren().addAll(
+            idField,
+            passwordField,
+            confirmPasswordField,
+            nameField,
+            phoneField,
+            emailField
+        );
 
-        // GridPane 레이아웃
-        GridPane gridPane = new GridPane();
-        gridPane.setAlignment(Pos.CENTER);
-        gridPane.setHgap(10);
-        gridPane.setVgap(15);
-        gridPane.setPadding(new Insets(20));
-
-        gridPane.add(userTypeLabel, 0, 0);
-        gridPane.add(userTypeComboBox, 1, 0);
-        gridPane.add(new Label("아이디:"), 0, 1);
-        gridPane.add(idField, 1, 1);
-        gridPane.add(new Label("비밀번호:"), 0, 2);
-        gridPane.add(passwordField, 1, 2);
-        gridPane.add(new Label("비밀번호 확인:"), 0, 3);
-        gridPane.add(confirmPasswordField, 1, 3);
-        gridPane.add(new Label("이름:"), 0, 4);
-        gridPane.add(nameField, 1, 4);
-        gridPane.add(new Label("전화번호:"), 0, 5);
-        gridPane.add(phoneField, 1, 5);
-        gridPane.add(new Label("이메일:"), 0, 6);
-        gridPane.add(emailField, 1, 6);
-
-        VBox buttonBox = new VBox(10);
+        // 버튼 박스
+        VBox buttonBox = new VBox(12);
         buttonBox.setAlignment(Pos.CENTER);
-        buttonBox.getChildren().addAll(registerButton, cancelButton);
+        buttonBox.setPadding(new Insets(10, 0, 0, 0));
+        buttonBox.getChildren().addAll(registerButton, cancelButton);        // 메인 레이아웃
+        VBox mainLayout = new VBox(20);
+        mainLayout.setAlignment(Pos.CENTER);
+        mainLayout.setPadding(new Insets(30));
+        mainLayout.setStyle("-fx-background-color: linear-gradient(to bottom, rgb(236, 241, 240),rgb(187, 240, 216));");        mainLayout.getChildren().addAll(logoView, formContainer, buttonBox);
 
-        VBox vbox = new VBox(20);
-        vbox.setAlignment(Pos.CENTER);
-        vbox.setPadding(new Insets(20));
-        vbox.getChildren().addAll(gridPane, buttonBox);
-
-        Scene scene = new Scene(vbox, 800, 600);
+        Scene scene = new Scene(mainLayout, 800, 650);
+        
+        // Pretendard 폰트 적용
+        try {
+            scene.getStylesheets().add(getClass().getResource("/styles/global.css").toExternalForm());
+        } catch (Exception e) {
+            System.out.println("CSS 파일을 불러올 수 없습니다: " + e.getMessage());
+        }
+        
         stage.setScene(scene);
         stage.show();
     }

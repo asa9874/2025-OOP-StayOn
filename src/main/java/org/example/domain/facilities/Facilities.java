@@ -12,14 +12,14 @@ public class Facilities {
     boolean requireReservation;
 
     private Pension pension;
-
-    public Facilities(
+    private String image;    public Facilities(
         int id,
         String name,
         LocalDateTime openingTime,
         LocalDateTime closingTime,
         boolean requireReservation,
-        Pension pension
+        Pension pension,
+        String image
     ) {
         this.id = id;
         this.name = name;
@@ -27,6 +27,7 @@ public class Facilities {
         this.closingTime = closingTime;
         this.requireReservation = requireReservation;
         this.pension = pension;
+        this.image = image;
     }
 
     public int getId() {
@@ -71,9 +72,15 @@ public class Facilities {
 
     public void setRequireReservation(boolean requireReservation) {
         this.requireReservation = requireReservation;
+    }    public void setPension(Pension pension) {
+        this.pension = pension;
     }
 
-    public void setPension(Pension pension) {
-        this.pension = pension;
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }
