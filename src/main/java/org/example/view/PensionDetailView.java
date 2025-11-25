@@ -137,25 +137,24 @@ public class PensionDetailView {
             facilitiesView.show();
         });
         
-        buttonBox.getChildren().addAll(selectRoomButton, facilitiesButton);
-
-        Button reviewButton = new Button("후기 조회");
-        reviewButton.setStyle("-fx-font-size: 16px; -fx-background-color: #0066cc; -fx-text-fill: white; -fx-padding: 10 20;");
+        // 후기 조회 버튼
+        Button reviewButton = new Button("📝 후기 조회");
+        reviewButton.setPrefWidth(200);
+        reviewButton.setPrefHeight(45);
+        reviewButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #9b59b6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;");
+        reviewButton.setOnMouseEntered(e -> reviewButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #8e44ad; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;"));
+        reviewButton.setOnMouseExited(e -> reviewButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: #9b59b6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;"));
         reviewButton.setOnAction(e -> {
             ReviewView reviewView = new ReviewView(pension, stage);
             reviewView.show();
         });
 
-        HBox buttonBox = new HBox(10);
-        buttonBox.setPadding(new Insets(10));
-        buttonBox.getChildren().addAll(
-            selectRoomButton,
-            reviewButton
-        );
+        buttonBox.getChildren().addAll(selectRoomButton, facilitiesButton, reviewButton);
 
-        // 객실 정보
-        VBox roomBox = new VBox(10);
-        roomBox.setPadding(new Insets(10));
+        // 객실 목록 섹션
+        VBox roomSection = new VBox(15);
+        roomSection.setPadding(new Insets(20));
+        roomSection.setStyle("-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 3);");
         
         Label roomTitleLabel = new Label("객실 목록");
         roomTitleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
