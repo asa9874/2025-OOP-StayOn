@@ -21,7 +21,7 @@ public class DefaultRoomDataStrategy implements RoomInitStrategy {
             throw new IllegalStateException("Pension이 먼저 초기화되어야 합니다.");
         }
         
-        String[] buildings = {"A동", "B동", "C동"};
+        String[] buildings = {"A", "B", "C"};
         RoomType[] types = {RoomType.SINGLE, RoomType.DUPLEX, RoomType.HOTEL};
         RoomStatus[] statuses = {RoomStatus.RESERVATION, RoomStatus.USING, RoomStatus.CLEANING, RoomStatus.CHECKING};
         int[] prices = {50000, 70000, 90000, 100000, 120000};
