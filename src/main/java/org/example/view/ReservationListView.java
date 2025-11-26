@@ -398,7 +398,7 @@ public class ReservationListView {
         bottomBox.setStyle("-fx-background-color: #f8fafc; -fx-background-radius: 0 0 16 16;");
 
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime checkOut = now.plusDays(3);
+        LocalDateTime checkOut = now.plusDays(1);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         HBox dateInfoBox = new HBox(30);

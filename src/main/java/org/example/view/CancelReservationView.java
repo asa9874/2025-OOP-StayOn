@@ -42,10 +42,10 @@ public class CancelReservationView {
 
     public void show() {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime threeDaysLater = now.plusDays(3);
+        LocalDateTime oneDaysLater = now.plusDays(1);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시");
         String formattedDateTime = now.format(formatter);
-        String formattedDateTimeLater = threeDaysLater.format(formatter);
+        String formattedDateTimeLater = oneDaysLater.format(formatter);
 
         stage.setTitle("StayOn - 예약 취소");
 

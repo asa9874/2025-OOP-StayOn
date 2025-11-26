@@ -137,7 +137,7 @@ public class ConfirmReservationView {
         cards.setAlignment(Pos.CENTER);
 
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime checkOut = now.plusDays(3);
+        LocalDateTime checkOut = now.plusDays(1);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM월 dd일");
         int totalPrice = room.getPrice() * selectedCount;
 
@@ -245,7 +245,7 @@ public class ConfirmReservationView {
         divider.setMaxHeight(1);
 
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime checkOut = now.plusDays(3);
+        LocalDateTime checkOut = now.plusDays(1);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시");
 
         VBox infoGrid = new VBox(12);
