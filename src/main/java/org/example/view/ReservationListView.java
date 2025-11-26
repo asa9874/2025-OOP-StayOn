@@ -7,8 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import org.example.domain.pension.Pension;
 import org.example.domain.pension.PensionController;
@@ -16,122 +15,255 @@ import org.example.domain.reservation.Reservation;
 import org.example.domain.reservation.ReservationController;
 import org.example.domain.reservation.ReservationStatus;
 import org.example.domain.room.Room;
-import org.example.domain.room.RoomController;
 import org.example.domain.user.customer.Customer;
 
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReservationListView {
-    private final Stage stage;
-    private final Customer customer;
+    private final Stage stage;    private final Customer customer;
     private final ReservationController reservationController;
-    private final RoomController roomController;
     private final PensionController pensionController;
-    private VBox reservationListContainer;
+    private FlowPane reservationGridContainer;
     private List<Reservation> currentReservationList;
     private ReservationStatus currentFilter;
+    private List<Button> filterButtons;
+    private Button activeFilterButton;
 
-    public ReservationListView(Customer customer, Stage stage) {
-        this.customer = customer;
+    public ReservationListView(Customer customer, Stage stage) {        this.customer = customer;
         this.stage = stage;
         this.reservationController = ReservationController.getInstance();
-        this.roomController = RoomController.getInstance();
         this.pensionController = PensionController.getInstance();
         this.currentFilter = null;
+        this.filterButtons = new ArrayList<>();
     }
 
     public void show() {
-        stage.setTitle("예약 내역 조회");
+        stage.setTitle("StayOn - 예약 내역");
 
-        // 뒤로가기 버튼
+        VBox mainContainer = new VBox(0);
+        mainContainer.setStyle("-fx-background-color: #f8fafc;");
+
+        // 헤더
+        HBox header = createHeader();
+
+        // 히어로 섹션
+        VBox heroSection = createHeroSection();
+
+        // 필터 섹션
+        HBox filterSection = createFilterSection();
+
+        // 예약 목록 그리드
+        reservationGridContainer = new FlowPane();
+        reservationGridContainer.setHgap(25);
+        reservationGridContainer.setVgap(25);
+        reservationGridContainer.setPadding(new Insets(30, 50, 50, 50));
+        reservationGridContainer.setAlignment(Pos.TOP_CENTER);
+        reservationGridContainer.setStyle("-fx-background-color: transparent;");
+
+        updateReservationList(null);
+
+        // 스크롤 패널
+        ScrollPane scrollPane = new ScrollPane(reservationGridContainer);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-background: #f8fafc; -fx-background-color: #f8fafc; -fx-border-color: transparent;");
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
+
+        mainContainer.getChildren().addAll(header, heroSection, filterSection, scrollPane);
+
+        Scene scene = new Scene(mainContainer, 1100, 800);
+
+        try {
+            scene.getStylesheets().add(getClass().getResource("/styles/global.css").toExternalForm());
+        } catch (Exception e) {
+            System.out.println("CSS 파일을 불러올 수 없습니다: " + e.getMessage());
+        }
+
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private HBox createHeader() {
+        HBox header = new HBox();
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setPadding(new Insets(15, 40, 15, 40));
+        header.setStyle("-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);");
+
         Button backButton = new Button("← 메인으로");
+        backButton.setStyle(getBackButtonStyle());
+        backButton.setOnMouseEntered(e -> backButton.setStyle(getBackButtonHoverStyle()));
+        backButton.setOnMouseExited(e -> backButton.setStyle(getBackButtonStyle()));
         backButton.setOnAction(e -> {
             MainView mainView = new MainView(stage);
             mainView.show();
         });
 
-        // 제목
-        Label titleLabel = new Label("예약 내역");
-        titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        Region spacer1 = new Region();
+        HBox.setHgrow(spacer1, Priority.ALWAYS);
 
-        // 필터 버튼들 (ToggleButton 사용)
-        ToggleGroup filterGroup = new ToggleGroup();
+        try {
+            ImageView logoView = new ImageView(new Image(getClass().getResourceAsStream("/images/logo.png")));
+            logoView.setFitHeight(32);
+            logoView.setPreserveRatio(true);
+            header.getChildren().addAll(backButton, spacer1, logoView);
+        } catch (Exception e) {
+            Label logoText = new Label("StayOn");
+            logoText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2563eb;");
+            header.getChildren().addAll(backButton, spacer1, logoText);
+        }
 
-        ToggleButton showAllButton = new ToggleButton("전체");
-        showAllButton.setToggleGroup(filterGroup);
-        showAllButton.setStyle("-fx-padding: 8 20; -fx-font-size: 12px;");
-        showAllButton.setSelected(true);
-        showAllButton.setOnAction(e -> updateReservationList(null));
+        Region spacer2 = new Region();
+        spacer2.setMinWidth(100);
+        header.getChildren().add(spacer2);
 
-        ToggleButton filterPendingButton = new ToggleButton("예약 대기");
-        filterPendingButton.setToggleGroup(filterGroup);
-        filterPendingButton.setStyle("-fx-padding: 8 20; -fx-font-size: 12px;");
-        filterPendingButton.setOnAction(e -> updateReservationList(ReservationStatus.PENDING));
+        return header;
+    }
 
-        ToggleButton filterConfirmedButton = new ToggleButton("예약 확정");
-        filterConfirmedButton.setToggleGroup(filterGroup);
-        filterConfirmedButton.setStyle("-fx-padding: 8 20; -fx-font-size: 12px;");
-        filterConfirmedButton.setOnAction(e -> updateReservationList(ReservationStatus.CONFIRMED));
+    private VBox createHeroSection() {
+        VBox hero = new VBox(15);
+        hero.setAlignment(Pos.CENTER);
+        hero.setPadding(new Insets(40, 40, 30, 40));
+        hero.setStyle("-fx-background-color: linear-gradient(to right, #f59e0b, #d97706);");
 
-        ToggleButton filterCancelledButton = new ToggleButton("취소됨");
-        filterCancelledButton.setToggleGroup(filterGroup);
-        filterCancelledButton.setStyle("-fx-padding: 8 20; -fx-font-size: 12px;");
-        filterCancelledButton.setOnAction(e -> updateReservationList(ReservationStatus.CANCELLED));
+        Label titleLabel = new Label("📋 예약 내역");
+        titleLabel.setStyle("-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: white;");
 
-        ToggleButton filterRefundedButton = new ToggleButton("환불 완료");
-        filterRefundedButton.setToggleGroup(filterGroup);
-        filterRefundedButton.setStyle("-fx-padding: 8 20; -fx-font-size: 12px;");
-        filterRefundedButton.setOnAction(e -> updateReservationList(ReservationStatus.REFUNDED));
+        Label subtitleLabel = new Label("예약 내역을 확인하고 관리하세요");
+        subtitleLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: rgba(255,255,255,0.85);");
 
-        HBox filterBox = new HBox(10);
-        filterBox.setAlignment(Pos.CENTER_LEFT);
-        filterBox.setPadding(new Insets(10, 0, 10, 0));
-        filterBox.getChildren().addAll(
-            new Label("필터:"),
-            showAllButton,
-            filterPendingButton,
-            filterConfirmedButton,
-            filterCancelledButton,
-            filterRefundedButton
-        );
+        hero.getChildren().addAll(titleLabel, subtitleLabel);
 
-        // 예약 목록 컨테이너
-        reservationListContainer = new VBox(15);
-        reservationListContainer.setPadding(new Insets(10));
+        return hero;
+    }
 
-        // 초기 목록 로드
-        updateReservationList(null);
+    private HBox createFilterSection() {
+        HBox filterBox = new HBox(15);
+        filterBox.setAlignment(Pos.CENTER);
+        filterBox.setPadding(new Insets(20, 50, 10, 50));
+        filterBox.setStyle("-fx-background-color: #f8fafc;");
 
-        // 스크롤 패널
-        ScrollPane scrollPane = new ScrollPane(reservationListContainer);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setPrefHeight(500);
+        Button showAllBtn = createFilterButton("전체");
+        showAllBtn.setOnAction(e -> {
+            setActiveFilter(showAllBtn);
+            updateReservationList(null);
+        });
 
-        // 레이아웃
-        VBox mainLayout = new VBox(15);
-        mainLayout.setPadding(new Insets(20));
-        mainLayout.getChildren().addAll(
-            backButton,
-            titleLabel,
-            new Separator(),
-            filterBox,
-            scrollPane
-        );
+        Button pendingBtn = createFilterButton("⏳ 예약 대기");
+        pendingBtn.setOnAction(e -> {
+            setActiveFilter(pendingBtn);
+            updateReservationList(ReservationStatus.PENDING);
+        });
 
-        Scene scene = new Scene(mainLayout, 900, 700);
-        stage.setScene(scene);
-        stage.show();
+        Button confirmedBtn = createFilterButton("✅ 예약 확정");
+        confirmedBtn.setOnAction(e -> {
+            setActiveFilter(confirmedBtn);
+            updateReservationList(ReservationStatus.CONFIRMED);
+        });
+
+        Button cancelledBtn = createFilterButton("❌ 취소됨");
+        cancelledBtn.setOnAction(e -> {
+            setActiveFilter(cancelledBtn);
+            updateReservationList(ReservationStatus.CANCELLED);
+        });
+
+        Button refundedBtn = createFilterButton("💰 환불 완료");
+        refundedBtn.setOnAction(e -> {
+            setActiveFilter(refundedBtn);
+            updateReservationList(ReservationStatus.REFUNDED);
+        });
+
+        filterButtons.addAll(List.of(showAllBtn, pendingBtn, confirmedBtn, cancelledBtn, refundedBtn));
+        setActiveFilter(showAllBtn);
+
+        filterBox.getChildren().addAll(showAllBtn, pendingBtn, confirmedBtn, cancelledBtn, refundedBtn);
+
+        return filterBox;
+    }
+
+    private Button createFilterButton(String text) {
+        Button btn = new Button(text);
+        btn.setStyle(getInactiveFilterStyle());
+        btn.setOnMouseEntered(e -> {
+            if (btn != activeFilterButton) {
+                btn.setStyle(getHoverFilterStyle());
+            }
+        });
+        btn.setOnMouseExited(e -> {
+            if (btn != activeFilterButton) {
+                btn.setStyle(getInactiveFilterStyle());
+            }
+        });
+        return btn;
+    }
+
+    private void setActiveFilter(Button btn) {
+        if (activeFilterButton != null) {
+            activeFilterButton.setStyle(getInactiveFilterStyle());
+        }
+        activeFilterButton = btn;
+        btn.setStyle(getActiveFilterStyle());
+    }
+
+    private String getActiveFilterStyle() {
+        return "-fx-background-color: linear-gradient(to right, #f59e0b, #d97706); " +
+               "-fx-text-fill: white; " +
+               "-fx-font-size: 13px; " +
+               "-fx-padding: 10 20; " +
+               "-fx-background-radius: 20; " +
+               "-fx-cursor: hand;";
+    }
+
+    private String getInactiveFilterStyle() {
+        return "-fx-background-color: white; " +
+               "-fx-text-fill: #64748b; " +
+               "-fx-font-size: 13px; " +
+               "-fx-padding: 10 20; " +
+               "-fx-background-radius: 20; " +
+               "-fx-border-color: #e2e8f0; " +
+               "-fx-border-radius: 20; " +
+               "-fx-cursor: hand;";
+    }
+
+    private String getHoverFilterStyle() {
+        return "-fx-background-color: #fffbeb; " +
+               "-fx-text-fill: #d97706; " +
+               "-fx-font-size: 13px; " +
+               "-fx-padding: 10 20; " +
+               "-fx-background-radius: 20; " +
+               "-fx-border-color: #f59e0b; " +
+               "-fx-border-radius: 20; " +
+               "-fx-cursor: hand;";
+    }
+
+    private String getBackButtonStyle() {
+        return "-fx-background-color: transparent; " +
+               "-fx-text-fill: #64748b; " +
+               "-fx-font-size: 14px; " +
+               "-fx-cursor: hand; " +
+               "-fx-padding: 8 20; " +
+               "-fx-border-color: #e2e8f0; " +
+               "-fx-border-radius: 20; " +
+               "-fx-background-radius: 20;";
+    }
+
+    private String getBackButtonHoverStyle() {
+        return "-fx-background-color: #f1f5f9; " +
+               "-fx-text-fill: #2563eb; " +
+               "-fx-font-size: 14px; " +
+               "-fx-cursor: hand; " +
+               "-fx-padding: 8 20; " +
+               "-fx-border-color: #2563eb; " +
+               "-fx-border-radius: 20; " +
+               "-fx-background-radius: 20;";
     }
 
     private void updateReservationList(ReservationStatus filterStatus) {
         currentFilter = filterStatus;
-        // 고객의 예약 목록 가져오기
         currentReservationList = reservationController.findByCustomer(customer);
 
-        // 필터 적용
         if (filterStatus != null) {
             currentReservationList = currentReservationList.stream()
                 .filter(reservation -> reservation.getReservationStatus() == filterStatus)
@@ -142,48 +274,64 @@ public class ReservationListView {
     }
 
     private void displayReservationList() {
-        reservationListContainer.getChildren().clear();
+        reservationGridContainer.getChildren().clear();
 
         if (currentReservationList.isEmpty()) {
             VBox emptyBox = new VBox(20);
             emptyBox.setAlignment(Pos.CENTER);
-            emptyBox.setPadding(new Insets(50));
+            emptyBox.setPadding(new Insets(60));
+            emptyBox.setStyle(
+                "-fx-background-color: white; " +
+                "-fx-background-radius: 16; " +
+                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);"
+            );
 
             Label emptyIcon = new Label("📋");
             emptyIcon.setStyle("-fx-font-size: 48px;");
 
             Label noReservationLabel = new Label("예약 내역이 없습니다.");
-            noReservationLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #666;");
+            noReservationLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #94a3b8;");
 
             emptyBox.getChildren().addAll(emptyIcon, noReservationLabel);
-            reservationListContainer.getChildren().add(emptyBox);
+            reservationGridContainer.getChildren().add(emptyBox);
         } else {
-            // 상태별 카운트 표시
+            // 카운트 레이블
+            VBox countBox = new VBox();
+            countBox.setMinWidth(1000);
+            countBox.setPadding(new Insets(0, 0, 10, 0));
             Label countLabel = new Label("총 " + currentReservationList.size() + "건의 예약");
-            countLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #666; -fx-font-weight: bold;");
-            reservationListContainer.getChildren().add(countLabel);
+            countLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #64748b; -fx-font-weight: bold;");
+            countBox.getChildren().add(countLabel);
+            reservationGridContainer.getChildren().add(countBox);
 
             for (Reservation reservation : currentReservationList) {
-                reservationListContainer.getChildren().add(createReservationCard(reservation));
+                reservationGridContainer.getChildren().add(createReservationCard(reservation));
             }
         }
     }
 
     private VBox createReservationCard(Reservation reservation) {
-        VBox card = new VBox(15);
-        card.setPadding(new Insets(20));
-        card.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: white; -fx-background-radius: 10; -fx-border-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);");
+        VBox card = new VBox(0);
+        card.setMinWidth(1000);
+        card.setMaxWidth(1000);
+        card.setStyle(
+            "-fx-background-color: white; " +
+            "-fx-background-radius: 16; " +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);"
+        );
 
         Room room = reservation.getRoom();
         Pension pension = pensionController.findById(room.getPensionId());
 
-        // 상단: 펜션 이미지 + 기본 정보
+        // 상단 영역: 이미지 + 정보 + 상태
         HBox topBox = new HBox(20);
+        topBox.setPadding(new Insets(20));
+        topBox.setAlignment(Pos.CENTER_LEFT);
 
         // 펜션 이미지
         ImageView imageView = new ImageView();
-        imageView.setFitWidth(200);
-        imageView.setFitHeight(150);
+        imageView.setFitWidth(180);
+        imageView.setFitHeight(120);
         imageView.setPreserveRatio(false);
 
         try {
@@ -203,110 +351,175 @@ public class ReservationListView {
             // 빈 이미지
         }
 
+        javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(180, 120);
+        clip.setArcWidth(16);
+        clip.setArcHeight(16);
+        imageView.setClip(clip);
+
         // 정보 영역
-        VBox infoBox = new VBox(10);
-        infoBox.setPadding(new Insets(5));
+        VBox infoBox = new VBox(8);
+        HBox.setHgrow(infoBox, Priority.ALWAYS);
 
         Label reservationIdLabel = new Label("예약 번호: #" + reservation.getId());
-        reservationIdLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
+        reservationIdLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #94a3b8;");
 
         Label pensionNameLabel = new Label(pension.getName());
-        pensionNameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 20px;");
+        pensionNameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 18px; -fx-text-fill: #1e293b;");
 
-        Label roomNameLabel = new Label(room.getRoomName());
-        roomNameLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #666;");
+        Label roomNameLabel = new Label("🛏️ " + room.getRoomName());
+        roomNameLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #64748b;");
 
         Label addressLabel = new Label("📍 " + pension.getAddress());
-        addressLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
+        addressLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #94a3b8;");
 
-        Label phoneLabel = new Label("📞 " + pension.getPhoneNumber());
-        phoneLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
+        infoBox.getChildren().addAll(reservationIdLabel, pensionNameLabel, roomNameLabel, addressLabel);
 
-        infoBox.getChildren().addAll(
-            reservationIdLabel,
-            pensionNameLabel,
-            roomNameLabel,
-            addressLabel,
-            phoneLabel
+        // 상태 태그 영역
+        VBox statusBox = new VBox(10);
+        statusBox.setAlignment(Pos.TOP_RIGHT);
+
+        Label statusTag = new Label(getStatusText(reservation.getReservationStatus()));
+        String statusColor = getStatusColor(reservation.getReservationStatus());
+        String statusBg = getStatusBgColor(reservation.getReservationStatus());
+        statusTag.setStyle(
+            "-fx-background-color: " + statusBg + "; " +
+            "-fx-text-fill: " + statusColor + "; " +
+            "-fx-padding: 6 16; " +
+            "-fx-background-radius: 20; " +
+            "-fx-font-size: 12px; " +
+            "-fx-font-weight: bold;"
         );
 
-        HBox.setHgrow(infoBox, javafx.scene.layout.Priority.ALWAYS);
-        topBox.getChildren().addAll(imageView, infoBox);
+        Label priceLabel = new Label(String.format("%,d원", room.getPrice()));
+        priceLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2563eb;");
 
-        // 중간: 예약 상세 정보
-        HBox detailBox = new HBox(30);
-        detailBox.setPadding(new Insets(15, 0, 15, 0));
-        detailBox.setStyle("-fx-background-color: #f9f9f9; -fx-background-radius: 5; -fx-padding: 15;");
+        statusBox.getChildren().addAll(statusTag, priceLabel);
 
-        // 날짜 정보 (예시)
+        topBox.getChildren().addAll(imageView, infoBox, statusBox);
+
+        // 하단 영역: 날짜 정보 + 버튼
+        HBox bottomBox = new HBox(30);
+        bottomBox.setPadding(new Insets(15, 20, 20, 20));
+        bottomBox.setAlignment(Pos.CENTER_LEFT);
+        bottomBox.setStyle("-fx-background-color: #f8fafc; -fx-background-radius: 0 0 16 16;");
+
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime checkOut = now.plusDays(3);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        VBox dateBox = new VBox(5);
-        Label checkInTitleLabel = new Label("체크인");
-        checkInTitleLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
-        Label checkInLabel = new Label(now.format(formatter));
-        checkInLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
-        dateBox.getChildren().addAll(checkInTitleLabel, checkInLabel);
+        HBox dateInfoBox = new HBox(30);
+        dateInfoBox.setAlignment(Pos.CENTER_LEFT);
+        HBox.setHgrow(dateInfoBox, Priority.ALWAYS);
 
-        VBox dateBox2 = new VBox(5);
-        Label checkOutTitleLabel = new Label("체크아웃");
-        checkOutTitleLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
-        Label checkOutLabel = new Label(checkOut.format(formatter));
-        checkOutLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
-        dateBox2.getChildren().addAll(checkOutTitleLabel, checkOutLabel);
+        VBox checkInBox = new VBox(3);
+        Label checkInTitle = new Label("체크인");
+        checkInTitle.setStyle("-fx-font-size: 12px; -fx-text-fill: #94a3b8;");
+        Label checkInValue = new Label("📅 " + now.format(formatter));
+        checkInValue.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1e293b;");
+        checkInBox.getChildren().addAll(checkInTitle, checkInValue);
 
-        VBox priceBox = new VBox(5);
-        Label priceTitleLabel = new Label("결제 금액");
-        priceTitleLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
-        Label priceLabel = new Label(String.format("%,d원", room.getPrice()));
-        priceLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0066cc;");
-        priceBox.getChildren().addAll(priceTitleLabel, priceLabel);
+        VBox checkOutBox = new VBox(3);
+        Label checkOutTitle = new Label("체크아웃");
+        checkOutTitle.setStyle("-fx-font-size: 12px; -fx-text-fill: #94a3b8;");
+        Label checkOutValue = new Label("📅 " + checkOut.format(formatter));
+        checkOutValue.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1e293b;");
+        checkOutBox.getChildren().addAll(checkOutTitle, checkOutValue);
 
-        VBox statusBox = new VBox(5);
-        Label statusTitleLabel = new Label("예약 상태");
-        statusTitleLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
-        Label statusLabel = new Label(getStatusText(reservation.getReservationStatus()));
-        statusLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: " + getStatusColor(reservation.getReservationStatus()) + ";");
-        statusBox.getChildren().addAll(statusTitleLabel, statusLabel);
+        dateInfoBox.getChildren().addAll(checkInBox, checkOutBox);
 
-        detailBox.getChildren().addAll(dateBox, dateBox2, priceBox, statusBox);
-
-        // 하단: 액션 버튼
+        // 버튼 영역
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
 
         Button detailButton = new Button("상세 보기");
-        detailButton.setStyle("-fx-background-color: #0066cc; -fx-text-fill: white; -fx-padding: 8 20; -fx-font-size: 12px; -fx-background-radius: 5;");
+        detailButton.setStyle(getOutlineButtonStyle("#2563eb"));
+        detailButton.setOnMouseEntered(e -> detailButton.setStyle(getOutlineButtonHoverStyle("#2563eb")));
+        detailButton.setOnMouseExited(e -> detailButton.setStyle(getOutlineButtonStyle("#2563eb")));
         detailButton.setOnAction(e -> showReservationDetail(reservation));
-
         buttonBox.getChildren().add(detailButton);
 
-        // 상태에 따른 추가 버튼
         if (reservation.getReservationStatus() == ReservationStatus.PENDING ||
             reservation.getReservationStatus() == ReservationStatus.CONFIRMED) {
 
             Button payButton = new Button("결제하기");
-            payButton.setStyle("-fx-background-color: #28a745; -fx-text-fill: white; -fx-padding: 8 20; -fx-font-size: 12px; -fx-background-radius: 5;");
+            payButton.setStyle(getFilledButtonStyle("#10b981"));
+            payButton.setOnMouseEntered(e -> payButton.setStyle(getFilledButtonHoverStyle("#059669")));
+            payButton.setOnMouseExited(e -> payButton.setStyle(getFilledButtonStyle("#10b981")));
             payButton.setOnAction(e -> processPayment(reservation));
 
             Button cancelButton = new Button("예약 취소");
-            cancelButton.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white; -fx-padding: 8 20; -fx-font-size: 12px; -fx-background-radius: 5;");
+            cancelButton.setStyle(getOutlineButtonStyle("#ef4444"));
+            cancelButton.setOnMouseEntered(e -> cancelButton.setStyle(getOutlineButtonHoverStyle("#ef4444")));
+            cancelButton.setOnMouseExited(e -> cancelButton.setStyle(getOutlineButtonStyle("#ef4444")));
             cancelButton.setOnAction(e -> cancelReservation(reservation));
 
             buttonBox.getChildren().addAll(payButton, cancelButton);
         } else if (reservation.getReservationStatus() == ReservationStatus.CANCELLED) {
             Button refundButton = new Button("환불 요청");
-            refundButton.setStyle("-fx-background-color: #FFA500; -fx-text-fill: white; -fx-padding: 8 20; -fx-font-size: 12px; -fx-background-radius: 5;");
+            refundButton.setStyle(getFilledButtonStyle("#f59e0b"));
+            refundButton.setOnMouseEntered(e -> refundButton.setStyle(getFilledButtonHoverStyle("#d97706")));
+            refundButton.setOnMouseExited(e -> refundButton.setStyle(getFilledButtonStyle("#f59e0b")));
             refundButton.setOnAction(e -> requestRefund(reservation));
-
             buttonBox.getChildren().add(refundButton);
         }
 
-        card.getChildren().addAll(topBox, new Separator(), detailBox, buttonBox);
+        bottomBox.getChildren().addAll(dateInfoBox, buttonBox);
+
+        card.getChildren().addAll(topBox, bottomBox);
+
+        // 호버 효과
+        card.setOnMouseEntered(e -> card.setStyle(
+            "-fx-background-color: white; " +
+            "-fx-background-radius: 16; " +
+            "-fx-effect: dropshadow(gaussian, rgba(245, 158, 11, 0.25), 25, 0, 0, 8);"
+        ));
+        card.setOnMouseExited(e -> card.setStyle(
+            "-fx-background-color: white; " +
+            "-fx-background-radius: 16; " +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);"
+        ));
 
         return card;
+    }
+
+    private String getOutlineButtonStyle(String color) {
+        return "-fx-background-color: white; " +
+               "-fx-text-fill: " + color + "; " +
+               "-fx-padding: 8 20; " +
+               "-fx-font-size: 12px; " +
+               "-fx-background-radius: 8; " +
+               "-fx-border-color: " + color + "; " +
+               "-fx-border-radius: 8; " +
+               "-fx-cursor: hand;";
+    }
+
+    private String getOutlineButtonHoverStyle(String color) {
+        return "-fx-background-color: " + color + "15; " +
+               "-fx-text-fill: " + color + "; " +
+               "-fx-padding: 8 20; " +
+               "-fx-font-size: 12px; " +
+               "-fx-background-radius: 8; " +
+               "-fx-border-color: " + color + "; " +
+               "-fx-border-radius: 8; " +
+               "-fx-cursor: hand;";
+    }
+
+    private String getFilledButtonStyle(String color) {
+        return "-fx-background-color: " + color + "; " +
+               "-fx-text-fill: white; " +
+               "-fx-padding: 8 20; " +
+               "-fx-font-size: 12px; " +
+               "-fx-background-radius: 8; " +
+               "-fx-cursor: hand;";
+    }
+
+    private String getFilledButtonHoverStyle(String color) {
+        return "-fx-background-color: " + color + "; " +
+               "-fx-text-fill: white; " +
+               "-fx-padding: 8 20; " +
+               "-fx-font-size: 12px; " +
+               "-fx-background-radius: 8; " +
+               "-fx-cursor: hand;";
     }
 
     private void showReservationDetail(Reservation reservation) {
@@ -343,7 +556,7 @@ public class ReservationListView {
 
         for (Label label : labels) {
             if (label.getText().startsWith("━")) {
-                label.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #0066cc;");
+                label.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2563eb;");
             } else {
                 label.setStyle("-fx-font-size: 12px;");
             }
@@ -416,13 +629,13 @@ public class ReservationListView {
     private String getStatusText(ReservationStatus status) {
         switch (status) {
             case PENDING:
-                return "예약 대기";
+                return "⏳ 예약 대기";
             case CONFIRMED:
-                return "예약 확정";
+                return "✅ 예약 확정";
             case CANCELLED:
-                return "취소됨";
+                return "❌ 취소됨";
             case REFUNDED:
-                return "환불 완료";
+                return "💰 환불 완료";
             default:
                 return status.toString();
         }
@@ -431,15 +644,30 @@ public class ReservationListView {
     private String getStatusColor(ReservationStatus status) {
         switch (status) {
             case PENDING:
-                return "#FFA500";
+                return "#f59e0b";
             case CONFIRMED:
-                return "#28a745";
+                return "#10b981";
             case CANCELLED:
-                return "#dc3545";
+                return "#ef4444";
             case REFUNDED:
-                return "#6c757d";
+                return "#6b7280";
             default:
-                return "#000000";
+                return "#1e293b";
+        }
+    }
+
+    private String getStatusBgColor(ReservationStatus status) {
+        switch (status) {
+            case PENDING:
+                return "#fef3c7";
+            case CONFIRMED:
+                return "#d1fae5";
+            case CANCELLED:
+                return "#fee2e2";
+            case REFUNDED:
+                return "#f3f4f6";
+            default:
+                return "#f8fafc";
         }
     }
 

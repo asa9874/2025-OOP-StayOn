@@ -64,16 +64,17 @@ public class ReservationRepository {
     public List<Reservation> findAll() {
         return new ArrayList<>(reservationList);
     }
-
     public List<Reservation> findByCustomer(Customer customer) {
         return reservationList.stream()
-                .filter(reservation -> reservation.getCustomer().getId() == customer.getId())
+                .filter(reservation -> reservation.getCustomer() != null && 
+                        reservation.getCustomer().getId() == customer.getId())
                 .toList();
     }
 
     public List<Reservation> findByRoom(Room room) {
         return reservationList.stream()
-                .filter(reservation -> reservation.getRoom().getId() == room.getId())
+                .filter(reservation -> reservation.getRoom() != null && 
+                        reservation.getRoom().getId() == room.getId())
                 .toList();
     }
 

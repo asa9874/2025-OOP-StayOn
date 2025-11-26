@@ -4,12 +4,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
+import javafx.scene.control.*;
 import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -19,21 +18,12 @@ import org.example.domain.room.RoomController;
 import org.example.domain.pension.Pension;
 import org.example.domain.room.Room;
 import org.example.domain.user.customer.Customer;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.GridPane;
-import javafx.geometry.HPos;
-import javafx.scene.layout.HBox;
 
-// pension명, pension위치, 예약 인원수, 예약 날짜, 예약 요금, 최종 결제액, 결제수단(현금, 카드)
-// 예약하기 -> PENDING상태, 결제완료 -> CONFIRMED상태
-// 어떤 controller를 써야하지? 핵심 정보위주 - 예약 정보
 public class PaymentView extends Application {
     private final PensionController pensionController;
     private final RoomController roomController;
     private int roomId;
-    private int pensionId;
-    private int selectedCount;
+    private int pensionId;    private int selectedCount;
     private Customer customer;
 
     public PaymentView(int pensionId, int roomId, int selectedCount) {
@@ -55,44 +45,163 @@ public class PaymentView extends Application {
         Room room = roomController.findById(roomId);
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime threeDaysLater = now.plusDays(3);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH시");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시");
         String formattedDateTime = now.format(formatter);
         String formattedDateTimeLater = threeDaysLater.format(formatter);
 
-        stage.setTitle("확인 및 결제");
+        stage.setTitle("StayOn - 결제하기");
 
-        // 뒤로가기 버튼
-        Button backButton = new Button("← 객실 정보로");
+        VBox mainContainer = new VBox(0);
+        mainContainer.setStyle("-fx-background-color: #f8fafc;");
+
+        // 헤더
+        HBox header = createHeader(pension, stage);
+
+        // 히어로 섹션
+        VBox heroSection = createHeroSection();
+
+        // 콘텐츠 영역
+        HBox contentBox = new HBox(30);
+        contentBox.setPadding(new Insets(30, 50, 50, 50));
+        contentBox.setAlignment(Pos.TOP_CENTER);
+
+        // 왼쪽: 예약 정보 카드
+        VBox reservationCard = createReservationCard(pension, room, formattedDateTime, formattedDateTimeLater);
+
+        // 오른쪽: 결제 정보 카드
+        VBox paymentCard = createPaymentCard(pension, room, stage);
+
+        contentBox.getChildren().addAll(reservationCard, paymentCard);
+
+        // 스크롤 패널
+        ScrollPane scrollPane = new ScrollPane(contentBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-background: #f8fafc; -fx-background-color: #f8fafc; -fx-border-color: transparent;");
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
+
+        mainContainer.getChildren().addAll(header, heroSection, scrollPane);
+
+        Scene scene = new Scene(mainContainer, 1100, 800);
+
+        try {
+            scene.getStylesheets().add(getClass().getResource("/styles/global.css").toExternalForm());
+        } catch (Exception e) {
+            System.out.println("CSS 파일을 불러올 수 없습니다: " + e.getMessage());
+        }
+
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private HBox createHeader(Pension pension, Stage stage) {
+        HBox header = new HBox();
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setPadding(new Insets(15, 40, 15, 40));
+        header.setStyle("-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);");
+
+        Button backButton = new Button("← 객실 선택으로");
+        backButton.setStyle(
+            "-fx-background-color: transparent; " +
+            "-fx-text-fill: #64748b; " +
+            "-fx-font-size: 14px; " +
+            "-fx-cursor: hand; " +
+            "-fx-padding: 8 20; " +
+            "-fx-border-color: #e2e8f0; " +
+            "-fx-border-radius: 20; " +
+            "-fx-background-radius: 20;"
+        );
+        backButton.setOnMouseEntered(e -> backButton.setStyle(
+            "-fx-background-color: #f1f5f9; " +
+            "-fx-text-fill: #2563eb; " +
+            "-fx-font-size: 14px; " +
+            "-fx-cursor: hand; " +
+            "-fx-padding: 8 20; " +
+            "-fx-border-color: #2563eb; " +
+            "-fx-border-radius: 20; " +
+            "-fx-background-radius: 20;"
+        ));
+        backButton.setOnMouseExited(e -> backButton.setStyle(
+            "-fx-background-color: transparent; " +
+            "-fx-text-fill: #64748b; " +
+            "-fx-font-size: 14px; " +
+            "-fx-cursor: hand; " +
+            "-fx-padding: 8 20; " +
+            "-fx-border-color: #e2e8f0; " +
+            "-fx-border-radius: 20; " +
+            "-fx-background-radius: 20;"
+        ));
         backButton.setOnAction(e -> {
             RoomSelectView roomSelectView = new RoomSelectView(pension, stage);
             roomSelectView.show();
         });
 
-        // 예약정보 label
-        Label reservationLabel = new Label("예약 정보");
-        reservationLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");        // 객실 목록 컨테이너 (VBox로 변경하여 행 단위 출력)
+        Region spacer1 = new Region();
+        HBox.setHgrow(spacer1, Priority.ALWAYS);
 
+        try {
+            ImageView logoView = new ImageView(new Image(getClass().getResourceAsStream("/images/logo.png")));
+            logoView.setFitHeight(32);
+            logoView.setPreserveRatio(true);
+            header.getChildren().addAll(backButton, spacer1, logoView);
+        } catch (Exception e) {
+            Label logoText = new Label("StayOn");
+            logoText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2563eb;");
+            header.getChildren().addAll(backButton, spacer1, logoText);
+        }
+
+        Region spacer2 = new Region();
+        spacer2.setMinWidth(100);
+        header.getChildren().add(spacer2);
+
+        return header;
+    }
+
+    private VBox createHeroSection() {
+        VBox hero = new VBox(15);
+        hero.setAlignment(Pos.CENTER);
+        hero.setPadding(new Insets(40, 40, 30, 40));
+        hero.setStyle("-fx-background-color: linear-gradient(to right, #10b981, #059669);");
+
+        Label titleLabel = new Label("💳 결제하기");
+        titleLabel.setStyle("-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: white;");
+
+        Label subtitleLabel = new Label("예약 정보를 확인하고 결제를 진행해 주세요");
+        subtitleLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: rgba(255,255,255,0.85);");
+
+        hero.getChildren().addAll(titleLabel, subtitleLabel);
+
+        return hero;
+    }
+
+    private VBox createReservationCard(Pension pension, Room room, String checkIn, String checkOut) {
+        VBox card = new VBox(20);
+        card.setMinWidth(450);
+        card.setMaxWidth(450);
+        card.setPadding(new Insets(25));
+        card.setStyle(
+            "-fx-background-color: white; " +
+            "-fx-background-radius: 16; " +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);"
+        );
+
+        Label sectionTitle = new Label("📋 예약 정보");
+        sectionTitle.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1e293b;");
+
+        // 이미지
         ImageView imageView = new ImageView();
-        imageView.setFitWidth(300);
-        imageView.setFitHeight(300);
+        imageView.setFitWidth(400);
+        imageView.setFitHeight(200);
         imageView.setPreserveRatio(false);
 
-        // 이미지 로드
         try {
             File imageFile = new File(pension.getImage());
             if (imageFile.exists()) {
                 Image image = new Image(imageFile.toURI().toString());
-                
-                // 이미지의 실제 크기
                 double imageWidth = image.getWidth();
                 double imageHeight = image.getHeight();
-                
-                // 정사각형으로 자르기 위한 계산
                 double size = Math.min(imageWidth, imageHeight);
                 double offsetX = (imageWidth - size) / 2;
                 double offsetY = (imageHeight - size) / 2;
-                
-                // 뷰포트 설정
                 Rectangle2D viewport = new Rectangle2D(offsetX, offsetY, size, size);
                 imageView.setViewport(viewport);
                 imageView.setImage(image);
@@ -101,173 +210,223 @@ public class PaymentView extends Application {
             // 빈 이미지
         }
 
-        // 팬션 이름 label 
+        javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(400, 200);
+        clip.setArcWidth(20);
+        clip.setArcHeight(20);
+        imageView.setClip(clip);
+
+        // 펜션 정보
+        VBox pensionInfo = new VBox(8);
         Label pensionNameLabel = new Label(pension.getName());
-        pensionNameLabel.setStyle("-fx-font-size: 14px;");
+        pensionNameLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1e293b;");
 
-        // 위치 상세주소 label
-        Label pensionLocationLabel = new Label(pension.getAddress());
-        pensionNameLabel.setStyle("-fx-font-size: 14px;");
+        Label pensionAddressLabel = new Label("📍 " + pension.getAddress());
+        pensionAddressLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #64748b;");
 
-        // 투숙인원 label
-        Label peopleNumberLabel = new Label("투숙인원  " + room.getMaxPeople() * selectedCount);
-        pensionNameLabel.setStyle("-fx-font-size: 14px;");
+        pensionInfo.getChildren().addAll(pensionNameLabel, pensionAddressLabel);
 
-        // 투숙날짜 label
-        Label stayPeriodLabel = new Label("투숙날짜  " + formattedDateTime + " ~ " + formattedDateTimeLater);
-        pensionNameLabel.setStyle("-fx-font-size: 14px;");
+        // 구분선
+        Region divider = new Region();
+        divider.setStyle("-fx-background-color: #e2e8f0;");
+        divider.setMinHeight(1);
+        divider.setMaxHeight(1);
 
-        // 레이아웃
-        VBox mainLayout = new VBox(15);
-        mainLayout.setPadding(new Insets(10));
-        mainLayout.getChildren().addAll(
-            imageView,
-            new Separator(),
-            pensionNameLabel,
-            pensionLocationLabel,
-            peopleNumberLabel,
-            stayPeriodLabel
+        // 객실 정보
+        VBox infoGrid = new VBox(12);
+
+        HBox roomRow = createInfoRow("🛏️ 객실", room.getRoomName());
+        HBox countRow = createInfoRow("🔢 객실 수", selectedCount + "개");
+        HBox peopleRow = createInfoRow("👥 투숙 인원", (room.getMaxPeople() * selectedCount) + "명");
+        HBox checkInRow = createInfoRow("📅 체크인", checkIn);
+        HBox checkOutRow = createInfoRow("📅 체크아웃", checkOut);
+
+        infoGrid.getChildren().addAll(roomRow, countRow, peopleRow, checkInRow, checkOutRow);
+
+        card.getChildren().addAll(sectionTitle, imageView, pensionInfo, divider, infoGrid);
+
+        return card;
+    }
+
+    private HBox createInfoRow(String label, String value) {
+        HBox row = new HBox();
+        row.setAlignment(Pos.CENTER_LEFT);
+
+        Label labelNode = new Label(label);
+        labelNode.setStyle("-fx-font-size: 14px; -fx-text-fill: #64748b;");
+        labelNode.setMinWidth(120);
+
+        Label valueNode = new Label(value);
+        valueNode.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1e293b;");
+
+        row.getChildren().addAll(labelNode, valueNode);
+        return row;
+    }
+
+    private VBox createPaymentCard(Pension pension, Room room, Stage stage) {
+        VBox card = new VBox(20);
+        card.setMinWidth(450);
+        card.setMaxWidth(450);
+        card.setPadding(new Insets(25));
+        card.setStyle(
+            "-fx-background-color: white; " +
+            "-fx-background-radius: 16; " +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);"
         );
 
+        Label sectionTitle = new Label("💳 결제 수단");
+        sectionTitle.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1e293b;");
 
-        // 결제 UI
-        
-
-        // ... (다른 start 메서드 내용)
-
-        // ===================================
-        // 1. 결제 수단 선택 영역
-        // ===================================
-        Label paymethodLabel = new Label("결제 방법");
-        paymethodLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
-
-        // 토글 그룹 생성: 이 그룹에 속한 버튼 중 오직 하나만 선택 가능
+        // 결제 수단 그리드
         ToggleGroup paymentToggleGroup = new ToggleGroup();
 
-        // 카드 버튼 생성 및 그룹화
-        ToggleButton cardButton1 = new ToggleButton("국민카드");
-        cardButton1.setToggleGroup(paymentToggleGroup);
-        cardButton1.setPrefSize(200, 100); // 버튼 크기 설정
-        // CSS 스타일링을 통해 이미지와 모양을 구현합니다.
-        cardButton1.setStyle("-fx-background-color: #e0e0f0; -fx-text-fill: #333; -fx-background-radius: 8;");
+        GridPane paymentGrid = new GridPane();
+        paymentGrid.setHgap(12);
+        paymentGrid.setVgap(12);
 
-        // 현금 버튼 생성 및 그룹화
-        ToggleButton cardButton2 = new ToggleButton("신한카드");
-        cardButton2.setToggleGroup(paymentToggleGroup);
-        cardButton2.setPrefSize(200, 100);
-        cardButton2.setStyle("-fx-background-color: #e0e0f0; -fx-text-fill: #333; -fx-background-radius: 8;");
+        String[] paymentMethods = {"국민카드", "신한카드", "현대카드", "삼성카드", "카카오페이", "토스뱅크"};
+        String[] icons = {"💳", "💳", "💳", "💳", "🟡", "🔵"};
 
-        // 기타 결제 수단 (더미 버튼)
-        ToggleButton cardButton3 = new ToggleButton("현대카드");
-        cardButton3.setToggleGroup(paymentToggleGroup);
-        cardButton3.setPrefSize(200, 100);
-        cardButton3.setStyle("-fx-background-color: #e0e0f0; -fx-text-fill: #333; -fx-background-radius: 8;");
+        for (int i = 0; i < paymentMethods.length; i++) {
+            ToggleButton btn = createPaymentButton(paymentMethods[i], icons[i], paymentToggleGroup);
+            paymentGrid.add(btn, i % 3, i / 3);
+        }
 
-        // 기타 결제 수단 (더미 버튼)
-        ToggleButton cardButton4 = new ToggleButton("삼성카드");
-        cardButton4.setToggleGroup(paymentToggleGroup);
-        cardButton4.setPrefSize(200, 100);
-        cardButton4.setStyle("-fx-background-color: #e0e0f0; -fx-text-fill: #333; -fx-background-radius: 8;");
+        // 구분선
+        Region divider = new Region();
+        divider.setStyle("-fx-background-color: #e2e8f0;");
+        divider.setMinHeight(1);
+        divider.setMaxHeight(1);
 
-        // 기타 결제 수단 (더미 버튼)
-        ToggleButton cardButton5 = new ToggleButton("카카오페이");
-        cardButton5.setToggleGroup(paymentToggleGroup);
-        cardButton5.setPrefSize(200, 100);
-        cardButton5.setStyle("-fx-background-color: #e0e0f0; -fx-text-fill: #333; -fx-background-radius: 8;");
+        // 금액 정보
+        Label priceTitle = new Label("💰 결제 금액");
+        priceTitle.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1e293b;");
 
-        // 기타 결제 수단 (더미 버튼)
-        ToggleButton cardButton6 = new ToggleButton("토스뱅크");
-        cardButton6.setToggleGroup(paymentToggleGroup);
-        cardButton6.setPrefSize(200, 100);
-        cardButton6.setStyle("-fx-background-color: #e0e0f0; -fx-text-fill: #333; -fx-background-radius: 8;");
+        int totalPrice = room.getPrice() * selectedCount;
 
-        // GridPane을 사용하여 2열 3행의 버튼 레이아웃 구성
-        GridPane paymentMethodGrid = new GridPane();
-        paymentMethodGrid.setHgap(15); // 가로 간격
-        paymentMethodGrid.setVgap(10); // 세로 간격
-        paymentMethodGrid.setPadding(new Insets(10, 0, 20, 0));
+        VBox priceBox = new VBox(12);
+        priceBox.setPadding(new Insets(15));
+        priceBox.setStyle("-fx-background-color: #f8fafc; -fx-background-radius: 12;");
 
-        // 버튼들을 그리드에 추가 (GridPane.add(노드, 열 인덱스, 행 인덱스))
-        paymentMethodGrid.add(cardButton1, 0, 0); 
-        paymentMethodGrid.add(cardButton2, 1, 0); 
-        paymentMethodGrid.add(cardButton3, 2, 0); 
-        paymentMethodGrid.add(cardButton4, 0, 1); 
-        paymentMethodGrid.add(cardButton5, 1, 1); 
-        paymentMethodGrid.add(cardButton6, 2, 1); 
+        HBox priceRow = createPriceRow("객실 요금", String.format("%,d원", room.getPrice()) + " × " + selectedCount, "#64748b");
+        HBox discountRow = createPriceRow("할인 금액", "0원", "#10b981");
+        
+        Region priceDivider = new Region();
+        priceDivider.setStyle("-fx-background-color: #e2e8f0;");
+        priceDivider.setMinHeight(1);
+        priceDivider.setMaxHeight(1);
 
-        // 예약요금 행
-        HBox reservationPriceBox = new HBox(300);
-        reservationPriceBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        Label reservationPriceTitleLabel = new Label("예약요금");
-        reservationPriceTitleLabel.setStyle("-fx-font-size: 14px;");
-        reservationPriceTitleLabel.setMinWidth(100);
-        Label reservationPriceValueLabel = new Label(String.format("%,d원", room.getPrice() * selectedCount));
-        reservationPriceValueLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
-        reservationPriceBox.getChildren().addAll(reservationPriceTitleLabel, reservationPriceValueLabel);
+        HBox totalRow = new HBox();
+        totalRow.setAlignment(Pos.CENTER_LEFT);
+        Label totalLabel = new Label("최종 결제액");
+        totalLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;");
+        totalLabel.setMinWidth(120);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        Label totalValue = new Label(String.format("%,d원", totalPrice));
+        totalValue.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2563eb;");
+        totalRow.getChildren().addAll(totalLabel, spacer, totalValue);
 
-        // 최종 결제액 행
-        HBox finalPriceBox = new HBox(300);
-        finalPriceBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        Label finalPriceTitleLabel = new Label("최종 결제액");
-        finalPriceTitleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-        finalPriceTitleLabel.setMinWidth(100);
-        Label finalPriceValueLabel = new Label(String.format("%,d원", room.getPrice() * selectedCount));
-        finalPriceValueLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0066cc;");
-        finalPriceBox.getChildren().addAll(finalPriceTitleLabel, finalPriceValueLabel);
+        priceBox.getChildren().addAll(priceRow, discountRow, priceDivider, totalRow);
 
-        // 할인 금액
-        HBox discountPriceBox = new HBox(300);
-        discountPriceBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        Label discountPriceLabel = new Label("할인 금액");
-        discountPriceLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-        discountPriceLabel.setMinWidth(100);
-        Label discountPriceValueLabel = new Label("0원");
-        discountPriceValueLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0066cc;");
-        discountPriceBox.getChildren().addAll(discountPriceLabel, discountPriceValueLabel);
-
-        VBox paymentSection = new VBox(30);
-        paymentSection.getChildren().addAll(
-            paymethodLabel,
-            paymentMethodGrid, // Grid를 VBox에 추가
-            new Separator(),
-            reservationPriceBox,
-            discountPriceBox,
-            finalPriceBox
+        // 결제 버튼
+        Button paymentButton = new Button("결제하기");
+        paymentButton.setMaxWidth(Double.MAX_VALUE);
+        paymentButton.setStyle(
+            "-fx-background-color: linear-gradient(to right, #10b981, #059669); " +
+            "-fx-text-fill: white; " +
+            "-fx-font-size: 16px; " +
+            "-fx-font-weight: bold; " +
+            "-fx-padding: 15 30; " +
+            "-fx-background-radius: 12; " +
+            "-fx-cursor: hand;"
         );
-
-        Button paymentButton = new Button("결제 확인");
-        paymentButton.setStyle("-fx-font-size: 14px; -fx-background-color: #0066cc; -fx-text-fill: white; -fx-padding: 10 30;");
+        paymentButton.setOnMouseEntered(e -> paymentButton.setStyle(
+            "-fx-background-color: linear-gradient(to right, #059669, #047857); " +
+            "-fx-text-fill: white; " +
+            "-fx-font-size: 16px; " +
+            "-fx-font-weight: bold; " +
+            "-fx-padding: 15 30; " +
+            "-fx-background-radius: 12; " +
+            "-fx-cursor: hand;"
+        ));
+        paymentButton.setOnMouseExited(e -> paymentButton.setStyle(
+            "-fx-background-color: linear-gradient(to right, #10b981, #059669); " +
+            "-fx-text-fill: white; " +
+            "-fx-font-size: 16px; " +
+            "-fx-font-weight: bold; " +
+            "-fx-padding: 15 30; " +
+            "-fx-background-radius: 12; " +
+            "-fx-cursor: hand;"
+        ));
         paymentButton.setOnAction(e -> {
             ConfirmReservationView confirmReservationView = new ConfirmReservationView(pension, room, customer, selectedCount, stage);
             confirmReservationView.show();
         });
 
-        // 버튼을 오른쪽 정렬하기 위한 HBox
-        HBox buttonBox = new HBox();
-        buttonBox.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
-        buttonBox.setPadding(new Insets(10));
-        buttonBox.getChildren().add(paymentButton);
+        card.getChildren().addAll(sectionTitle, paymentGrid, divider, priceTitle, priceBox, paymentButton);
 
-        HBox filterBox = new HBox(20);
-        filterBox.setPadding(new Insets(10));
-        filterBox.getChildren().addAll(
-            mainLayout,
-            paymentSection
+        return card;
+    }
+
+    private ToggleButton createPaymentButton(String text, String icon, ToggleGroup group) {
+        ToggleButton btn = new ToggleButton(icon + " " + text);
+        btn.setToggleGroup(group);
+        btn.setPrefWidth(130);
+        btn.setPrefHeight(60);
+        btn.setStyle(
+            "-fx-background-color: white; " +
+            "-fx-text-fill: #1e293b; " +
+            "-fx-font-size: 13px; " +
+            "-fx-background-radius: 12; " +
+            "-fx-border-color: #e2e8f0; " +
+            "-fx-border-radius: 12; " +
+            "-fx-cursor: hand;"
         );
 
-        VBox finalBox = new VBox(15);
-        finalBox.setPadding(new Insets(10));
-        finalBox.getChildren().addAll(
-            backButton,
-            reservationLabel,
-            new Separator(),
-            filterBox,
-            new Separator(),
-            buttonBox
-        );
+        btn.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
+            if (isSelected) {
+                btn.setStyle(
+                    "-fx-background-color: #eff6ff; " +
+                    "-fx-text-fill: #2563eb; " +
+                    "-fx-font-size: 13px; " +
+                    "-fx-font-weight: bold; " +
+                    "-fx-background-radius: 12; " +
+                    "-fx-border-color: #2563eb; " +
+                    "-fx-border-radius: 12; " +
+                    "-fx-border-width: 2; " +
+                    "-fx-cursor: hand;"
+                );
+            } else {
+                btn.setStyle(
+                    "-fx-background-color: white; " +
+                    "-fx-text-fill: #1e293b; " +
+                    "-fx-font-size: 13px; " +
+                    "-fx-background-radius: 12; " +
+                    "-fx-border-color: #e2e8f0; " +
+                    "-fx-border-radius: 12; " +
+                    "-fx-cursor: hand;"
+                );
+            }
+        });
 
-        Scene scene = new Scene(finalBox, 900, 700);
-        stage.setScene(scene);
-        stage.show();
+        return btn;
+    }
+
+    private HBox createPriceRow(String label, String value, String color) {
+        HBox row = new HBox();
+        row.setAlignment(Pos.CENTER_LEFT);
+
+        Label labelNode = new Label(label);
+        labelNode.setStyle("-fx-font-size: 14px; -fx-text-fill: #64748b;");
+        labelNode.setMinWidth(120);
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Label valueNode = new Label(value);
+        valueNode.setStyle("-fx-font-size: 14px; -fx-text-fill: " + color + ";");
+
+        row.getChildren().addAll(labelNode, spacer, valueNode);
+        return row;
     }
 }

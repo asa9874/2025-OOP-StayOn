@@ -7,11 +7,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import org.example.domain.pension.Pension;
-import org.example.domain.reservation.ReservationController;
 import org.example.domain.room.Room;
 import org.example.domain.room.RoomController;
 import org.example.domain.room.RoomStatus;
@@ -21,92 +19,237 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoomSelectView {
-    private final Pension pension;
+public class RoomSelectView {    private final Pension pension;
     private final Stage stage;
     private final RoomController roomController;
-    private final ReservationController reservationController;
-    private VBox roomListContainer;
+    private FlowPane roomGridContainer;
     private List<Room> currentRoomList;
+    private List<Button> filterButtons;
+    private Button activeFilterButton;
 
-    public RoomSelectView(Pension pension, Stage stage) {
-        this.pension = pension;
+    public RoomSelectView(Pension pension, Stage stage) {        this.pension = pension;
         this.stage = stage;
         this.roomController = RoomController.getInstance();
-        this.reservationController = ReservationController.getInstance();
+        this.filterButtons = new ArrayList<>();
     }
 
     public void show() {
-        stage.setTitle(pension.getName() + " - 객실 선택");
+        stage.setTitle("StayOn - 객실 선택");
 
-        // 뒤로가기 버튼
-        Button backButton = new Button("← 펜션 정보로");
-        backButton.setOnAction(e -> {
-            PensionDetailView detailView = new PensionDetailView(pension, stage);
-            detailView.show();
-        });
+        VBox mainContainer = new VBox(0);
+        mainContainer.setStyle("-fx-background-color: #f8fafc;");
 
-        // 펜션 정보 요약
-        Label pensionNameLabel = new Label(pension.getName());
-        pensionNameLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");        // 객실 목록 컨테이너 (VBox로 변경하여 행 단위 출력)
-        roomListContainer = new VBox(15);
-        roomListContainer.setPadding(new Insets(10));
+        // 헤더
+        HBox header = createHeader();
 
-        // 필터 버튼들
-        Button showAllButton = new Button("전체 객실");
-        showAllButton.setOnAction(e -> updateRoomList());
+        // 히어로 섹션
+        VBox heroSection = createHeroSection();
 
-        Button filterSingleButton = new Button("독채형");
-        filterSingleButton.setOnAction(e -> filterByType(RoomType.SINGLE));
+        // 필터 섹션
+        HBox filterSection = createFilterSection();
 
-        Button filterDuplexButton = new Button("복층형");
-        filterDuplexButton.setOnAction(e -> filterByType(RoomType.DUPLEX));
+        // 객실 그리드
+        roomGridContainer = new FlowPane();
+        roomGridContainer.setHgap(25);
+        roomGridContainer.setVgap(25);
+        roomGridContainer.setPadding(new Insets(30, 50, 50, 50));
+        roomGridContainer.setAlignment(Pos.CENTER);
+        roomGridContainer.setStyle("-fx-background-color: transparent;");
 
-        Button filterHotelButton = new Button("호텔형");
-        filterHotelButton.setOnAction(e -> filterByType(RoomType.HOTEL));
-
-        Button filterAvailableButton = new Button("예약 가능");
-        filterAvailableButton.setOnAction(e -> filterAvailableRooms());
-
-        HBox filterBox = new HBox(10);
-        filterBox.getChildren().addAll(
-            new Label("필터:"),
-            showAllButton,
-            filterSingleButton,
-            filterDuplexButton,
-            filterHotelButton,
-            filterAvailableButton
-        );        updateRoomList();
+        updateRoomList();
 
         // 스크롤 패널
-        ScrollPane scrollPane = new ScrollPane(roomListContainer);
+        ScrollPane scrollPane = new ScrollPane(roomGridContainer);
         scrollPane.setFitToWidth(true);
-        scrollPane.setPrefHeight(500);
+        scrollPane.setStyle("-fx-background: #f8fafc; -fx-background-color: #f8fafc; -fx-border-color: transparent;");
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
 
-        // 레이아웃
-        VBox mainLayout = new VBox(15);
-        mainLayout.setPadding(new Insets(10));
-        mainLayout.getChildren().addAll(
-            backButton,
-            new Separator(),
-            pensionNameLabel,
-            new Separator(),
-            filterBox,
-            new Label("객실 목록:"),
-            scrollPane
-        );
+        mainContainer.getChildren().addAll(header, heroSection, filterSection, scrollPane);
 
-        Scene scene = new Scene(mainLayout, 900, 700);
-        
-        // Pretendard 폰트 적용
+        Scene scene = new Scene(mainContainer, 1100, 800);
+
         try {
             scene.getStylesheets().add(getClass().getResource("/styles/global.css").toExternalForm());
         } catch (Exception e) {
             System.out.println("CSS 파일을 불러올 수 없습니다: " + e.getMessage());
         }
-        
+
         stage.setScene(scene);
         stage.show();
+    }
+
+    private HBox createHeader() {
+        HBox header = new HBox();
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setPadding(new Insets(15, 40, 15, 40));
+        header.setStyle("-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);");
+
+        Button backButton = new Button("← 펜션 정보로");
+        backButton.setStyle(getBackButtonStyle());
+        backButton.setOnMouseEntered(e -> backButton.setStyle(getBackButtonHoverStyle()));
+        backButton.setOnMouseExited(e -> backButton.setStyle(getBackButtonStyle()));
+        backButton.setOnAction(e -> {
+            PensionDetailView detailView = new PensionDetailView(pension, stage);
+            detailView.show();
+        });
+
+        Region spacer1 = new Region();
+        HBox.setHgrow(spacer1, Priority.ALWAYS);
+
+        try {
+            ImageView logoView = new ImageView(new Image(getClass().getResourceAsStream("/images/logo.png")));
+            logoView.setFitHeight(32);
+            logoView.setPreserveRatio(true);
+            header.getChildren().addAll(backButton, spacer1, logoView);
+        } catch (Exception e) {
+            Label logoText = new Label("StayOn");
+            logoText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2563eb;");
+            header.getChildren().addAll(backButton, spacer1, logoText);
+        }
+
+        Region spacer2 = new Region();
+        spacer2.setMinWidth(100);
+        header.getChildren().add(spacer2);
+
+        return header;
+    }
+
+    private VBox createHeroSection() {
+        VBox hero = new VBox(15);
+        hero.setAlignment(Pos.CENTER);
+        hero.setPadding(new Insets(40, 40, 30, 40));
+        hero.setStyle("-fx-background-color: linear-gradient(to right, #2563eb, #7c3aed);");
+
+        Label titleLabel = new Label("🛏️ 객실 선택");
+        titleLabel.setStyle("-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: white;");
+
+        Label subtitleLabel = new Label(pension.getName() + "의 객실을 선택해 주세요");
+        subtitleLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: rgba(255,255,255,0.85);");
+
+        hero.getChildren().addAll(titleLabel, subtitleLabel);
+
+        return hero;
+    }
+
+    private HBox createFilterSection() {
+        HBox filterBox = new HBox(15);
+        filterBox.setAlignment(Pos.CENTER);
+        filterBox.setPadding(new Insets(20, 50, 10, 50));
+        filterBox.setStyle("-fx-background-color: #f8fafc;");
+
+        Button showAllBtn = createFilterButton("전체");
+        showAllBtn.setOnAction(e -> {
+            setActiveFilter(showAllBtn);
+            updateRoomList();
+        });
+
+        Button filterSingleBtn = createFilterButton("🏠 독채형");
+        filterSingleBtn.setOnAction(e -> {
+            setActiveFilter(filterSingleBtn);
+            filterByType(RoomType.SINGLE);
+        });
+
+        Button filterDuplexBtn = createFilterButton("🏢 복층형");
+        filterDuplexBtn.setOnAction(e -> {
+            setActiveFilter(filterDuplexBtn);
+            filterByType(RoomType.DUPLEX);
+        });
+
+        Button filterHotelBtn = createFilterButton("🏨 호텔형");
+        filterHotelBtn.setOnAction(e -> {
+            setActiveFilter(filterHotelBtn);
+            filterByType(RoomType.HOTEL);
+        });
+
+        Button filterAvailableBtn = createFilterButton("✅ 예약가능");
+        filterAvailableBtn.setOnAction(e -> {
+            setActiveFilter(filterAvailableBtn);
+            filterAvailableRooms();
+        });
+
+        filterButtons.addAll(List.of(showAllBtn, filterSingleBtn, filterDuplexBtn, filterHotelBtn, filterAvailableBtn));
+        setActiveFilter(showAllBtn);
+
+        filterBox.getChildren().addAll(showAllBtn, filterSingleBtn, filterDuplexBtn, filterHotelBtn, filterAvailableBtn);
+
+        return filterBox;
+    }
+
+    private Button createFilterButton(String text) {
+        Button btn = new Button(text);
+        btn.setStyle(getInactiveFilterStyle());
+        btn.setOnMouseEntered(e -> {
+            if (btn != activeFilterButton) {
+                btn.setStyle(getHoverFilterStyle());
+            }
+        });
+        btn.setOnMouseExited(e -> {
+            if (btn != activeFilterButton) {
+                btn.setStyle(getInactiveFilterStyle());
+            }
+        });
+        return btn;
+    }
+
+    private void setActiveFilter(Button btn) {
+        if (activeFilterButton != null) {
+            activeFilterButton.setStyle(getInactiveFilterStyle());
+        }
+        activeFilterButton = btn;
+        btn.setStyle(getActiveFilterStyle());
+    }
+
+    private String getActiveFilterStyle() {
+        return "-fx-background-color: linear-gradient(to right, #2563eb, #7c3aed); " +
+               "-fx-text-fill: white; " +
+               "-fx-font-size: 13px; " +
+               "-fx-padding: 10 20; " +
+               "-fx-background-radius: 20; " +
+               "-fx-cursor: hand;";
+    }
+
+    private String getInactiveFilterStyle() {
+        return "-fx-background-color: white; " +
+               "-fx-text-fill: #64748b; " +
+               "-fx-font-size: 13px; " +
+               "-fx-padding: 10 20; " +
+               "-fx-background-radius: 20; " +
+               "-fx-border-color: #e2e8f0; " +
+               "-fx-border-radius: 20; " +
+               "-fx-cursor: hand;";
+    }
+
+    private String getHoverFilterStyle() {
+        return "-fx-background-color: #f1f5f9; " +
+               "-fx-text-fill: #2563eb; " +
+               "-fx-font-size: 13px; " +
+               "-fx-padding: 10 20; " +
+               "-fx-background-radius: 20; " +
+               "-fx-border-color: #2563eb; " +
+               "-fx-border-radius: 20; " +
+               "-fx-cursor: hand;";
+    }
+
+    private String getBackButtonStyle() {
+        return "-fx-background-color: transparent; " +
+               "-fx-text-fill: #64748b; " +
+               "-fx-font-size: 14px; " +
+               "-fx-cursor: hand; " +
+               "-fx-padding: 8 20; " +
+               "-fx-border-color: #e2e8f0; " +
+               "-fx-border-radius: 20; " +
+               "-fx-background-radius: 20;";
+    }
+
+    private String getBackButtonHoverStyle() {
+        return "-fx-background-color: #f1f5f9; " +
+               "-fx-text-fill: #2563eb; " +
+               "-fx-font-size: 14px; " +
+               "-fx-cursor: hand; " +
+               "-fx-padding: 8 20; " +
+               "-fx-border-color: #2563eb; " +
+               "-fx-border-radius: 20; " +
+               "-fx-background-radius: 20;";
     }
 
     private void updateRoomList() {
@@ -127,103 +270,176 @@ public class RoomSelectView {
     private void filterAvailableRooms() {
         currentRoomList = new ArrayList<>();
         for (Room room : roomController.findByPensionId(pension.getId())) {
-            // 예약 가능한 객실 (판매 중 상태)
             if (room.getRoomStatus() == RoomStatus.CLEANING) {
                 currentRoomList.add(room);
             }
         }
         displayRoomList();
-    }    private void displayRoomList() {
-        roomListContainer.getChildren().clear();
+    }
+
+    private void displayRoomList() {
+        roomGridContainer.getChildren().clear();
         if (currentRoomList.isEmpty()) {
+            VBox emptyBox = new VBox(20);
+            emptyBox.setAlignment(Pos.CENTER);
+            emptyBox.setPadding(new Insets(60));
+            emptyBox.setStyle(
+                "-fx-background-color: white; " +
+                "-fx-background-radius: 16; " +
+                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);"
+            );
+
+            Label emptyIcon = new Label("🛏️");
+            emptyIcon.setStyle("-fx-font-size: 48px;");
+
             Label noRoomLabel = new Label("해당하는 객실이 없습니다.");
-            noRoomLabel.setStyle("-fx-font-size: 14px;");
-            roomListContainer.getChildren().add(noRoomLabel);
+            noRoomLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #94a3b8;");
+
+            emptyBox.getChildren().addAll(emptyIcon, noRoomLabel);
+            roomGridContainer.getChildren().add(emptyBox);
         } else {
             for (Room room : currentRoomList) {
-                roomListContainer.getChildren().add(createRoomRow(room));
+                roomGridContainer.getChildren().add(createRoomCard(room));
             }
         }
-    }    private HBox createRoomRow(Room room) {
-        // 왼쪽: 객실 이미지
+    }
+
+    private VBox createRoomCard(Room room) {
+        VBox card = new VBox(0);
+        card.setMaxWidth(320);
+        card.setMinWidth(320);
+        card.setStyle(
+            "-fx-background-color: white; " +
+            "-fx-background-radius: 16; " +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);"
+        );
+
+        // 이미지 컨테이너
+        StackPane imageContainer = new StackPane();
+        imageContainer.setMinHeight(200);
+        imageContainer.setMaxHeight(200);
+
         ImageView imageView = new ImageView();
-        imageView.setFitWidth(150);
-        imageView.setFitHeight(150);
+        imageView.setFitWidth(320);
+        imageView.setFitHeight(200);
         imageView.setPreserveRatio(false);
 
-        // 이미지 로드
         try {
             File imageFile = new File(room.getImage());
             if (imageFile.exists()) {
                 Image image = new Image(imageFile.toURI().toString());
-                
-                // 이미지의 실제 크기
                 double imageWidth = image.getWidth();
                 double imageHeight = image.getHeight();
-                
-                // 정사각형으로 자르기 위한 계산
                 double size = Math.min(imageWidth, imageHeight);
                 double offsetX = (imageWidth - size) / 2;
                 double offsetY = (imageHeight - size) / 2;
-                
-                // 뷰포트 설정
                 Rectangle2D viewport = new Rectangle2D(offsetX, offsetY, size, size);
                 imageView.setViewport(viewport);
                 imageView.setImage(image);
             }
         } catch (Exception e) {
-            // 빈 이미지
+            imageContainer.setStyle("-fx-background-color: #e2e8f0; -fx-background-radius: 16 16 0 0;");
         }
 
-        // 오른쪽: 객실 정보
-        VBox infoBox = new VBox(8);
-        infoBox.setPadding(new Insets(10));
-        
+        javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(320, 200);
+        clip.setArcWidth(32);
+        clip.setArcHeight(32);
+        imageView.setClip(clip);
+
+        // 상태 태그 (이미지 위)
+        HBox tagBox = new HBox(8);
+        tagBox.setAlignment(Pos.TOP_LEFT);
+        tagBox.setPadding(new Insets(12));
+
+        Label typeTag = new Label(getRoomTypeText(room.getRoomType()));
+        typeTag.setStyle(
+            "-fx-background-color: rgba(37, 99, 235, 0.9); " +
+            "-fx-text-fill: white; " +
+            "-fx-padding: 4 12; " +
+            "-fx-background-radius: 12; " +
+            "-fx-font-size: 11px;"
+        );
+
+        Label statusTag = new Label(getRoomStatusText(room.getRoomStatus()));
+        String statusColor = getStatusTagColor(room.getRoomStatus());
+        statusTag.setStyle(
+            "-fx-background-color: " + statusColor + "; " +
+            "-fx-text-fill: white; " +
+            "-fx-padding: 4 12; " +
+            "-fx-background-radius: 12; " +
+            "-fx-font-size: 11px;"
+        );
+
+        tagBox.getChildren().addAll(typeTag, statusTag);
+        StackPane.setAlignment(tagBox, Pos.TOP_LEFT);
+
+        imageContainer.getChildren().addAll(imageView, tagBox);
+
+        // 정보 영역
+        VBox infoBox = new VBox(10);
+        infoBox.setPadding(new Insets(18));
+
         Label nameLabel = new Label(room.getRoomName());
-        nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
-        
-        Label typeLabel = new Label("객실 타입: " + getRoomTypeText(room.getRoomType()));
-        typeLabel.setStyle("-fx-font-size: 14px;");
-        
-        Label statusLabel = new Label("상태: " + getRoomStatusText(room.getRoomStatus()));
-        // 상태에 따른 색상 변경
-        if (room.getRoomStatus() == RoomStatus.CLEANING) {
-            statusLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: green; -fx-font-weight: bold;");
-        } else if (room.getRoomStatus() == RoomStatus.NOTSALES) {
-            statusLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: red; -fx-font-weight: bold;");
-        } else {
-            statusLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: orange; -fx-font-weight: bold;");
-        }
-        
-        Label priceLabel = new Label("가격: " + String.format("%,d", room.getPrice()) + "원");
-        priceLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0066cc;");
-        
-        Label maxPeopleLabel = new Label("최대 인원: " + room.getMaxPeople() + "명");
-        maxPeopleLabel.setStyle("-fx-font-size: 14px;");
-        
-        Label floorLabel = new Label("층: " + room.getFloor() + "층 | 건물: " + room.getBuilding());
-        floorLabel.setStyle("-fx-font-size: 14px;");
-        
-        infoBox.getChildren().addAll(nameLabel, typeLabel, statusLabel, priceLabel, maxPeopleLabel, floorLabel);
+        nameLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1e293b;");
 
-        // 예약 컨트롤
-        VBox reservationBox = new VBox(10);
-        reservationBox.setPadding(new Insets(10));
-        reservationBox.setAlignment(Pos.CENTER_RIGHT);
-        
-        Label selectLabel = new Label("예약할 객실 수:");
-        selectLabel.setStyle("-fx-font-size: 14px;");
-        
+        HBox detailsBox = new HBox(15);
+        detailsBox.setAlignment(Pos.CENTER_LEFT);
+
+        Label peopleLabel = new Label("👥 최대 " + room.getMaxPeople() + "명");
+        peopleLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #64748b;");
+
+        Label floorLabel = new Label("🏢 " + room.getFloor() + "층 / " + room.getBuilding() + "동");
+        floorLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #64748b;");
+
+        detailsBox.getChildren().addAll(peopleLabel, floorLabel);
+
+        Label priceLabel = new Label(String.format("%,d원", room.getPrice()) + " / 1박");
+        priceLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2563eb;");
+
+        // 예약 버튼 영역
+        HBox reserveBox = new HBox(15);
+        reserveBox.setAlignment(Pos.CENTER_LEFT);
+        reserveBox.setPadding(new Insets(10, 0, 0, 0));
+
+        Label selectLabel = new Label("객실 수:");
+        selectLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #64748b;");
+
         Spinner<Integer> roomCountSpinner = new Spinner<>(0, 10, 1);
-        roomCountSpinner.setPrefWidth(80);
+        roomCountSpinner.setPrefWidth(70);
         roomCountSpinner.setEditable(true);
-        
+        roomCountSpinner.setStyle("-fx-font-size: 13px;");
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
         Button reserveButton = new Button("예약하기");
-        reserveButton.setStyle("-fx-font-size: 14px; -fx-background-color: #0066cc; -fx-text-fill: white; -fx-padding: 10 30;");
+        reserveButton.setStyle(
+            "-fx-background-color: linear-gradient(to right, #2563eb, #7c3aed); " +
+            "-fx-text-fill: white; " +
+            "-fx-font-size: 13px; " +
+            "-fx-padding: 10 20; " +
+            "-fx-background-radius: 20; " +
+            "-fx-cursor: hand;"
+        );
+        reserveButton.setOnMouseEntered(e -> reserveButton.setStyle(
+            "-fx-background-color: linear-gradient(to right, #1d4ed8, #6d28d9); " +
+            "-fx-text-fill: white; " +
+            "-fx-font-size: 13px; " +
+            "-fx-padding: 10 20; " +
+            "-fx-background-radius: 20; " +
+            "-fx-cursor: hand;"
+        ));
+        reserveButton.setOnMouseExited(e -> reserveButton.setStyle(
+            "-fx-background-color: linear-gradient(to right, #2563eb, #7c3aed); " +
+            "-fx-text-fill: white; " +
+            "-fx-font-size: 13px; " +
+            "-fx-padding: 10 20; " +
+            "-fx-background-radius: 20; " +
+            "-fx-cursor: hand;"
+        ));
         reserveButton.setOnAction(e -> {
             int selectedCount = roomCountSpinner.getValue();
             if (selectedCount > 0) {
-                // PaymentView로 이동
                 PaymentView paymentView = new PaymentView(pension.getId(), room.getId(), selectedCount);
                 try {
                     paymentView.start(stage);
@@ -238,18 +454,41 @@ public class RoomSelectView {
                 alert.showAndWait();
             }
         });
-        
-        reservationBox.getChildren().addAll(selectLabel, roomCountSpinner, reserveButton);
 
-        // 행 레이아웃
-        HBox row = new HBox(20);
-        row.setPadding(new Insets(15));
-        row.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #f9f9f9;");
-        row.getChildren().addAll(imageView, infoBox, reservationBox);
-        
-        HBox.setHgrow(infoBox, javafx.scene.layout.Priority.ALWAYS);
-        
-        return row;
+        reserveBox.getChildren().addAll(selectLabel, roomCountSpinner, spacer, reserveButton);
+
+        infoBox.getChildren().addAll(nameLabel, detailsBox, priceLabel, reserveBox);
+        card.getChildren().addAll(imageContainer, infoBox);
+
+        // 호버 효과
+        card.setOnMouseEntered(e -> card.setStyle(
+            "-fx-background-color: white; " +
+            "-fx-background-radius: 16; " +
+            "-fx-effect: dropshadow(gaussian, rgba(37, 99, 235, 0.25), 25, 0, 0, 8); " +
+            "-fx-scale-x: 1.02; " +
+            "-fx-scale-y: 1.02;"
+        ));
+        card.setOnMouseExited(e -> card.setStyle(
+            "-fx-background-color: white; " +
+            "-fx-background-radius: 16; " +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);"
+        ));
+
+        return card;
+    }
+
+    private String getStatusTagColor(RoomStatus status) {
+        switch (status) {
+            case CLEANING:
+                return "rgba(16, 185, 129, 0.9)";
+            case NOTSALES:
+                return "rgba(239, 68, 68, 0.9)";
+            case RESERVATION:
+            case RESERVATIONED:
+                return "rgba(245, 158, 11, 0.9)";
+            default:
+                return "rgba(100, 116, 139, 0.9)";
+        }
     }
 
     private String getRoomStatusText(RoomStatus status) {
@@ -270,6 +509,7 @@ public class RoomSelectView {
                 return status.toString();
         }
     }
+
     private String getRoomTypeText(RoomType type) {
         switch (type) {
             case DUPLEX:

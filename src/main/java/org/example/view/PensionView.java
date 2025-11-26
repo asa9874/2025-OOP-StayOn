@@ -15,6 +15,7 @@ import org.example.domain.room.Room;
 import org.example.domain.room.RoomController;
 import org.example.domain.review.Review;
 import org.example.domain.review.ReviewController;
+import org.example.domain.user.customer.Customer;
 
 import java.io.File;
 import java.text.NumberFormat;
@@ -33,12 +34,18 @@ public class PensionView {
     private Label resultCountLabel;
     private List<Button> filterButtons;
     private Button activeFilterButton;
+    private Customer customer;
 
     public PensionView() {
         this.controller = PensionController.getInstance();
         this.roomController = RoomController.getInstance();
         this.reviewController = ReviewController.getInstance();
         this.filterButtons = new ArrayList<>();
+    }
+
+    public PensionView(Customer customer) {
+        this();
+        this.customer = customer;
     }
 
     public void start(Stage stage) {
@@ -129,41 +136,73 @@ public class PensionView {
 
         Button logoutBtn = new Button("로그아웃");
         logoutBtn.setStyle(
-                "-fx-background-color: transparent; " +
-                        "-fx-text-fill: #64748b; " +
-                        "-fx-font-size: 14px; " +
-                        "-fx-cursor: hand; " +
-                        "-fx-padding: 8 20; " +
-                        "-fx-border-color: #e2e8f0; " +
-                        "-fx-border-radius: 20; " +
-                        "-fx-background-radius: 20;"
+            "-fx-background-color: transparent; " +
+            "-fx-text-fill: #64748b; " +
+            "-fx-font-size: 14px; " +
+            "-fx-cursor: hand; " +
+            "-fx-padding: 8 20; " +
+            "-fx-border-color: #e2e8f0; " +
+            "-fx-border-radius: 20; " +
+            "-fx-background-radius: 20;"
         );
         logoutBtn.setOnMouseEntered(e -> logoutBtn.setStyle(
-                "-fx-background-color: #fee2e2; " +
-                        "-fx-text-fill: #dc2626; " +
-                        "-fx-font-size: 14px; " +
-                        "-fx-cursor: hand; " +
-                        "-fx-padding: 8 20; " +
-                        "-fx-border-color: #fecaca; " +
-                        "-fx-border-radius: 20; " +
-                        "-fx-background-radius: 20;"
+            "-fx-background-color: #fee2e2; " +
+            "-fx-text-fill: #dc2626; " +
+            "-fx-font-size: 14px; " +
+            "-fx-cursor: hand; " +
+            "-fx-padding: 8 20; " +
+            "-fx-border-color: #fecaca; " +
+            "-fx-border-radius: 20; " +
+            "-fx-background-radius: 20;"
         ));
         logoutBtn.setOnMouseExited(e -> logoutBtn.setStyle(
-                "-fx-background-color: transparent; " +
-                        "-fx-text-fill: #64748b; " +
-                        "-fx-font-size: 14px; " +
-                        "-fx-cursor: hand; " +
-                        "-fx-padding: 8 20; " +
-                        "-fx-border-color: #e2e8f0; " +
-                        "-fx-border-radius: 20; " +
-                        "-fx-background-radius: 20;"
+            "-fx-background-color: transparent; " +
+            "-fx-text-fill: #64748b; " +
+            "-fx-font-size: 14px; " +
+            "-fx-cursor: hand; " +
+            "-fx-padding: 8 20; " +
+            "-fx-border-color: #e2e8f0; " +
+            "-fx-border-radius: 20; " +
+            "-fx-background-radius: 20;"
         ));
         logoutBtn.setOnAction(e -> {
             LoginView loginView = new LoginView(stage);
             loginView.show();
         });
 
-        header.getChildren().addAll(logoBox, navMenu, spacer, logoutBtn);
+        Button reservationBtn = new Button("예약 조회");
+        reservationBtn.setStyle(
+            "-fx-background-color: #2563eb; " +
+            "-fx-text-fill: white; " +
+            "-fx-font-size: 14px; " +
+            "-fx-cursor: hand; " +
+            "-fx-padding: 8 20; " +
+            "-fx-border-radius: 20; " +
+            "-fx-background-radius: 20;"
+        );
+        reservationBtn.setOnMouseEntered(e -> reservationBtn.setStyle(
+            "-fx-background-color: #1d4ed8; " +
+            "-fx-text-fill: white; " +
+            "-fx-font-size: 14px; " +
+            "-fx-cursor: hand; " +
+            "-fx-padding: 8 20; " +
+            "-fx-border-radius: 20; " +
+            "-fx-background-radius: 20;"
+        ));
+        reservationBtn.setOnMouseExited(e -> reservationBtn.setStyle(
+            "-fx-background-color: #2563eb; " +
+            "-fx-text-fill: white; " +
+            "-fx-font-size: 14px; " +
+            "-fx-cursor: hand; " +
+            "-fx-padding: 8 20; " +
+            "-fx-border-radius: 20; " +
+            "-fx-background-radius: 20;"
+        ));        reservationBtn.setOnAction(e -> {
+            ReservationListView reservationListView = new ReservationListView(customer, stage);
+            reservationListView.show();
+        });
+
+        header.getChildren().addAll(logoBox, navMenu, spacer, reservationBtn, logoutBtn);
         return header;
     }
 
@@ -184,7 +223,7 @@ public class PensionView {
         hero.setAlignment(Pos.CENTER);
         hero.setPadding(new Insets(40, 40, 30, 40));
         hero.setStyle(
-                "-fx-background-color: linear-gradient(to right, #2563eb, #7c3aed);"
+            "-fx-background-color: linear-gradient(to right, #2563eb, #7c3aed);"
         );
 
         // 메인 타이틀
@@ -199,9 +238,9 @@ public class PensionView {
         searchBar.setAlignment(Pos.CENTER);
         searchBar.setMaxWidth(600);
         searchBar.setStyle(
-                "-fx-background-color: white; " +
-                        "-fx-background-radius: 30; " +
-                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 20, 0, 0, 5);"
+            "-fx-background-color: white; " +
+            "-fx-background-radius: 30; " +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 20, 0, 0, 5);"
         );
 
         searchField = new TextField();
@@ -209,10 +248,10 @@ public class PensionView {
         searchField.setPrefWidth(450);
         searchField.setPrefHeight(50);
         searchField.setStyle(
-                "-fx-background-color: transparent; " +
-                        "-fx-font-size: 15px; " +
-                        "-fx-padding: 0 25; " +
-                        "-fx-prompt-text-fill: #94a3b8;"
+            "-fx-background-color: transparent; " +
+            "-fx-font-size: 15px; " +
+            "-fx-padding: 0 25; " +
+            "-fx-prompt-text-fill: #94a3b8;"
         );
         searchField.setOnAction(e -> performSearch());
 
@@ -220,28 +259,28 @@ public class PensionView {
         searchBtn.setPrefHeight(50);
         searchBtn.setPrefWidth(100);
         searchBtn.setStyle(
-                "-fx-background-color: #2563eb; " +
-                        "-fx-text-fill: white; " +
-                        "-fx-font-size: 15px; " +
-                        "-fx-font-weight: bold; " +
-                        "-fx-background-radius: 0 30 30 0; " +
-                        "-fx-cursor: hand;"
+            "-fx-background-color: #2563eb; " +
+            "-fx-text-fill: white; " +
+            "-fx-font-size: 15px; " +
+            "-fx-font-weight: bold; " +
+            "-fx-background-radius: 0 30 30 0; " +
+            "-fx-cursor: hand;"
         );
         searchBtn.setOnMouseEntered(e -> searchBtn.setStyle(
-                "-fx-background-color: #1d4ed8; " +
-                        "-fx-text-fill: white; " +
-                        "-fx-font-size: 15px; " +
-                        "-fx-font-weight: bold; " +
-                        "-fx-background-radius: 0 30 30 0; " +
-                        "-fx-cursor: hand;"
+            "-fx-background-color: #1d4ed8; " +
+            "-fx-text-fill: white; " +
+            "-fx-font-size: 15px; " +
+            "-fx-font-weight: bold; " +
+            "-fx-background-radius: 0 30 30 0; " +
+            "-fx-cursor: hand;"
         ));
         searchBtn.setOnMouseExited(e -> searchBtn.setStyle(
-                "-fx-background-color: #2563eb; " +
-                        "-fx-text-fill: white; " +
-                        "-fx-font-size: 15px; " +
-                        "-fx-font-weight: bold; " +
-                        "-fx-background-radius: 0 30 30 0; " +
-                        "-fx-cursor: hand;"
+            "-fx-background-color: #2563eb; " +
+            "-fx-text-fill: white; " +
+            "-fx-font-size: 15px; " +
+            "-fx-font-weight: bold; " +
+            "-fx-background-radius: 0 30 30 0; " +
+            "-fx-cursor: hand;"
         ));
         searchBtn.setOnAction(e -> performSearch());
 
@@ -343,33 +382,33 @@ public class PensionView {
 
     private String getActiveFilterStyle() {
         return "-fx-background-color: #2563eb; " +
-                "-fx-text-fill: white; " +
-                "-fx-font-size: 13px; " +
-                "-fx-padding: 8 18; " +
-                "-fx-background-radius: 20; " +
-                "-fx-cursor: hand;";
+               "-fx-text-fill: white; " +
+               "-fx-font-size: 13px; " +
+               "-fx-padding: 8 18; " +
+               "-fx-background-radius: 20; " +
+               "-fx-cursor: hand;";
     }
 
     private String getInactiveFilterStyle() {
         return "-fx-background-color: white; " +
-                "-fx-text-fill: #64748b; " +
-                "-fx-font-size: 13px; " +
-                "-fx-padding: 8 18; " +
-                "-fx-background-radius: 20; " +
-                "-fx-border-color: #e2e8f0; " +
-                "-fx-border-radius: 20; " +
-                "-fx-cursor: hand;";
+               "-fx-text-fill: #64748b; " +
+               "-fx-font-size: 13px; " +
+               "-fx-padding: 8 18; " +
+               "-fx-background-radius: 20; " +
+               "-fx-border-color: #e2e8f0; " +
+               "-fx-border-radius: 20; " +
+               "-fx-cursor: hand;";
     }
 
     private String getHoverFilterStyle() {
         return "-fx-background-color: #f1f5f9; " +
-                "-fx-text-fill: #2563eb; " +
-                "-fx-font-size: 13px; " +
-                "-fx-padding: 8 18; " +
-                "-fx-background-radius: 20; " +
-                "-fx-border-color: #2563eb; " +
-                "-fx-border-radius: 20; " +
-                "-fx-cursor: hand;";
+               "-fx-text-fill: #2563eb; " +
+               "-fx-font-size: 13px; " +
+               "-fx-padding: 8 18; " +
+               "-fx-background-radius: 20; " +
+               "-fx-border-color: #2563eb; " +
+               "-fx-border-radius: 20; " +
+               "-fx-cursor: hand;";
     }
 
     private void performSearch() {
@@ -397,8 +436,8 @@ public class PensionView {
     private void sortById(boolean ascending) {
         if (currentPensionList != null) {
             currentPensionList.sort((p1, p2) -> ascending ?
-                    Integer.compare(p1.getId(), p2.getId()) :
-                    Integer.compare(p2.getId(), p1.getId()));
+                Integer.compare(p1.getId(), p2.getId()) :
+                Integer.compare(p2.getId(), p1.getId()));
             displayPensionList();
         }
     }
@@ -406,8 +445,8 @@ public class PensionView {
     private void sortByName(boolean ascending) {
         if (currentPensionList != null) {
             currentPensionList.sort((p1, p2) -> ascending ?
-                    p1.getName().compareTo(p2.getName()) :
-                    p2.getName().compareTo(p1.getName()));
+                p1.getName().compareTo(p2.getName()) :
+                p2.getName().compareTo(p1.getName()));
             displayPensionList();
         }
     }
@@ -459,9 +498,9 @@ public class PensionView {
         card.setMaxWidth(280);
         card.setMinWidth(280);
         card.setStyle(
-                "-fx-background-color: white; " +
-                        "-fx-background-radius: 16; " +
-                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);"
+            "-fx-background-color: white; " +
+            "-fx-background-radius: 16; " +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);"
         );
 
         // 이미지 컨테이너
@@ -503,12 +542,12 @@ public class PensionView {
         // 하트 아이콘 (즐겨찾기)
         Label heartIcon = new Label("♡");
         heartIcon.setStyle(
-                "-fx-font-size: 22px; " +
-                        "-fx-text-fill: white; " +
-                        "-fx-background-color: rgba(0,0,0,0.3); " +
-                        "-fx-padding: 5 8; " +
-                        "-fx-background-radius: 20; " +
-                        "-fx-cursor: hand;"
+            "-fx-font-size: 22px; " +
+            "-fx-text-fill: white; " +
+            "-fx-background-color: rgba(0,0,0,0.3); " +
+            "-fx-padding: 5 8; " +
+            "-fx-background-radius: 20; " +
+            "-fx-cursor: hand;"
         );
         StackPane.setAlignment(heartIcon, Pos.TOP_RIGHT);
         StackPane.setMargin(heartIcon, new Insets(12, 12, 0, 0));
@@ -573,19 +612,19 @@ public class PensionView {
         // 호버 효과
         card.setOnMouseEntered(e -> {
             card.setStyle(
-                    "-fx-background-color: white; " +
-                            "-fx-background-radius: 16; " +
-                            "-fx-effect: dropshadow(gaussian, rgba(37, 99, 235, 0.25), 25, 0, 0, 8); " +
-                            "-fx-scale-x: 1.02; " +
-                            "-fx-scale-y: 1.02;"
+                "-fx-background-color: white; " +
+                "-fx-background-radius: 16; " +
+                "-fx-effect: dropshadow(gaussian, rgba(37, 99, 235, 0.25), 25, 0, 0, 8); " +
+                "-fx-scale-x: 1.02; " +
+                "-fx-scale-y: 1.02;"
             );
         });
 
         card.setOnMouseExited(e -> {
             card.setStyle(
-                    "-fx-background-color: white; " +
-                            "-fx-background-radius: 16; " +
-                            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);"
+                "-fx-background-color: white; " +
+                "-fx-background-radius: 16; " +
+                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);"
             );
         });
 
