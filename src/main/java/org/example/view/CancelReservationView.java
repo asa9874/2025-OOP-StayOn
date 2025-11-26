@@ -15,19 +15,29 @@ import java.io.File;
 import org.example.domain.pension.Pension;
 import org.example.domain.room.Room;
 import org.example.domain.user.customer.Customer;
+import org.example.domain.reservation.Reservation;
+import org.example.domain.reservation.ReservationController;
 
 public class CancelReservationView {
     private final Stage stage;
     private final Pension pension;    private final Room room;
     private final Customer customer;
     private final int selectedCount;
+    private final Reservation reservation;
+    private final ReservationController reservationController;
 
     public CancelReservationView(Pension pension, Room room, Customer customer, int selectedCount, Stage stage) {
+        this(pension, room, customer, selectedCount, stage, null);
+    }
+
+    public CancelReservationView(Pension pension, Room room, Customer customer, int selectedCount, Stage stage, Reservation reservation) {
         this.pension = pension;
         this.room = room;
         this.customer = customer;
         this.selectedCount = selectedCount;
         this.stage = stage;
+        this.reservation = reservation;
+        this.reservationController = ReservationController.getInstance();
     }
 
     public void show() {
@@ -325,21 +335,37 @@ public class CancelReservationView {
                 return;
             }
 
-            Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-            confirmAlert.setTitle("예약 취소 확인");
-            confirmAlert.setHeaderText(null);
-            confirmAlert.setContentText("정말로 예약을 취소하시겠습니까?");            confirmAlert.showAndWait().ifPresent(response -> {
-                if (response == ButtonType.OK) {
-                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-                    successAlert.setTitle("예약 취소 완료");
-                    successAlert.setHeaderText("예약이 취소되었습니다.");
-                    successAlert.setContentText("환불 금액: " + String.format("%,d원", totalPrice));
-                    successAlert.showAndWait();
+//            Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+//            confirmAlert.setTitle("예약 취소 확인");
+//            confirmAlert.setHeaderText(null);
+//            confirmAlert.setContentText("정말로 예약을 취소하시겠습니까?");
+//            confirmAlert.showAndWait().ifPresent(response -> {
+//                if (response == ButtonType.OK) {
+                    // 예약이 있으면 취소 처리
+                    if (reservation != null) {
+                        try {
+                            reservationController.cancel(reservation.getId());
+                        } catch (Exception ex) {
+                            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                            errorAlert.setTitle("오류");
+                            errorAlert.setHeaderText(null);
+                            errorAlert.setContentText("예약 취소 중 오류가 발생했습니다: " + ex.getMessage());
+                            errorAlert.showAndWait();
+                            return;
+                        }
+                    }
+                    
+//                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+//                    successAlert.setTitle("예약 취소 완료");
+//                    successAlert.setHeaderText("예약이 취소되었습니다.");
+//                    successAlert.setContentText("환불 금액: " + String.format("%,d원", totalPrice));
+//                    successAlert.showAndWait();
 
-                    PensionView pensionView = new PensionView(customer);
-                    pensionView.start(stage);
-                }
-            });
+                    // 예약 내역 페이지로 이동
+                    ReservationListView reservationListView = new ReservationListView(customer, stage);
+                    reservationListView.show();
+//                }
+//            });
         });
 
         // 돌아가기 버튼

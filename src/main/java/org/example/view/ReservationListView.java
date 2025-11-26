@@ -434,11 +434,8 @@ public class ReservationListView {
         detailButton.setOnMouseEntered(e -> detailButton.setStyle(getOutlineButtonHoverStyle("#2563eb")));
         detailButton.setOnMouseExited(e -> detailButton.setStyle(getOutlineButtonStyle("#2563eb")));
         detailButton.setOnAction(e -> showReservationDetail(reservation));
-        buttonBox.getChildren().add(detailButton);
-
-        if (reservation.getReservationStatus() == ReservationStatus.PENDING ||
-            reservation.getReservationStatus() == ReservationStatus.CONFIRMED) {
-
+        buttonBox.getChildren().add(detailButton);        if (reservation.getReservationStatus() == ReservationStatus.PENDING) {
+            // PENDING: 결제하기 + 예약 취소
             Button payButton = new Button("결제하기");
             payButton.setStyle(getFilledButtonStyle("#10b981"));
             payButton.setOnMouseEntered(e -> payButton.setStyle(getFilledButtonHoverStyle("#059669")));
@@ -452,14 +449,17 @@ public class ReservationListView {
             cancelButton.setOnAction(e -> cancelReservation(reservation));
 
             buttonBox.getChildren().addAll(payButton, cancelButton);
-        } else if (reservation.getReservationStatus() == ReservationStatus.CANCELLED) {
-            Button refundButton = new Button("환불 요청");
-            refundButton.setStyle(getFilledButtonStyle("#f59e0b"));
-            refundButton.setOnMouseEntered(e -> refundButton.setStyle(getFilledButtonHoverStyle("#d97706")));
-            refundButton.setOnMouseExited(e -> refundButton.setStyle(getFilledButtonStyle("#f59e0b")));
-            refundButton.setOnAction(e -> requestRefund(reservation));
-            buttonBox.getChildren().add(refundButton);
+        } else if (reservation.getReservationStatus() == ReservationStatus.CONFIRMED) {
+            // CONFIRMED: 예약 취소만 (결제 버튼 없음)
+            Button cancelButton = new Button("예약 취소");
+            cancelButton.setStyle(getOutlineButtonStyle("#ef4444"));
+            cancelButton.setOnMouseEntered(e -> cancelButton.setStyle(getOutlineButtonHoverStyle("#ef4444")));
+            cancelButton.setOnMouseExited(e -> cancelButton.setStyle(getOutlineButtonStyle("#ef4444")));
+            cancelButton.setOnAction(e -> cancelReservation(reservation));
+
+            buttonBox.getChildren().add(cancelButton);
         }
+        // CANCELLED: 환불 요청 버튼 삭제 (아무 버튼도 추가하지 않음)
 
         bottomBox.getChildren().addAll(dateInfoBox, buttonBox);
 
@@ -565,50 +565,44 @@ public class ReservationListView {
         alert.getDialogPane().setContent(content);
         alert.getDialogPane().setPrefWidth(400);
         alert.showAndWait();
-    }
-
-    private void processPayment(Reservation reservation) {
-        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("결제 확인");
-        confirmAlert.setHeaderText(null);
-        confirmAlert.setContentText("결제를 진행하시겠습니까?");
-
-        confirmAlert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                try {
-                    reservationController.pay(reservation.getId());
-                    showAlert("성공", "결제가 완료되었습니다.");
-                    updateReservationList(currentFilter);
-                } catch (Exception e) {
-                    showAlert("오류", "결제 처리 중 오류가 발생했습니다: " + e.getMessage());
-                }
-            }
-        });
-    }    private void cancelReservation(Reservation reservation) {
+    }    private void processPayment(Reservation reservation) {
         Room room = reservation.getRoom();
         Pension pension = pensionController.findById(room.getPensionId());
         
-        CancelReservationView cancelView = new CancelReservationView(pension, room, customer, 1, stage);
-        cancelView.show();
-    }
+        // 기존 예약을 사용하여 PaymentView로 이동
+        PaymentView paymentView = new PaymentView(pension.getId(), room.getId(), 1, customer, reservation);
+        try {
+            paymentView.start(stage);
+        } catch (Exception e) {
+            showAlert("오류", "결제 화면 이동 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }private void cancelReservation(Reservation reservation) {
+        Room room = reservation.getRoom();
+        Pension pension = pensionController.findById(room.getPensionId());
+        
+        if (reservation.getReservationStatus() == ReservationStatus.PENDING) {
+            // PENDING 상태인 경우 - 예약 삭제
+            Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmAlert.setTitle("예약 취소");
+            confirmAlert.setHeaderText(null);
+            confirmAlert.setContentText("결제 대기 중인 예약을 취소하시겠습니까?\n예약이 삭제됩니다.");
 
-    private void requestRefund(Reservation reservation) {
-        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("환불 요청");
-        confirmAlert.setHeaderText(null);
-        confirmAlert.setContentText("환불을 요청하시겠습니까?");
-
-        confirmAlert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                try {
-                    reservationController.refund(reservation.getId());
-                    showAlert("성공", "환불이 완료되었습니다.");
-                    updateReservationList(currentFilter);
-                } catch (Exception e) {
-                    showAlert("오류", "환불 처리 중 오류가 발생했습니다: " + e.getMessage());
+            confirmAlert.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    try {
+                        reservationController.deleteById(reservation.getId());
+                        showAlert("성공", "예약이 취소되었습니다.");
+                        updateReservationList(currentFilter);
+                    } catch (Exception e) {
+                        showAlert("오류", "예약 취소 중 오류가 발생했습니다: " + e.getMessage());
+                    }
                 }
-            }
-        });
+            });
+        } else if (reservation.getReservationStatus() == ReservationStatus.CONFIRMED) {
+            // CONFIRMED 상태인 경우 - CancelReservationView로 이동
+            CancelReservationView cancelView = new CancelReservationView(pension, room, customer, 1, stage, reservation);
+            cancelView.show();
+        }
     }
 
     private String getStatusText(ReservationStatus status) {

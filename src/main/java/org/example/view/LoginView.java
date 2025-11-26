@@ -143,7 +143,7 @@ public class LoginView {
         idField.setOnMouseExited(e -> {
             if (!idField.isFocused()) idField.setStyle(getInputFieldStyle());
         });
-
+        idField.setText("solid");
         idBox.getChildren().addAll(idLabel, idField);
 
         // 비밀번호 필드
@@ -177,7 +177,8 @@ public class LoginView {
             if (id.isEmpty() || password.isEmpty()) {
                 showAlert(Alert.AlertType.WARNING, "입력 오류", "아이디와 비밀번호를 모두 입력해주세요.");
                 return;
-            }            try {
+            }            
+            try {
                 Customer customer = CustomerController.getInstance().login(id, password);
                 if (customer != null) {
                     showAlert(Alert.AlertType.INFORMATION, "로그인 성공", customer.getName() + "님 환영합니다!");

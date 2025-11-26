@@ -18,14 +18,21 @@ import org.example.domain.room.RoomController;
 import org.example.domain.pension.Pension;
 import org.example.domain.room.Room;
 import org.example.domain.user.customer.Customer;
+import org.example.domain.reservation.Reservation;
+import org.example.domain.reservation.ReservationController;
+import org.example.domain.reservation.ReservationStatus;
+import org.example.domain.reservation.dto.ReservationRequestDTO;
 
 public class PaymentView extends Application {
     private final PensionController pensionController;
     private final RoomController roomController;
+    private final ReservationController reservationController;
     private int roomId;
     private int pensionId;    
     private int selectedCount;
     private Customer customer;
+    private Reservation reservation;
+    private boolean existingReservation = false;
 
     public PaymentView(int pensionId, int roomId, int selectedCount) {
         this(pensionId, roomId, selectedCount, null);
@@ -34,16 +41,36 @@ public class PaymentView extends Application {
     public PaymentView(int pensionId, int roomId, int selectedCount, Customer customer) {
         this.pensionController = PensionController.getInstance();
         this.roomController = RoomController.getInstance();
+        this.reservationController = ReservationController.getInstance();
         this.roomId = roomId;
         this.pensionId = pensionId;
         this.selectedCount = selectedCount;
         this.customer = customer;
+        this.existingReservation = false;
+    }
+
+    // 기존 예약으로 결제하는 경우
+    public PaymentView(int pensionId, int roomId, int selectedCount, Customer customer, Reservation reservation) {
+        this(pensionId, roomId, selectedCount, customer);
+        this.reservation = reservation;
+        this.existingReservation = true;
     }
 
     @Override
     public void start(Stage stage) {
         Pension pension = pensionController.findById(pensionId);
         Room room = roomController.findById(roomId);
+        
+        // 기존 예약이 없는 경우에만 PENDING 상태로 예약 생성
+        if (!existingReservation) {
+            ReservationRequestDTO requestDTO = new ReservationRequestDTO(
+                room,
+                customer,
+                ReservationStatus.PENDING
+            );
+            this.reservation = reservationController.save(requestDTO);
+        }
+        
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime threeDaysLater = now.plusDays(3);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시");
@@ -98,9 +125,7 @@ public class PaymentView extends Application {
         HBox header = new HBox();
         header.setAlignment(Pos.CENTER_LEFT);
         header.setPadding(new Insets(15, 40, 15, 40));
-        header.setStyle("-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);");
-
-        Button backButton = new Button("← 객실 선택으로");
+        header.setStyle("-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);");        Button backButton = new Button("← 예약 내역으로");
         backButton.setStyle(
             "-fx-background-color: transparent; " +
             "-fx-text-fill: #64748b; " +
@@ -130,9 +155,10 @@ public class PaymentView extends Application {
             "-fx-border-color: #e2e8f0; " +
             "-fx-border-radius: 20; " +
             "-fx-background-radius: 20;"
-        ));        backButton.setOnAction(e -> {
-            RoomSelectView roomSelectView = new RoomSelectView(pension, customer, stage);
-            roomSelectView.show();
+        ));
+        backButton.setOnAction(e -> {
+            ReservationListView reservationListView = new ReservationListView(customer, stage);
+            reservationListView.show();
         });
 
         Region spacer1 = new Region();
@@ -357,8 +383,48 @@ public class PaymentView extends Application {
             "-fx-padding: 15 30; " +
             "-fx-background-radius: 12; " +
             "-fx-cursor: hand;"
-        ));
-        paymentButton.setOnAction(e -> {
+        ));        paymentButton.setOnAction(e -> {
+            int paymentAmount = room.getPrice() * selectedCount;
+            
+            // 잔액 확인
+            if (customer.getMoney() < paymentAmount) {
+                Alert insufficientAlert = new Alert(Alert.AlertType.WARNING);
+                insufficientAlert.setTitle("잔액 부족");
+                insufficientAlert.setHeaderText("💸 잔액이 부족합니다!");
+                insufficientAlert.setContentText(
+                    "결제 금액: " + String.format("%,d원", paymentAmount) + "\n" +
+                    "현재 잔액: " + String.format("%,d원", customer.getMoney()) + "\n" +
+                    "부족 금액: " + String.format("%,d원", paymentAmount - customer.getMoney())
+                );
+                insufficientAlert.showAndWait();
+                return;
+            }
+            
+            // 잔액 차감
+            try {
+                customer.subtractMoney(paymentAmount);
+            } catch (IllegalArgumentException ex) {
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setTitle("결제 실패");
+                errorAlert.setHeaderText(null);
+                errorAlert.setContentText(ex.getMessage());
+                errorAlert.showAndWait();
+                return;
+            }
+            
+            // 결제 완료 - 예약 상태를 CONFIRMED로 변경
+            reservationController.pay(reservation.getId());
+            
+//            Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+//            successAlert.setTitle("결제 완료");
+//            successAlert.setHeaderText("🎉 결제가 완료되었습니다!");
+//            successAlert.setContentText(
+//                "예약 번호: " + reservation.getId() + "\n" +
+//                "결제 금액: " + String.format("%,d원", paymentAmount) + "\n" +
+//                "남은 잔액: " + String.format("%,d원", customer.getMoney())
+//            );
+//            successAlert.showAndWait();
+            
             ConfirmReservationView confirmReservationView = new ConfirmReservationView(pension, room, customer, selectedCount, stage);
             confirmReservationView.show();
         });

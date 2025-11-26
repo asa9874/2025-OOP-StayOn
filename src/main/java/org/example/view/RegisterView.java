@@ -132,26 +132,32 @@ public class RegisterView {
         // 아이디 필드
         VBox idBox = createStyledTextField("아이디", "사용할 아이디를 입력하세요");
         TextField idField = (TextField) idBox.getChildren().get(1);
+        idField.setText("solid");
 
         // 비밀번호 필드
         VBox pwBox = createStyledPasswordField("비밀번호", "비밀번호를 입력하세요");
         PasswordField passwordField = (PasswordField) pwBox.getChildren().get(1);
+        passwordField.setText("1234");
 
         // 비밀번호 확인 필드
         VBox confirmPwBox = createStyledPasswordField("비밀번호 확인", "비밀번호를 다시 입력하세요");
         PasswordField confirmPasswordField = (PasswordField) confirmPwBox.getChildren().get(1);
+        confirmPasswordField.setText("1234");
 
         // 이름 필드
         VBox nameBox = createStyledTextField("이름", "이름을 입력하세요");
         TextField nameField = (TextField) nameBox.getChildren().get(1);
+        nameField.setText("솔리드");
 
         // 전화번호 필드
         VBox phoneBox = createStyledTextField("전화번호", "010-0000-0000");
         TextField phoneField = (TextField) phoneBox.getChildren().get(1);
+        phoneField.setText("010-1234-5678");
 
         // 이메일 필드
         VBox emailBox = createStyledTextField("이메일 (선택)", "example@email.com");
         TextField emailField = (TextField) emailBox.getChildren().get(1);
+        emailField.setText("solid@koreatech.ac.kr");
 
         // 회원가입 버튼
         Button registerButton = new Button("가입하기");
@@ -172,7 +178,7 @@ public class RegisterView {
                 passwordField.getText(),
                 phoneField.getText(),
                 emailField.getText(),
-                0
+                10000000
             ));
 
             showAlert(Alert.AlertType.INFORMATION, "회원가입 완료", "회원가입이 완료되었습니다.");

@@ -10,10 +10,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import org.example.domain.pension.Pension;
-import org.example.domain.reservation.Reservation;
-import org.example.domain.reservation.ReservationController;
-import org.example.domain.reservation.ReservationStatus;
-import org.example.domain.reservation.dto.ReservationRequestDTO;
 import org.example.domain.room.Room;
 import org.example.domain.user.customer.Customer;
 
@@ -27,7 +23,6 @@ public class ConfirmReservationView {
     private final Room room;
     private final Customer customer;
     private final int selectedCount;
-    private final ReservationController reservationController;
 
     public ConfirmReservationView(Pension pension, Room room, Customer customer, int selectedCount, Stage stage) {
         this.pension = pension;
@@ -35,7 +30,6 @@ public class ConfirmReservationView {
         this.customer = customer;
         this.selectedCount = selectedCount;
         this.stage = stage;
-        this.reservationController = ReservationController.getInstance();
     }
 
     public void show() {
@@ -131,12 +125,10 @@ public class ConfirmReservationView {
         VBox hero = new VBox(15);
         hero.setAlignment(Pos.CENTER);
         hero.setPadding(new Insets(40, 40, 30, 40));
-        hero.setStyle("-fx-background-color: linear-gradient(to right, #2563eb, #7c3aed);");
-
-        Label titleLabel = new Label("✅ 예약 확인");
+        hero.setStyle("-fx-background-color: linear-gradient(to right, #2563eb, #7c3aed);");        Label titleLabel = new Label("✅ 예약 완료");
         titleLabel.setStyle("-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: white;");
 
-        Label subtitleLabel = new Label("예약 정보를 확인하고 예약을 완료해 주세요");
+        Label subtitleLabel = new Label("예약이 완료되었습니다. 예약 정보를 확인해 주세요");
         subtitleLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: rgba(255,255,255,0.85);");
 
         hero.getChildren().addAll(titleLabel, subtitleLabel);
@@ -383,55 +375,54 @@ public class ConfirmReservationView {
 
         row.getChildren().addAll(labelNode, spacer, valueNode);
         return row;
-    }
-
-    private HBox createButtonBox() {
+    }    private HBox createButtonBox() {
         HBox buttonBox = new HBox(15);
         buttonBox.setAlignment(Pos.CENTER);
         buttonBox.setPadding(new Insets(10, 0, 0, 0));
 
-        Button cancelButton = new Button("❌ 취소");
-        cancelButton.setPrefWidth(200);
-        cancelButton.setStyle(
+        Button reservationListButton = new Button("📋 예약 내역 보기");
+        reservationListButton.setPrefWidth(200);
+        reservationListButton.setStyle(
             "-fx-background-color: white; " +
-            "-fx-text-fill: #ef4444; " +
+            "-fx-text-fill: #2563eb; " +
             "-fx-font-size: 15px; " +
             "-fx-font-weight: bold; " +
             "-fx-padding: 15 30; " +
             "-fx-background-radius: 12; " +
-            "-fx-border-color: #ef4444; " +
+            "-fx-border-color: #2563eb; " +
             "-fx-border-radius: 12; " +
             "-fx-cursor: hand;"
         );
-        cancelButton.setOnMouseEntered(e -> cancelButton.setStyle(
-            "-fx-background-color: #fef2f2; " +
-            "-fx-text-fill: #dc2626; " +
+        reservationListButton.setOnMouseEntered(e -> reservationListButton.setStyle(
+            "-fx-background-color: #eff6ff; " +
+            "-fx-text-fill: #1d4ed8; " +
             "-fx-font-size: 15px; " +
             "-fx-font-weight: bold; " +
             "-fx-padding: 15 30; " +
             "-fx-background-radius: 12; " +
-            "-fx-border-color: #dc2626; " +
+            "-fx-border-color: #1d4ed8; " +
             "-fx-border-radius: 12; " +
             "-fx-cursor: hand;"
         ));
-        cancelButton.setOnMouseExited(e -> cancelButton.setStyle(
+        reservationListButton.setOnMouseExited(e -> reservationListButton.setStyle(
             "-fx-background-color: white; " +
-            "-fx-text-fill: #ef4444; " +
+            "-fx-text-fill: #2563eb; " +
             "-fx-font-size: 15px; " +
             "-fx-font-weight: bold; " +
             "-fx-padding: 15 30; " +
             "-fx-background-radius: 12; " +
-            "-fx-border-color: #ef4444; " +
+            "-fx-border-color: #2563eb; " +
             "-fx-border-radius: 12; " +
             "-fx-cursor: hand;"
-        ));        cancelButton.setOnAction(e -> {
-            RoomSelectView roomSelectView = new RoomSelectView(pension, customer, stage);
-            roomSelectView.show();
+        ));
+        reservationListButton.setOnAction(e -> {
+            ReservationListView reservationListView = new ReservationListView(customer, stage);
+            reservationListView.show();
         });
 
-        Button confirmButton = new Button("✅ 예약 확정");
-        confirmButton.setPrefWidth(200);
-        confirmButton.setStyle(
+        Button homeButton = new Button("🏠 홈으로");
+        homeButton.setPrefWidth(200);
+        homeButton.setStyle(
             "-fx-background-color: linear-gradient(to right, #10b981, #059669); " +
             "-fx-text-fill: white; " +
             "-fx-font-size: 15px; " +
@@ -440,7 +431,7 @@ public class ConfirmReservationView {
             "-fx-background-radius: 12; " +
             "-fx-cursor: hand;"
         );
-        confirmButton.setOnMouseEntered(e -> confirmButton.setStyle(
+        homeButton.setOnMouseEntered(e -> homeButton.setStyle(
             "-fx-background-color: linear-gradient(to right, #059669, #047857); " +
             "-fx-text-fill: white; " +
             "-fx-font-size: 15px; " +
@@ -449,7 +440,7 @@ public class ConfirmReservationView {
             "-fx-background-radius: 12; " +
             "-fx-cursor: hand;"
         ));
-        confirmButton.setOnMouseExited(e -> confirmButton.setStyle(
+        homeButton.setOnMouseExited(e -> homeButton.setStyle(
             "-fx-background-color: linear-gradient(to right, #10b981, #059669); " +
             "-fx-text-fill: white; " +
             "-fx-font-size: 15px; " +
@@ -458,9 +449,12 @@ public class ConfirmReservationView {
             "-fx-background-radius: 12; " +
             "-fx-cursor: hand;"
         ));
-        confirmButton.setOnAction(e -> confirmReservation());
+        homeButton.setOnAction(e -> {
+            PensionView pensionView = new PensionView(customer);
+            pensionView.start(stage);
+        });
 
-        buttonBox.getChildren().addAll(cancelButton, confirmButton);
+        buttonBox.getChildren().addAll(reservationListButton, homeButton);
 
         return buttonBox;
     }
@@ -474,9 +468,7 @@ public class ConfirmReservationView {
                "-fx-border-color: #e2e8f0; " +
                "-fx-border-radius: 20; " +
                "-fx-background-radius: 20;";
-    }
-
-    private String getBackButtonHoverStyle() {
+    }    private String getBackButtonHoverStyle() {
         return "-fx-background-color: #f1f5f9; " +
                "-fx-text-fill: #2563eb; " +
                "-fx-font-size: 14px; " +
@@ -485,46 +477,6 @@ public class ConfirmReservationView {
                "-fx-border-color: #2563eb; " +
                "-fx-border-radius: 20; " +
                "-fx-background-radius: 20;";
-    }
-
-    private void confirmReservation() {
-        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("예약 확정");
-        confirmAlert.setHeaderText(null);
-        confirmAlert.setContentText("예약을 확정하시겠습니까?");
-
-        confirmAlert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                try {
-                    ReservationRequestDTO requestDTO = new ReservationRequestDTO(
-                        room,
-                        customer,
-                        ReservationStatus.PENDING
-                    );
-
-                    Reservation reservation = reservationController.save(requestDTO);
-
-                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-                    successAlert.setTitle("예약 완료");
-                    successAlert.setHeaderText("🎉 예약이 완료되었습니다!");
-                    successAlert.setContentText(
-                        "예약 번호: " + reservation.getId() + "\n\n" +
-                        "예약 내역은 '예약 내역 조회'에서 확인하실 수 있습니다."
-                    );                    
-                    successAlert.showAndWait();
-
-                    PensionView pensionView = new PensionView(customer);
-                    pensionView.start(stage);
-
-                } catch (Exception e) {
-                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-                    errorAlert.setTitle("예약 실패");
-                    errorAlert.setHeaderText(null);
-                    errorAlert.setContentText("예약 처리 중 오류가 발생했습니다: " + e.getMessage());
-                    errorAlert.showAndWait();
-                }
-            }
-        });
     }
 
     private String getRoomTypeText(org.example.domain.room.RoomType type) {

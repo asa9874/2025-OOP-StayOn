@@ -443,8 +443,12 @@ public class RoomSelectView {
         ));        reserveButton.setOnAction(e -> {
             int selectedCount = roomCountSpinner.getValue();
             if (selectedCount > 0) {
-                ConfirmReservationView confirmView = new ConfirmReservationView(pension, room, customer, selectedCount, stage);
-                confirmView.show();
+                PaymentView paymentView = new PaymentView(pension.getId(), room.getId(), selectedCount, customer);
+                try {
+                    paymentView.start(stage);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("경고");
