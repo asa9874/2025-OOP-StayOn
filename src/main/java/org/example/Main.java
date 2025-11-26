@@ -1,15 +1,14 @@
 package org.example;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.stage.Stage;
-import org.example.view.MainView;
+import org.example.view.LoginView;
 
 public class Main extends Application {
     @Override
     public void start(Stage stage) {
-        MainView mainView = new MainView(stage);
-        mainView.show();
+        LoginView loginView = new LoginView(stage);
+        loginView.show();
     }
 
     public static void main(String[] args) {

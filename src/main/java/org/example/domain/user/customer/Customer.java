@@ -7,7 +7,7 @@ public class Customer extends User {
 
     public Customer(String name, String accountId, String password, String phone, String email) {
         super(name, accountId, password, phone, email);
-        this.money = 0;
+        this.money = 1000000000;
     }
 
     public Customer(String name, String accountId, String password, String phone, String email, int money) {

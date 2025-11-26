@@ -21,8 +21,9 @@ src/
 │               │       ├── dto/                      # DTO 클래스들
 │               │       └── strategy/                 # 레포지토리 데이터 전략 패턴 클래스 (필수는 아니고 CleaningStaffRepository에는 전략패턴 한번 적용해봤습니다.)
 │               ├── view/            # UI 관련 코드
-│               │   ├── MainView.java    # 메인 화면 (필수)
-│               │   └── [화면이름?]View.java
+│               │   ├── LoginView.java   # 로그인 화면 (시작점)
+│               │   ├── PensionView.java # 펜션 목록 화면 (메인)
+│               │   └── [화면이름]View.java
 │               ├── Init.java        # 의존성 초기화
 │               └── Main.java        # 애플리케이션 시작점
 └── test/
@@ -54,9 +55,11 @@ src/
 
 ### 3. View 구현
 - 모든 View 클래스는 `src/main/java/org/example/view` 디렉토리에 작성
-- **MainView는 필수**: 모든 화면 전환의 중심점
+- **LoginView**: 애플리케이션 시작 화면 (로그인)
+- **PensionView**: 로그인 후 메인 화면 (펜션 목록)
 - 화면 전환 구조:
-  1. MainView가 기본 화면
+  1. LoginView → PensionView (로그인 성공 시)
+  2. PensionView에서 각 기능 화면으로 이동
 - View에서 Controller 사용 시 직접 싱글톤 인스턴스를 가져와서 사용:
 ```java
 public class SomeView {
@@ -100,6 +103,6 @@ class SomeTest {
 
 ## 주의사항
 1. 모든 의존성 초기화는 반드시 `Init.initializeDependencies()`를 통해 수행
-2. View는 반드시 MainView를 통해 화면 전환이 이루어지도록 구현
+2. 화면 전환은 LoginView → PensionView를 기본으로 하고, PensionView에서 각 기능 화면으로 이동
 3. 각 도메인의 Controller, Service, Repository는 반드시 싱글톤으로 구현
 4. 테스트 코드는 항상 @BeforeEach에서 의존성을 초기화하고 데이터를 리셋

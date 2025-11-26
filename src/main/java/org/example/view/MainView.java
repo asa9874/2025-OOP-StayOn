@@ -41,17 +41,12 @@ public class MainView {
         // 레이아웃 설정
         VBox vbox = new VBox(20);
         vbox.setPadding(new Insets(30));        vbox.setAlignment(Pos.CENTER);
-        vbox.getChildren().addAll(cleaningStaffButton, pensionButton, loginButton);
-
-        // 씬 설정
-        Scene scene = new Scene(vbox, 800, 600);
+        vbox.getChildren().addAll(cleaningStaffButton, pensionButton, loginButton);        // 씬 설정
+        Scene scene = new Scene(vbox, 1200, 800);
         
-        // Pretendard 폰트 적용
-        try {
-            scene.getStylesheets().add(getClass().getResource("/styles/global.css").toExternalForm());
-        } catch (Exception e) {
-            System.out.println("CSS 파일을 불러올 수 없습니다: " + e.getMessage());
-        }
+        // 폰트 로드 및 적용
+        FontUtil.loadFont();
+        vbox.setStyle("-fx-font-family: '" + FontUtil.getFontFamily() + "';");
         
         stage.setScene(scene);
         stage.show();
