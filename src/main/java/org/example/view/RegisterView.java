@@ -34,7 +34,7 @@ public class RegisterView {
         rightPanel.setMinWidth(480);
         rightPanel.setMaxWidth(480);        mainContainer.getChildren().addAll(leftPanel, rightPanel);
 
-        Scene scene = new Scene(mainContainer, 1050, 720);
+        Scene scene = new Scene(mainContainer, 1200, 800);
 
         // 폰트 로드 및 적용
         FontUtil.loadFont();

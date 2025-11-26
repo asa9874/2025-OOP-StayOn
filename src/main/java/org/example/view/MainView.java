@@ -42,7 +42,7 @@ public class MainView {
         VBox vbox = new VBox(20);
         vbox.setPadding(new Insets(30));        vbox.setAlignment(Pos.CENTER);
         vbox.getChildren().addAll(cleaningStaffButton, pensionButton, loginButton);        // 씬 설정
-        Scene scene = new Scene(vbox, 800, 600);
+        Scene scene = new Scene(vbox, 1200, 800);
         
         // 폰트 로드 및 적용
         FontUtil.loadFont();

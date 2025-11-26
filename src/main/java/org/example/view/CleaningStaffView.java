@@ -51,7 +51,7 @@ public class CleaningStaffView {
         scrollPane.setStyle("-fx-background: #f8fafc; -fx-background-color: #f8fafc; -fx-border-color: transparent;");
         VBox.setVgrow(scrollPane, Priority.ALWAYS);        mainContainer.getChildren().addAll(header, heroSection, scrollPane);
 
-        Scene scene = new Scene(mainContainer, 1000, 700);
+        Scene scene = new Scene(mainContainer, 1200, 800);
 
         // 폰트 로드 및 적용
         FontUtil.loadFont();

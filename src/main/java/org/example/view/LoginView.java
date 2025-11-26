@@ -33,7 +33,7 @@ public class LoginView {
         rightPanel.setMinWidth(450);
         rightPanel.setMaxWidth(450);
 
-        mainContainer.getChildren().addAll(leftPanel, rightPanel);        Scene scene = new Scene(mainContainer, 1000, 650);
+        mainContainer.getChildren().addAll(leftPanel, rightPanel);        Scene scene = new Scene(mainContainer, 1200, 800);
 
         // 폰트 로드 및 적용
         FontUtil.loadFont();
