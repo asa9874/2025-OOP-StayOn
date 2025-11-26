@@ -33,16 +33,11 @@ public class LoginView {
         rightPanel.setMinWidth(450);
         rightPanel.setMaxWidth(450);
 
-        mainContainer.getChildren().addAll(leftPanel, rightPanel);
+        mainContainer.getChildren().addAll(leftPanel, rightPanel);        Scene scene = new Scene(mainContainer, 1000, 650);
 
-        Scene scene = new Scene(mainContainer, 1000, 650);
-
-        // CSS 적용
-        try {
-            scene.getStylesheets().add(getClass().getResource("/styles/global.css").toExternalForm());
-        } catch (Exception e) {
-            System.out.println("CSS 파일을 불러올 수 없습니다: " + e.getMessage());
-        }
+        // 폰트 로드 및 적용
+        FontUtil.loadFont();
+        mainContainer.setStyle("-fx-font-family: '" + FontUtil.getFontFamily() + "';");
 
         stage.setScene(scene);
         stage.show();

@@ -81,18 +81,13 @@ public class PensionView {
         VBox.setVgrow(scrollPane, Priority.ALWAYS);
 
         // 데이터 로드
-        updatePensionList();
-
-        mainContainer.getChildren().addAll(header, heroSection, filterSection, scrollPane);
+        updatePensionList();        mainContainer.getChildren().addAll(header, heroSection, filterSection, scrollPane);
 
         Scene scene = new Scene(mainContainer, 1200, 800);
 
-        // CSS 적용
-        try {
-            scene.getStylesheets().add(getClass().getResource("/styles/global.css").toExternalForm());
-        } catch (Exception e) {
-            System.out.println("CSS 파일을 불러올 수 없습니다: " + e.getMessage());
-        }
+        // 폰트 로드 및 적용
+        FontUtil.loadFont();
+        mainContainer.setStyle("-fx-font-family: '" + FontUtil.getFontFamily() + "';");
 
         stage.setScene(scene);
         stage.show();
