@@ -14,20 +14,25 @@ import org.example.domain.room.Room;
 import org.example.domain.room.RoomController;
 import org.example.domain.room.RoomStatus;
 import org.example.domain.room.RoomType;
+import org.example.domain.user.customer.Customer;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoomSelectView {    private final Pension pension;
+public class RoomSelectView {    
+    private final Pension pension;
     private final Stage stage;
     private final RoomController roomController;
+    private final Customer customer;
     private FlowPane roomGridContainer;
     private List<Room> currentRoomList;
     private List<Button> filterButtons;
     private Button activeFilterButton;
 
-    public RoomSelectView(Pension pension, Stage stage) {        this.pension = pension;
+    public RoomSelectView(Pension pension, Customer customer, Stage stage) {
+        this.pension = pension;
+        this.customer = customer;
         this.stage = stage;
         this.roomController = RoomController.getInstance();
         this.filterButtons = new ArrayList<>();
@@ -87,9 +92,8 @@ public class RoomSelectView {    private final Pension pension;
         Button backButton = new Button("← 펜션 정보로");
         backButton.setStyle(getBackButtonStyle());
         backButton.setOnMouseEntered(e -> backButton.setStyle(getBackButtonHoverStyle()));
-        backButton.setOnMouseExited(e -> backButton.setStyle(getBackButtonStyle()));
-        backButton.setOnAction(e -> {
-            PensionDetailView detailView = new PensionDetailView(pension, stage);
+        backButton.setOnMouseExited(e -> backButton.setStyle(getBackButtonStyle()));        backButton.setOnAction(e -> {
+            PensionDetailView detailView = new PensionDetailView(pension, customer, stage);
             detailView.show();
         });
 
@@ -436,16 +440,11 @@ public class RoomSelectView {    private final Pension pension;
             "-fx-padding: 10 20; " +
             "-fx-background-radius: 20; " +
             "-fx-cursor: hand;"
-        ));
-        reserveButton.setOnAction(e -> {
+        ));        reserveButton.setOnAction(e -> {
             int selectedCount = roomCountSpinner.getValue();
             if (selectedCount > 0) {
-                PaymentView paymentView = new PaymentView(pension.getId(), room.getId(), selectedCount);
-                try {
-                    paymentView.start(stage);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+                ConfirmReservationView confirmView = new ConfirmReservationView(pension, room, customer, selectedCount, stage);
+                confirmView.show();
             } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("경고");

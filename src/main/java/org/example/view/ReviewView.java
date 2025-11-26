@@ -12,18 +12,22 @@ import org.example.domain.pension.Pension;
 import org.example.domain.review.Review;
 import org.example.domain.review.ReviewController;
 import org.example.domain.room.Room;
+import org.example.domain.user.customer.Customer;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ReviewView {
-    private final Stage stage;    private final Pension pension;
+    private final Stage stage;
+    private final Pension pension;
     private final ReviewController reviewController;
+    private final Customer customer;
     private FlowPane reviewGridContainer;
     private List<Review> currentReviewList;
 
-    public ReviewView(Pension pension, Stage stage) {
+    public ReviewView(Pension pension, Customer customer, Stage stage) {
         this.pension = pension;
+        this.customer = customer;
         this.stage = stage;
         this.reviewController = ReviewController.getInstance();
     }
@@ -82,9 +86,8 @@ public class ReviewView {
         Button backButton = new Button("← 펜션 정보로");
         backButton.setStyle(getBackButtonStyle());
         backButton.setOnMouseEntered(e -> backButton.setStyle(getBackButtonHoverStyle()));
-        backButton.setOnMouseExited(e -> backButton.setStyle(getBackButtonStyle()));
-        backButton.setOnAction(e -> {
-            PensionDetailView detailView = new PensionDetailView(pension, stage);
+        backButton.setOnMouseExited(e -> backButton.setStyle(getBackButtonStyle()));        backButton.setOnAction(e -> {
+            PensionDetailView detailView = new PensionDetailView(pension, customer, stage);
             detailView.show();
         });
 

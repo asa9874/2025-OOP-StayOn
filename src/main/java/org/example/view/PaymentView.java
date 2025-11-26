@@ -23,7 +23,8 @@ public class PaymentView extends Application {
     private final PensionController pensionController;
     private final RoomController roomController;
     private int roomId;
-    private int pensionId;    private int selectedCount;
+    private int pensionId;    
+    private int selectedCount;
     private Customer customer;
 
     public PaymentView(int pensionId, int roomId, int selectedCount) {
@@ -129,9 +130,8 @@ public class PaymentView extends Application {
             "-fx-border-color: #e2e8f0; " +
             "-fx-border-radius: 20; " +
             "-fx-background-radius: 20;"
-        ));
-        backButton.setOnAction(e -> {
-            RoomSelectView roomSelectView = new RoomSelectView(pension, stage);
+        ));        backButton.setOnAction(e -> {
+            RoomSelectView roomSelectView = new RoomSelectView(pension, customer, stage);
             roomSelectView.show();
         });
 

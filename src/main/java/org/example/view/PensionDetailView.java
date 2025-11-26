@@ -16,6 +16,7 @@ import org.example.domain.room.Room;
 import org.example.domain.room.RoomController;
 import org.example.domain.review.Review;
 import org.example.domain.review.ReviewController;
+import org.example.domain.user.customer.Customer;
 
 import java.io.File;
 import java.text.NumberFormat;
@@ -27,9 +28,11 @@ public class PensionDetailView {
     private final Stage stage;
     private final RoomController roomController;
     private final ReviewController reviewController;
+    private final Customer customer;
 
-    public PensionDetailView(Pension pension, Stage stage) {
+    public PensionDetailView(Pension pension, Customer customer, Stage stage) {
         this.pension = pension;
+        this.customer = customer;
         this.stage = stage;
         this.roomController = RoomController.getInstance();
         this.reviewController = ReviewController.getInstance();
@@ -120,9 +123,8 @@ public class PensionDetailView {
             "-fx-border-color: #e2e8f0; " +
             "-fx-border-radius: 20; " +
             "-fx-background-radius: 20;"
-        ));
-        backButton.setOnAction(e -> {
-            PensionView pensionView = new PensionView();
+        ));        backButton.setOnAction(e -> {
+            PensionView pensionView = new PensionView(customer);
             pensionView.start(stage);
         });
 
@@ -293,9 +295,8 @@ public class PensionDetailView {
             "-fx-font-weight: bold; " +
             "-fx-background-radius: 12; " +
             "-fx-cursor: hand;"
-        ));
-        reserveButton.setOnAction(e -> {
-            RoomSelectView roomSelectView = new RoomSelectView(pension, stage);
+        ));        reserveButton.setOnAction(e -> {
+            RoomSelectView roomSelectView = new RoomSelectView(pension, customer, stage);
             roomSelectView.show();
         });
 
@@ -325,9 +326,8 @@ public class PensionDetailView {
             "-fx-font-weight: bold; " +
             "-fx-background-radius: 12; " +
             "-fx-cursor: hand;"
-        ));
-        facilitiesButton.setOnAction(e -> {
-            FacilitiesView facilitiesView = new FacilitiesView(pension, stage);
+        ));        facilitiesButton.setOnAction(e -> {
+            FacilitiesView facilitiesView = new FacilitiesView(pension, customer, stage);
             facilitiesView.show();
         });
 

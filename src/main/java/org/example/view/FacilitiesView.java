@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import org.example.domain.facilities.Facilities;
 import org.example.domain.facilities.FacilitiesController;
 import org.example.domain.pension.Pension;
+import org.example.domain.user.customer.Customer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,13 +22,15 @@ public class FacilitiesView {
     private final Pension pension;
     private final Stage stage;
     private final FacilitiesController facilitiesController;
+    private final Customer customer;
     private FlowPane facilitiesGridContainer;
     private List<Facilities> currentFacilitiesList;
     private List<Button> filterButtons;
     private Button activeFilterButton;
 
-    public FacilitiesView(Pension pension, Stage stage) {
+    public FacilitiesView(Pension pension, Customer customer, Stage stage) {
         this.pension = pension;
+        this.customer = customer;
         this.stage = stage;
         this.facilitiesController = FacilitiesController.getInstance();
         this.filterButtons = new ArrayList<>();
@@ -114,9 +117,8 @@ public class FacilitiesView {
             "-fx-border-color: #e2e8f0; " +
             "-fx-border-radius: 20; " +
             "-fx-background-radius: 20;"
-        ));
-        backButton.setOnAction(e -> {
-            PensionDetailView detailView = new PensionDetailView(pension, stage);
+        ));        backButton.setOnAction(e -> {
+            PensionDetailView detailView = new PensionDetailView(pension, customer, stage);
             detailView.show();
         });
 

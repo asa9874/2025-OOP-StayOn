@@ -23,14 +23,16 @@ import java.time.format.DateTimeFormatter;
 
 public class ConfirmReservationView {
     private final Stage stage;
-    private final Pension pension;    private final Room room;
+    private final Pension pension;    
+    private final Room room;
     private final Customer customer;
     private final int selectedCount;
     private final ReservationController reservationController;
 
     public ConfirmReservationView(Pension pension, Room room, Customer customer, int selectedCount, Stage stage) {
         this.pension = pension;
-        this.room = room;        this.customer = customer;
+        this.room = room;        
+        this.customer = customer;
         this.selectedCount = selectedCount;
         this.stage = stage;
         this.reservationController = ReservationController.getInstance();
@@ -99,9 +101,8 @@ public class ConfirmReservationView {
         Button backButton = new Button("← 객실 선택으로");
         backButton.setStyle(getBackButtonStyle());
         backButton.setOnMouseEntered(e -> backButton.setStyle(getBackButtonHoverStyle()));
-        backButton.setOnMouseExited(e -> backButton.setStyle(getBackButtonStyle()));
-        backButton.setOnAction(e -> {
-            RoomSelectView roomSelectView = new RoomSelectView(pension, stage);
+        backButton.setOnMouseExited(e -> backButton.setStyle(getBackButtonStyle()));        backButton.setOnAction(e -> {
+            RoomSelectView roomSelectView = new RoomSelectView(pension, customer, stage);
             roomSelectView.show();
         });
 
@@ -423,10 +424,9 @@ public class ConfirmReservationView {
             "-fx-border-color: #ef4444; " +
             "-fx-border-radius: 12; " +
             "-fx-cursor: hand;"
-        ));
-        cancelButton.setOnAction(e -> {
-            CancelReservationView cancelView = new CancelReservationView(pension, room, customer, selectedCount, stage);
-            cancelView.show();
+        ));        cancelButton.setOnAction(e -> {
+            RoomSelectView roomSelectView = new RoomSelectView(pension, customer, stage);
+            roomSelectView.show();
         });
 
         Button confirmButton = new Button("✅ 예약 확정");
@@ -510,11 +510,11 @@ public class ConfirmReservationView {
                     successAlert.setContentText(
                         "예약 번호: " + reservation.getId() + "\n\n" +
                         "예약 내역은 '예약 내역 조회'에서 확인하실 수 있습니다."
-                    );
+                    );                    
                     successAlert.showAndWait();
 
-                    MainView mainView = new MainView(stage);
-                    mainView.show();
+                    PensionView pensionView = new PensionView(customer);
+                    pensionView.start(stage);
 
                 } catch (Exception e) {
                     Alert errorAlert = new Alert(Alert.AlertType.ERROR);

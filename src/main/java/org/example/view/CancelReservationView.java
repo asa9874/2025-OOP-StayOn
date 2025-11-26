@@ -90,9 +90,8 @@ public class CancelReservationView {
         Button backButton = new Button("← 객실 선택으로");
         backButton.setStyle(getBackButtonStyle());
         backButton.setOnMouseEntered(e -> backButton.setStyle(getBackButtonHoverStyle()));
-        backButton.setOnMouseExited(e -> backButton.setStyle(getBackButtonStyle()));
-        backButton.setOnAction(e -> {
-            RoomSelectView roomSelectView = new RoomSelectView(pension, stage);
+        backButton.setOnMouseExited(e -> backButton.setStyle(getBackButtonStyle()));        backButton.setOnAction(e -> {
+            RoomSelectView roomSelectView = new RoomSelectView(pension, customer, stage);
             roomSelectView.show();
         });
 
@@ -329,9 +328,7 @@ public class CancelReservationView {
             Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
             confirmAlert.setTitle("예약 취소 확인");
             confirmAlert.setHeaderText(null);
-            confirmAlert.setContentText("정말로 예약을 취소하시겠습니까?");
-
-            confirmAlert.showAndWait().ifPresent(response -> {
+            confirmAlert.setContentText("정말로 예약을 취소하시겠습니까?");            confirmAlert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
                     Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
                     successAlert.setTitle("예약 취소 완료");
@@ -339,8 +336,8 @@ public class CancelReservationView {
                     successAlert.setContentText("환불 금액: " + String.format("%,d원", totalPrice));
                     successAlert.showAndWait();
 
-                    MainView mainView = new MainView(stage);
-                    mainView.show();
+                    PensionView pensionView = new PensionView(customer);
+                    pensionView.start(stage);
                 }
             });
         });

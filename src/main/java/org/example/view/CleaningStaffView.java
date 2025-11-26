@@ -69,15 +69,13 @@ public class CleaningStaffView {
         HBox header = new HBox();
         header.setAlignment(Pos.CENTER_LEFT);
         header.setPadding(new Insets(15, 40, 15, 40));
-        header.setStyle("-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);");
-
-        Button backButton = new Button("← 메인으로");
+        header.setStyle("-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);");        Button backButton = new Button("← 로그인으로");
         backButton.setStyle(getBackButtonStyle());
         backButton.setOnMouseEntered(e -> backButton.setStyle(getBackButtonHoverStyle()));
         backButton.setOnMouseExited(e -> backButton.setStyle(getBackButtonStyle()));
         backButton.setOnAction(e -> {
-            MainView mainView = new MainView(stage);
-            mainView.show();
+            LoginView loginView = new LoginView(stage);
+            loginView.show();
         });
 
         Region spacer1 = new Region();

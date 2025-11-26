@@ -90,15 +90,13 @@ public class ReservationListView {
         HBox header = new HBox();
         header.setAlignment(Pos.CENTER_LEFT);
         header.setPadding(new Insets(15, 40, 15, 40));
-        header.setStyle("-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);");
-
-        Button backButton = new Button("← 메인으로");
+        header.setStyle("-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);");        Button backButton = new Button("← 펜션 목록으로");
         backButton.setStyle(getBackButtonStyle());
         backButton.setOnMouseEntered(e -> backButton.setStyle(getBackButtonHoverStyle()));
         backButton.setOnMouseExited(e -> backButton.setStyle(getBackButtonStyle()));
         backButton.setOnAction(e -> {
-            MainView mainView = new MainView(stage);
-            mainView.show();
+            PensionView pensionView = new PensionView(customer);
+            pensionView.start(stage);
         });
 
         Region spacer1 = new Region();
@@ -586,25 +584,12 @@ public class ReservationListView {
                 }
             }
         });
-    }
-
-    private void cancelReservation(Reservation reservation) {
-        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("예약 취소");
-        confirmAlert.setHeaderText(null);
-        confirmAlert.setContentText("정말로 예약을 취소하시겠습니까?");
-
-        confirmAlert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                try {
-                    reservationController.cancel(reservation.getId());
-                    showAlert("성공", "예약이 취소되었습니다.");
-                    updateReservationList(currentFilter);
-                } catch (Exception e) {
-                    showAlert("오류", "예약 취소 중 오류가 발생했습니다: " + e.getMessage());
-                }
-            }
-        });
+    }    private void cancelReservation(Reservation reservation) {
+        Room room = reservation.getRoom();
+        Pension pension = pensionController.findById(room.getPensionId());
+        
+        CancelReservationView cancelView = new CancelReservationView(pension, room, customer, 1, stage);
+        cancelView.show();
     }
 
     private void requestRefund(Reservation reservation) {

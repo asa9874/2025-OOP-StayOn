@@ -626,11 +626,9 @@ public class PensionView {
                 "-fx-background-radius: 16; " +
                 "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);"
             );
-        });
-
-        // 클릭 이벤트
+        });        // 클릭 이벤트
         card.setOnMouseClicked(e -> {
-            PensionDetailView detailView = new PensionDetailView(pension, stage);
+            PensionDetailView detailView = new PensionDetailView(pension, customer, stage);
             detailView.show();
         });
         card.setCursor(javafx.scene.Cursor.HAND);
