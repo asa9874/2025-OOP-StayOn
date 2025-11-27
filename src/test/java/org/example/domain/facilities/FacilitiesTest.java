@@ -26,8 +26,7 @@ class FacilitiesTest {
         repository = FacilitiesRepository.getInstance();
         controller = FacilitiesController.getInstance();
         repository.returnToDefaultData();
-    }
-
+    }    
     @Test
     void 저장_유효한입력_시설저장및반환() {
         // given
@@ -38,7 +37,8 @@ class FacilitiesTest {
             openingTime,
             closingTime,
             true,
-            1 // pensionId
+            1, // pensionId
+            "src/main/java/org/example/image/facilities/pool.jpeg"
         );
 
         // when
@@ -55,8 +55,7 @@ class FacilitiesTest {
         assertTrue(facility.isRequireReservation());
         assertEquals(1, facility.getPension().getId());
         assertTrue(facility.getId() > 0);
-    }
-
+    }    
     @Test
     void 아이디검색_존재하는아이디_시설반환() {
         // given
@@ -67,7 +66,8 @@ class FacilitiesTest {
             openingTime,
             closingTime,
             true,
-            1
+            1,
+            "src/main/java/org/example/image/facilities/pool.jpeg"
         );
         Facilities savedFacility = controller.save(requestDTO);
 
@@ -89,8 +89,7 @@ class FacilitiesTest {
         assertThrows(NoSuchElementException.class, () -> {
             controller.findById(999);
         });
-    }
-
+    }    
     @Test
     void 아이디삭제_존재하는아이디_시설삭제() {
         // given
@@ -101,7 +100,8 @@ class FacilitiesTest {
             openingTime,
             closingTime,
             true,
-            1
+            1,
+            "src/main/java/org/example/image/facilities/pool.jpeg"
         );
         Facilities savedFacility = controller.save(requestDTO);
 
@@ -122,8 +122,7 @@ class FacilitiesTest {
         assertThrows(NoSuchElementException.class, () -> {
             controller.deleteById(999);
         });
-    }
-
+    }    
     @Test
     void 전체조회_여러시설존재_모든시설반환() {
         // given
@@ -134,14 +133,16 @@ class FacilitiesTest {
             openingTime,
             closingTime,
             true,
-            1
+            1,
+            "src/main/java/org/example/image/facilities/pool.jpeg"
         );
         FacilitiesRequestDTO facility2 = new FacilitiesRequestDTO(
             "사우나",
             openingTime,
             closingTime,
             false,
-            1
+            1,
+            "src/main/java/org/example/image/facilities/sauna.jpeg"
         );
 
         controller.save(facility1);
@@ -152,8 +153,7 @@ class FacilitiesTest {
 
         // then
         assertEquals(2, allFacilities.size());
-    }
-
+    }    
     @Test
     void 펜션아이디로조회_존재하는펜션아이디_해당시설반환() {
         // given
@@ -164,7 +164,8 @@ class FacilitiesTest {
             openingTime,
             closingTime,
             true,
-            1
+            1,
+            "src/main/java/org/example/image/facilities/pool.jpeg"
         );
         controller.save(requestDTO);
 
